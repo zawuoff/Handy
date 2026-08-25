@@ -7,7 +7,15 @@
     "model": "Model",
     "quit": "Afsluiten",
     "cancel": "Annuleren",
-    "secureInputWarning": "⚠ Sneltoetsen geblokkeerd door Secure Input"
+    "secureInputWarning": "⚠ Sneltoetsen geblokkeerd door Secure Input",
+    "meeting": "Vergadering",
+    "meetingStop": "Vergadering stoppen en opslaan",
+    "meetingCopy": "Transcript tot nu toe kopiëren",
+    "meetingCopied": "Gekopieerd ✓",
+    "meetingCaptionsShow": "Live ondertitels tonen",
+    "meetingCaptionsHide": "Live ondertitels verbergen",
+    "meetingDiscard": "Opname verwijderen",
+    "meetingListening": "Luistert…"
   },
   "sidebar": {
     "general": "Algemeen",
@@ -16,7 +24,8 @@
     "postProcessing": "Naverwerking",
     "history": "Geschiedenis",
     "debug": "Probleemoplossing",
-    "about": "Over Handy"
+    "about": "Over Noted",
+    "notes": "Notities"
   },
   "onboarding": {
     "subtitle": "Kies een transcriptiemodel om aan de slag te gaan",
@@ -101,7 +110,7 @@
     },
     "permissions": {
       "title": "Machtigingen vereist",
-      "description": "Handy heeft een aantal machtigingen nodig om goed te kunnen werken.",
+      "description": "Noted heeft een aantal machtigingen nodig om goed te kunnen werken.",
       "microphone": {
         "title": "Microfoontoegang",
         "description": "Vereist om je stem op te nemen voor transcriptie."
@@ -179,6 +188,10 @@
           "transcribe_with_post_process": {
             "name": "Sneltoets voor naverwerking",
             "description": "Optioneel: Een specifieke sneltoets die altijd AI-naverwerking toepast op je transcriptie."
+          },
+          "meeting": {
+            "name": "Sneltoets vergadermodus",
+            "description": "Start en stopt een vergadersessie. Het transcript wordt in de geschiedenis opgeslagen in plaats van geplakt en blijft bewaard tot je het verwijdert."
           }
         },
         "errors": {
@@ -215,7 +228,7 @@
       },
       "rescan": {
         "label": "Opnieuw scannen",
-        "tooltip": "Scannen naar modellen die buiten Handy om zijn toegevoegd aan de modellenmap of Hugging Face-cache"
+        "tooltip": "Scannen naar modellen die buiten Noted om zijn toegevoegd aan de modellenmap of Hugging Face-cache"
       },
       "noModelsMatch": "Geen modellen voldoen aan dit filter."
     },
@@ -283,11 +296,11 @@
       },
       "autostart": {
         "label": "Starten bij opstarten",
-        "description": "Handy automatisch starten zodra je inlogt op je computer."
+        "description": "Noted automatisch starten zodra je inlogt op je computer."
       },
       "showTrayIcon": {
         "label": "Pictogram in systeemvak tonen",
-        "description": "Toon het Handy-pictogram in het systeemvak."
+        "description": "Toon het Noted-pictogram in het systeemvak."
       },
       "overlay": {
         "style": {
@@ -457,7 +470,8 @@
       "retranscribe": "Opnieuw transcriberen",
       "retranscribeError": "Opnieuw transcriberen mislukt. Probeer het opnieuw.",
       "transcribing": "Transcriberen...",
-      "transcriptionFailed": "Transcriptie mislukt. Je kunt het opnieuw proberen via het herlaad-pictogram."
+      "transcriptionFailed": "Transcriptie mislukt. Je kunt het opnieuw proberen via het herlaad-pictogram.",
+      "meetingBadge": "Vergadering"
     },
     "debug": {
       "title": "Probleemoplossing",
@@ -482,7 +496,7 @@
       },
       "updateChecks": {
         "label": "Controleren op updates",
-        "description": "Automatisch controleren op nieuwe versies van Handy"
+        "description": "Automatisch controleren op nieuwe versies van Noted"
       },
       "whatsNewPreview": {
         "title": "Voorbeeld van release-notes",
@@ -562,7 +576,7 @@
       },
       "keyboardDiagnostic": {
         "title": "Toetsenborddiagnose",
-        "description": "Controleert of toetsenbordgebeurtenissen Handy bereiken. Alleen het aantal gebeurtenissen wordt vastgelegd — nooit welke toetsen je indrukt.",
+        "description": "Controleert of toetsenbordgebeurtenissen Noted bereiken. Alleen het aantal gebeurtenissen wordt vastgelegd — nooit welke toetsen je indrukt.",
         "run": "Diagnose van 10 s uitvoeren",
         "running": "Luisteren… druk je sneltoets een paar keer in (bijv. Option+Space)",
         "secureInputLabel": "Secure Input",
@@ -576,24 +590,24 @@
         "mouse": "Muis",
         "verdictBlocked": "Secure Input blokkeert toetsgebeurtenissen — sneltoetsen met een gewone toets kunnen pas weer werken als dit is opgelost.",
         "verdictSuspicious": "Er kwamen wel modificatiegebeurtenissen binnen, maar geen toetsgebeurtenissen — iets onderdrukt toetsen terwijl Secure Input als uitgeschakeld wordt gemeld. Meld dit op GitHub.",
-        "verdictOk": "Toetsgebeurtenissen bereiken Handy normaal.",
+        "verdictOk": "Toetsgebeurtenissen bereiken Noted normaal.",
         "verdictNoEvents": "Geen gebeurtenissen vastgelegd — heb je tijdens de test toetsen ingedrukt?",
         "failed": "Diagnose mislukt: {{error}}"
       }
     },
     "about": {
-      "title": "Over Handy",
+      "title": "Over Noted",
       "version": {
         "title": "Versie",
-        "description": "Huidige versie van Handy"
+        "description": "Huidige versie van Noted"
       },
       "whatsNewUpdates": {
         "label": "Toon 'Wat is er nieuw'",
-        "description": "Release-notes tonen nadat Handy is bijgewerkt"
+        "description": "Release-notes tonen nadat Noted is bijgewerkt"
       },
       "appDataDirectory": {
         "title": "App-datamap",
-        "description": "Locatie waar Handy de gegevens opslaat"
+        "description": "Locatie waar Noted de gegevens opslaat"
       },
       "sourceCode": {
         "title": "Broncode",
@@ -602,7 +616,7 @@
       },
       "supportDevelopment": {
         "title": "Ontwikkeling ondersteunen",
-        "description": "Help ons om te blijven bouwen aan Handy",
+        "description": "Help ons om te blijven bouwen aan Noted",
         "button": "Doneren"
       },
       "acknowledgments": {
@@ -610,7 +624,7 @@
         "ggml": {
           "title": "ggml",
           "description": "Krachtige tensorbibliotheek voor lokale AI-verwerking",
-          "details": "Handy's lokale spraak-naar-tekst is gebouwd op transcribe.cpp en ggml. Met dank aan het geweldige werk van Georgi Gerganov en alle bijdragers."
+          "details": "Noted's lokale spraak-naar-tekst is gebouwd op transcribe.cpp en ggml. Met dank aan het geweldige werk van Georgi Gerganov en alle bijdragers."
         }
       }
     }
@@ -631,7 +645,7 @@
     "portableUpdateBrowseButton": "GitHub Releases openen"
   },
   "whatsNew": {
-    "title": "Nieuw in Handy v{{version}}"
+    "title": "Nieuw in Noted v{{version}}"
   },
   "common": {
     "loading": "Laden...",
@@ -643,7 +657,7 @@
     "noOptionsFound": "Geen opties gevonden"
   },
   "accessibility": {
-    "permissionsDescription": "Handy heeft toegankelijkheidsmachtigingen nodig om getranscribeerde tekst te kunnen typen.",
+    "permissionsDescription": "Noted heeft toegankelijkheidsmachtigingen nodig om getranscribeerde tekst te kunnen typen.",
     "openSettings": "Systeeminstellingen openen"
   },
   "errors": {
@@ -666,11 +680,11 @@
   },
   "appLanguage": {
     "title": "Interfacetaal",
-    "description": "Wijzig de taal van de Handy-interface"
+    "description": "Wijzig de taal van de Noted-interface"
   },
   "theme": {
     "title": "App-thema",
-    "description": "Kies of Handy het systeemthema volgt of licht of donker blijft",
+    "description": "Kies of Noted het systeemthema volgt of licht of donker blijft",
     "options": {
       "system": "Systeem",
       "light": "Licht",
@@ -691,5 +705,68 @@
     "learnMore": "Hoe je dit oplost",
     "recorderBlocked": "Sneltoetsen kunnen nu niet worden opgenomen — Secure Input van macOS blokkeert toetsgebeurtenissen. Los eerst de Secure Input-waarschuwing op.",
     "dismiss": "Sluiten"
+  },
+  "meeting": {
+    "savedTitle": "Vergadering opgeslagen",
+    "savedDescription": "Het transcript staat in de geschiedenis en is gemarkeerd zodat het niet automatisch wordt verwijderd.",
+    "saveFailedTitle": "Vergadering kon niet worden opgeslagen",
+    "saveFailedClipboard": "Opslaan is mislukt; het transcript is naar het klembord gekopieerd — plak het op een veilige plek.",
+    "saveFailedNoRescue": "Opslaan is mislukt en er is geen transcript gemaakt. Bekijk de logs voor details."
+  },
+  "notes": {
+    "title": "Notities",
+    "loading": "Notities laden…",
+    "empty": "Nog geen vergadernotities",
+    "emptyHint": "Start een vergadering met de vergadersneltoets, dan verschijnen de notities hier.",
+    "loadMore": "Meer laden",
+    "back": "Terug",
+    "titlePlaceholder": "Vergadering zonder titel",
+    "aiNotes": "AI-notities",
+    "writing": "Notities worden geschreven…",
+    "noNotesYet": "Nog geen notities — druk op het herhaalicoon om ze te maken.",
+    "noTranscript": "Deze opname heeft geen transcript.",
+    "regenerate": "Notities opnieuw genereren",
+    "copy": "Kopiëren",
+    "yourNotes": "Jouw notities",
+    "yourNotesPlaceholder": "Schrijf hier je eigen notities — ze worden automatisch opgeslagen.",
+    "transcript": "Transcript en opname",
+    "delete": "Notitie verwijderen",
+    "deleteConfirm": "Deze notitie, het transcript en de opname verwijderen? Dit kan niet ongedaan worden gemaakt.",
+    "promptTitle": "Notitiestijl",
+    "promptDescription": "Deze instructies bepalen hoe vergadernotities uit het transcript worden geschreven. Bewerk ze om structuur en toon te veranderen.",
+    "promptReset": "Standaard herstellen",
+    "readyToast": "Vergadernotities zijn klaar",
+    "failedToast": "Kon geen notities schrijven. Controleer je provider in de nabewerkingsinstellingen.",
+    "transcriptChip": "Transcript",
+    "onThisDevice": "Op dit apparaat",
+    "docPlaceholder": "Schrijf wat je wilt…"
+  },
+  "shell": {
+    "appName": "Noted",
+    "home": "Start",
+    "settings": "Instellingen",
+    "dictationReady": "Dicteren gereed",
+    "dictationHintHold": "Houd {{keys}} ingedrukt om te spreken",
+    "dictationHintPress": "Druk op {{keys}} om te spreken",
+    "goodMorning": "Goedemorgen",
+    "goodAfternoon": "Goedemiddag",
+    "goodEvening": "Goedenavond",
+    "startMeeting": "Vergadering starten",
+    "stopMeeting": "Vergadering stoppen",
+    "recentNotes": "Recente notities",
+    "today": "Vandaag",
+    "yesterday": "Gisteren",
+    "meetingMeta": "Vergadering",
+    "enhanced": "Verrijkt"
+  },
+  "live": {
+    "title": "Vergadering bezig",
+    "recording": "Opnemen",
+    "stop": "Stop",
+    "captions": "Ondertitels",
+    "liveTranscript": "Live transcript",
+    "listening": "Luistert…",
+    "noStreamingModel": "Opname loopt. Live tekst vereist een streamingmodel — het transcript is klaar wanneer je stopt.",
+    "privacy": "Getranscribeerd op dit apparaat. Niets verlaat je computer."
   }
 }

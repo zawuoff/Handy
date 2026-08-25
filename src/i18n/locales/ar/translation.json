@@ -7,7 +7,15 @@
     "model": "النموذج",
     "quit": "إنهاء",
     "cancel": "إلغاء",
-    "secureInputWarning": "⚠ الاختصارات محجوبة بواسطة Secure Input"
+    "secureInputWarning": "⚠ الاختصارات محجوبة بواسطة Secure Input",
+    "meeting": "اجتماع",
+    "meetingStop": "إيقاف الاجتماع وحفظه",
+    "meetingCopy": "نسخ النص حتى الآن",
+    "meetingCopied": "تم النسخ ✓",
+    "meetingCaptionsShow": "إظهار الترجمة المباشرة",
+    "meetingCaptionsHide": "إخفاء الترجمة المباشرة",
+    "meetingDiscard": "تجاهل التسجيل",
+    "meetingListening": "جارٍ الاستماع…"
   },
   "sidebar": {
     "general": "عام",
@@ -16,7 +24,8 @@
     "history": "السجل",
     "debug": "تصحيح الأخطاء",
     "about": "حول",
-    "models": "النماذج"
+    "models": "النماذج",
+    "notes": "الملاحظات"
   },
   "onboarding": {
     "subtitle": "للبدء، اختر نموذج التفريغ الصوتي",
@@ -101,7 +110,7 @@
     },
     "permissions": {
       "title": "الأذونات المطلوبة",
-      "description": ".يحتاج Handy إلى بعض الأذونات ليعمل بشكل صحيح",
+      "description": ".يحتاج Noted إلى بعض الأذونات ليعمل بشكل صحيح",
       "microphone": {
         "title": "الوصول إلى الميكروفون",
         "description": ".مطلوب لسماع صوتك من أجل التفريغ الصوتي"
@@ -158,7 +167,7 @@
     "general": {
       "title": "عام",
       "shortcut": {
-        "title": "اختصارات Handy",
+        "title": "اختصارات Noted",
         "description": "إعداد اختصارات لوحة المفاتيح لبدء تسجيل التفريغ الصوتي",
         "loading": "...جاري تحميل الاختصارات",
         "none": "لا توجد اختصارات مجهزة",
@@ -176,6 +185,10 @@
           "transcribe_with_post_process": {
             "name": "مفتاح المعالجة اللاحقة",
             "description": "اختياري: مفتاح اختصار مخصص يطبق دائماً المعالجة اللاحقة بالذكاء الاصطناعي على التفريغ الصوتي."
+          },
+          "meeting": {
+            "name": "اختصار وضع الاجتماع",
+            "description": "يبدأ جلسة اجتماع ويوقفها. يُحفظ النص في السجل بدلاً من لصقه، ويبقى حتى تحذفه بنفسك."
           }
         },
         "errors": {
@@ -260,11 +273,11 @@
       },
       "autostart": {
         "label": "التشغيل عند بدء التشغيل",
-        "description": ".بدء تشغيل Handy تلقائياً عند تسجيل الدخول إلى جهاز الكمبيوتر الخاص بك"
+        "description": ".بدء تشغيل Noted تلقائياً عند تسجيل الدخول إلى جهاز الكمبيوتر الخاص بك"
       },
       "showTrayIcon": {
         "label": "إظهار أيقونة شريط النظام",
-        "description": ".عرض أيقونة Handy في شريط النظام"
+        "description": ".عرض أيقونة Noted في شريط النظام"
       },
       "overlay": {
         "style": {
@@ -434,7 +447,8 @@
       "retranscribe": "إعادة النسخ",
       "retranscribeError": "فشلت إعادة النسخ. يرجى المحاولة مرة أخرى.",
       "transcribing": "جارٍ النسخ...",
-      "transcriptionFailed": "فشل النسخ. يمكنك إعادة النسخ باستخدام أيقونة إعادة المحاولة."
+      "transcriptionFailed": "فشل النسخ. يمكنك إعادة النسخ باستخدام أيقونة إعادة المحاولة.",
+      "meetingBadge": "اجتماع"
     },
     "debug": {
       "title": "تصحيح الأخطاء",
@@ -459,7 +473,7 @@
       },
       "updateChecks": {
         "label": "التحقق من وجود تحديثات",
-        "description": "التحقق تلقائياً من وجود إصدارات جديدة من Handy"
+        "description": "التحقق تلقائياً من وجود إصدارات جديدة من Noted"
       },
       "soundTheme": {
         "label": "سمة الصوت",
@@ -532,7 +546,7 @@
       },
       "keyboardDiagnostic": {
         "title": "تشخيص لوحة المفاتيح",
-        "description": "يتحقق مما إذا كانت أحداث لوحة المفاتيح تصل إلى Handy. يُسجَّل عدد الأحداث فقط — ولا تُسجَّل أبدًا المفاتيح التي تضغط عليها.",
+        "description": "يتحقق مما إذا كانت أحداث لوحة المفاتيح تصل إلى Noted. يُسجَّل عدد الأحداث فقط — ولا تُسجَّل أبدًا المفاتيح التي تضغط عليها.",
         "run": "تشغيل تشخيص لمدة 10 ثوانٍ",
         "running": "جارٍ الاستماع… اضغط اختصارك عدة مرات (مثل Option+Space)",
         "secureInputLabel": "Secure Input",
@@ -546,7 +560,7 @@
         "mouse": "الماوس",
         "verdictBlocked": "يحجب Secure Input أحداث المفاتيح — لا يمكن للاختصارات التي تتضمن مفتاحًا عاديًا أن تعمل حتى تُحلّ المشكلة.",
         "verdictSuspicious": "وصلت أحداث مفاتيح التعديل لكن لم يصل أي حدث مفتاح — هناك شيء يمنع المفاتيح رغم أن Secure Input يظهر معطلاً. يُرجى الإبلاغ عن ذلك على GitHub.",
-        "verdictOk": "أحداث المفاتيح تصل إلى Handy بشكل طبيعي.",
+        "verdictOk": "أحداث المفاتيح تصل إلى Noted بشكل طبيعي.",
         "verdictNoEvents": "لم يُسجَّل أي حدث — هل ضغطت أي مفاتيح أثناء الاختبار؟",
         "failed": "فشل التشخيص: {{error}}"
       },
@@ -562,11 +576,11 @@
       "title": "حول",
       "version": {
         "title": "الإصدار",
-        "description": "الإصدار الحالي من Handy"
+        "description": "الإصدار الحالي من Noted"
       },
       "appDataDirectory": {
         "title": "مجلد بيانات التطبيق",
-        "description": "الموقع الذي يخزن فيه Handy بياناته"
+        "description": "الموقع الذي يخزن فيه Noted بياناته"
       },
       "sourceCode": {
         "title": "كود المصدر",
@@ -575,7 +589,7 @@
       },
       "supportDevelopment": {
         "title": "دعم التطوير",
-        "description": "ساعدنا في مواصلة بناء Handy",
+        "description": "ساعدنا في مواصلة بناء Noted",
         "button": "تبرع"
       },
       "acknowledgments": {
@@ -583,12 +597,12 @@
         "ggml": {
           "title": "ggml",
           "description": "استنتاج عالي الأداء لنموذج التعرف التلقائي على الكلام Whisper من OpenAI",
-          "details": ".يستخدم Handy برنامج ggml لمعالجة سريعة ومحلية لتحويل الكلام إلى نص. شكراً للعمل الرائع الذي قام به Georgi Gerganov والمساهمون"
+          "details": ".يستخدم Noted برنامج ggml لمعالجة سريعة ومحلية لتحويل الكلام إلى نص. شكراً للعمل الرائع الذي قام به Georgi Gerganov والمساهمون"
         }
       },
       "whatsNewUpdates": {
         "label": "إظهار الجديد",
-        "description": "إظهار ملاحظات الإصدار بعد تحديثات Handy"
+        "description": "إظهار ملاحظات الإصدار بعد تحديثات Noted"
       }
     },
     "modelSettings": {
@@ -611,7 +625,7 @@
       "searchPlaceholder": "ابحث عن النماذج بالاسم…",
       "rescan": {
         "label": "إعادة الفحص",
-        "tooltip": "إعادة الفحص بحثًا عن النماذج المضافة إلى مجلد النماذج أو ذاكرة Hugging Face التخزينية المؤقتة خارج Handy"
+        "tooltip": "إعادة الفحص بحثًا عن النماذج المضافة إلى مجلد النماذج أو ذاكرة Hugging Face التخزينية المؤقتة خارج Noted"
       }
     }
   },
@@ -640,7 +654,7 @@
     "noOptionsFound": "لم يتم العثور على خيارات"
   },
   "accessibility": {
-    "permissionsDescription": ".يحتاج Handy إلى أذونات إمكانية الوصول لكتابة النص المفرغ",
+    "permissionsDescription": ".يحتاج Noted إلى أذونات إمكانية الوصول لكتابة النص المفرغ",
     "openSettings": "فتح إعدادات النظام"
   },
   "errors": {
@@ -663,11 +677,11 @@
   },
   "appLanguage": {
     "title": "لغة التطبيق",
-    "description": "تغيير لغة واجهة Handy"
+    "description": "تغيير لغة واجهة Noted"
   },
   "theme": {
     "title": "سمة التطبيق",
-    "description": "اختر ما إذا كان Handy يتبع مظهر النظام أو يبقى فاتحًا أو داكنًا",
+    "description": "اختر ما إذا كان Noted يتبع مظهر النظام أو يبقى فاتحًا أو داكنًا",
     "options": {
       "system": "النظام",
       "light": "فاتح",
@@ -679,7 +693,7 @@
     "processing": "...جاري المعالجة"
   },
   "whatsNew": {
-    "title": "الجديد في Handy v{{version}}"
+    "title": "الجديد في Noted v{{version}}"
   },
   "secureInput": {
     "blockedWithCulprit_one": "قد يحظر {{name}} اختصارًا واحدًا",
@@ -691,5 +705,68 @@
     "learnMore": "كيفية الإصلاح",
     "recorderBlocked": "لا يمكن تسجيل الاختصارات الآن — يحجب Secure Input في macOS أحداث المفاتيح. عالج تحذير Secure Input أولاً.",
     "dismiss": "تجاهل"
+  },
+  "meeting": {
+    "savedTitle": "تم حفظ الاجتماع",
+    "savedDescription": "النص المكتوب موجود في السجل، ومُعلَّم بحيث لا يُحذف تلقائيًا.",
+    "saveFailedTitle": "تعذّر حفظ الاجتماع",
+    "saveFailedClipboard": "فشل الحفظ، لذا نُسخ النص إلى الحافظة — الصقه في مكان آمن.",
+    "saveFailedNoRescue": "فشل الحفظ ولم يُنتَج أي نص. راجع السجلات لمعرفة التفاصيل."
+  },
+  "notes": {
+    "title": "الملاحظات",
+    "loading": "جارٍ تحميل الملاحظات…",
+    "empty": "لا توجد ملاحظات اجتماعات بعد",
+    "emptyHint": "ابدأ اجتماعًا باستخدام اختصار الاجتماع وستظهر ملاحظاته هنا.",
+    "loadMore": "تحميل المزيد",
+    "back": "رجوع",
+    "titlePlaceholder": "اجتماع بلا عنوان",
+    "aiNotes": "ملاحظات الذكاء الاصطناعي",
+    "writing": "جارٍ كتابة الملاحظات…",
+    "noNotesYet": "لا توجد ملاحظات بعد — اضغط أيقونة الإعادة لإنشائها.",
+    "noTranscript": "لا يوجد نص لهذا التسجيل.",
+    "regenerate": "إعادة إنشاء الملاحظات",
+    "copy": "نسخ",
+    "yourNotes": "ملاحظاتك",
+    "yourNotesPlaceholder": "اكتب ملاحظاتك هنا — تُحفظ تلقائيًا.",
+    "transcript": "النص والتسجيل",
+    "delete": "حذف الملاحظة",
+    "deleteConfirm": "هل تريد حذف ملاحظة الاجتماع هذه ونصها وتسجيلها؟ لا يمكن التراجع عن ذلك.",
+    "promptTitle": "نمط الملاحظات",
+    "promptDescription": "تحدد هذه التعليمات كيفية كتابة ملاحظات الاجتماع من النص. عدّلها لتغيير البنية والأسلوب.",
+    "promptReset": "إعادة التعيين إلى الافتراضي",
+    "readyToast": "ملاحظات الاجتماع جاهزة",
+    "failedToast": "تعذّرت كتابة ملاحظات الاجتماع. تحقق من المزوّد في إعدادات المعالجة اللاحقة.",
+    "transcriptChip": "النص",
+    "onThisDevice": "على هذا الجهاز",
+    "docPlaceholder": "اكتب أي شيء…"
+  },
+  "shell": {
+    "appName": "Noted",
+    "home": "الرئيسية",
+    "settings": "الإعدادات",
+    "dictationReady": "الإملاء جاهز",
+    "dictationHintHold": "اضغط مطولًا على {{keys}} للتحدث",
+    "dictationHintPress": "اضغط {{keys}} للتحدث",
+    "goodMorning": "صباح الخير",
+    "goodAfternoon": "مساء الخير",
+    "goodEvening": "مساء الخير",
+    "startMeeting": "بدء الاجتماع",
+    "stopMeeting": "إيقاف الاجتماع",
+    "recentNotes": "الملاحظات الأخيرة",
+    "today": "اليوم",
+    "yesterday": "أمس",
+    "meetingMeta": "اجتماع",
+    "enhanced": "مُحسَّن"
+  },
+  "live": {
+    "title": "اجتماع قيد التقدم",
+    "recording": "جارٍ التسجيل",
+    "stop": "إيقاف",
+    "captions": "الترجمة",
+    "liveTranscript": "النص المباشر",
+    "listening": "جارٍ الاستماع…",
+    "noStreamingModel": "جارٍ التسجيل. النص المباشر يتطلب نموذج بث — سيكون النص جاهزًا عند التوقف.",
+    "privacy": "تم النسخ على هذا الجهاز. لا شيء يغادر حاسوبك."
   }
 }

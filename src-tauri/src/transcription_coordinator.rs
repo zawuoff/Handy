@@ -9,6 +9,14 @@ use tauri::{AppHandle, Manager};
 
 const DEBOUNCE: Duration = Duration::from_millis(30);
 const RELEASE_GRACE: Duration = Duration::from_millis(50);
+/// Press debounce used while a toggle-only (long-session) binding is
+/// recording. OS key auto-repeat delivers the first repeat ~500ms after the
+/// initial press and then a press every few tens of milliseconds; with the
+/// plain 30ms window the first repeat would arrive as a toggle press and stop
+/// an hour-long meeting half a second in. This window is refreshed on every
+/// dropped press, so a held key's repeat train never escapes it, while a
+/// deliberate stop tap arrives well after the last repeat and passes.
+const LONG_SESSION_STOP_DEBOUNCE: Duration = Duration::from_millis(750);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 enum PttAction {
@@ -192,10 +200,24 @@ impl CoordinatorState {
         // External triggers are exempt: each one is a deliberate edge from the
         // user's own integration, and dropping it desyncs toggle parity.
         if input.is_pressed && !input.external {
+            // Toggle-only bindings get a much wider, refresh-on-drop window
+            // while their own session is recording — see
+            // LONG_SESSION_STOP_DEBOUNCE. Keyboard presses carry no parity, so
+            // dropping them is safe.
+            let long_session_recording = is_toggle_only_binding(&input.binding_id)
+                && matches!(&self.stage, Stage::Recording(id) if id == &input.binding_id);
+            let window = if long_session_recording {
+                LONG_SESSION_STOP_DEBOUNCE
+            } else {
+                DEBOUNCE
+            };
             if self
                 .last_press
-                .is_some_and(|t| now.duration_since(t) < DEBOUNCE)
+                .is_some_and(|t| now.duration_since(t) < window)
             {
+                if long_session_recording {
+                    self.last_press = Some(now);
+                }
                 debug!("Debounced press for '{}'", input.binding_id);
                 return None;
             }
@@ -339,7 +361,15 @@ pub struct TranscriptionCoordinator {
 }
 
 pub fn is_transcribe_binding(id: &str) -> bool {
-    id == "transcribe" || id == "transcribe_with_post_process"
+    id == "transcribe" || id == "transcribe_with_post_process" || id == "meeting"
+}
+
+/// Bindings that always toggle regardless of the push-to-talk setting —
+/// nobody holds a key down for an hour-long meeting. These also get the
+/// widened auto-repeat debounce while recording (see
+/// [`LONG_SESSION_STOP_DEBOUNCE`]).
+pub fn is_toggle_only_binding(id: &str) -> bool {
+    id == "meeting"
 }
 
 impl TranscriptionCoordinator {
@@ -963,6 +993,80 @@ mod tests {
             "keyboard repeat inside DEBOUNCE must be debounced"
         );
         assert_eq!(state.stage, Stage::Recording(BINDING.to_string()));
+    }
+
+    // ---------------------------------------------------------------------
+    // Toggle-only (long-session) bindings: auto-repeat must not stop them.
+    //
+    // The meeting binding always toggles, so a held key's OS auto-repeat
+    // (first repeat ~500ms after the press, then every few tens of ms) would
+    // arrive as toggle presses and stop an hour-long session half a second
+    // in. The widened refresh-on-drop debounce must absorb the whole train.
+    // ---------------------------------------------------------------------
+
+    const MEETING_BINDING: &str = "meeting";
+
+    fn meeting_press(external: bool) -> InputEvent {
+        InputEvent {
+            binding_id: MEETING_BINDING.to_string(),
+            hotkey_string: MEETING_BINDING.to_string(),
+            is_pressed: true,
+            push_to_talk: false,
+            external,
+        }
+    }
+
+    #[test]
+    fn meeting_autorepeat_train_does_not_stop_the_session() {
+        let mut state = CoordinatorState::new();
+        let start = Instant::now();
+
+        let effect = state.on_input(meeting_press(false), start);
+        assert!(matches!(effect, Some(Effect::Start { .. })));
+
+        // First repeat after the typical ~500ms delay, then a 30ms train.
+        let mut at = start + Duration::from_millis(500);
+        for _ in 0..20 {
+            let effect = state.on_input(meeting_press(false), at);
+            assert!(
+                effect.is_none(),
+                "auto-repeat press must not stop the meeting"
+            );
+            at += Duration::from_millis(30);
+        }
+        assert_eq!(state.stage, Stage::Recording(MEETING_BINDING.to_string()));
+    }
+
+    /// A deliberate stop tap arrives well after the last press and must
+    /// still stop the session.
+    #[test]
+    fn deliberate_meeting_stop_after_the_window_still_stops() {
+        let mut state = CoordinatorState::new();
+        let start = Instant::now();
+
+        assert!(matches!(
+            state.on_input(meeting_press(false), start),
+            Some(Effect::Start { .. })
+        ));
+        let effect = state.on_input(meeting_press(false), start + Duration::from_secs(5));
+        assert!(matches!(effect, Some(Effect::Stop { .. })));
+        assert_eq!(state.stage, Stage::Processing);
+    }
+
+    /// External toggles (CLI/signals) carry parity and must never be
+    /// debounced, even while a meeting is recording.
+    #[test]
+    fn external_meeting_toggle_is_never_debounced() {
+        let mut state = CoordinatorState::new();
+        let start = Instant::now();
+
+        assert!(matches!(
+            state.on_input(meeting_press(true), start),
+            Some(Effect::Start { .. })
+        ));
+        let effect = state.on_input(meeting_press(true), start + Duration::from_millis(5));
+        assert!(matches!(effect, Some(Effect::Stop { .. })));
+        assert_eq!(state.stage, Stage::Processing);
     }
 
     /// If the start effect fails to begin recording (e.g. microphone access

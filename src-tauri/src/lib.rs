@@ -12,7 +12,10 @@ mod helpers;
 mod input;
 mod llm_client;
 mod managers;
+mod mcp;
+mod meeting;
 mod memory;
+mod notes;
 mod overlay;
 mod paste_tx;
 pub mod portable;
@@ -181,6 +184,7 @@ fn initialize_core_logic(app_handle: &AppHandle) {
     app_handle.manage(transcription_manager.clone());
     app_handle.manage(history_manager.clone());
     app_handle.manage(tray::TrayState::new());
+    app_handle.manage(meeting::MeetingSession::new());
 
     // Note: Shortcuts are NOT initialized here.
     // The frontend is responsible for calling the `initialize_shortcuts` command
@@ -285,6 +289,20 @@ fn initialize_core_logic(app_handle: &AppHandle) {
 
                 // Use centralized cancellation that handles all operations
                 cancel_current_operation(app);
+            }
+            "meeting_stop" => {
+                // Same toggle edge as the meeting shortcut, so the
+                // coordinator's lifecycle state stays coherent.
+                signal_handle::send_transcription_input(app, "meeting", "tray");
+            }
+            "meeting_copy" => {
+                meeting::copy_transcript_so_far(app);
+            }
+            "meeting_captions" => {
+                meeting::toggle_captions(app);
+            }
+            "meeting_discard" => {
+                crate::utils::cancel_current_operation(app);
             }
             "quit" => {
                 app.exit(0);
@@ -609,6 +627,12 @@ pub fn run(cli_args: CliArgs) {
     // Detect portable mode before anything else
     portable::init();
 
+    // MCP server mode: a plain stdio protocol loop over the notes database.
+    // Runs before any Tauri/logging setup so nothing else touches stdout.
+    if cli_args.mcp_serve {
+        std::process::exit(mcp::serve());
+    }
+
     // Parse console logging directives from RUST_LOG, falling back to info-level logging
     // when the variable is unset
     let console_filter = build_console_filter();
@@ -722,6 +746,14 @@ pub fn run(cli_args: CliArgs) {
             commands::transcription::get_model_load_status,
             commands::transcription::unload_model_manually,
             commands::history::get_history_entries,
+            commands::history::get_meeting_entries,
+            commands::history::set_history_entry_title,
+            commands::history::set_history_entry_user_notes,
+            commands::history::generate_meeting_notes,
+            shortcut::change_meeting_notes_prompt_setting,
+            meeting::get_meeting_state,
+            meeting::toggle_meeting_session,
+            meeting::toggle_meeting_captions,
             commands::history::toggle_history_entry_saved,
             commands::history::get_audio_file_path,
             commands::history::delete_history_entry,
@@ -819,6 +851,8 @@ pub fn run(cli_args: CliArgs) {
                 signal_handle::send_transcription_input(app, "transcribe", "CLI");
             } else if args.iter().any(|a| a == "--toggle-post-process") {
                 signal_handle::send_transcription_input(app, "transcribe_with_post_process", "CLI");
+            } else if args.iter().any(|a| a == "--toggle-meeting") {
+                signal_handle::send_transcription_input(app, "meeting", "CLI");
             } else if args.iter().any(|a| a == "--cancel") {
                 crate::utils::cancel_current_operation(app);
             } else {
@@ -899,9 +933,9 @@ pub fn run(cli_args: CliArgs) {
             // for portable mode (redirects WebView2 cache to portable Data dir)
             let mut win_builder =
                 tauri::WebviewWindowBuilder::new(app, "main", tauri::WebviewUrl::App("/".into()))
-                    .title("Handy")
-                    .inner_size(680.0, 570.0)
-                    .min_inner_size(680.0, 570.0)
+                    .title("Noted")
+                    .inner_size(1100.0, 720.0)
+                    .min_inner_size(860.0, 600.0)
                     .resizable(true)
                     .maximizable(true)
                     .visible(false);

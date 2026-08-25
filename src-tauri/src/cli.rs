@@ -2,7 +2,7 @@ use clap::Parser;
 use std::path::PathBuf;
 
 #[derive(Parser, Debug, Clone, Default)]
-#[command(name = "handy", about = "Handy - Speech to Text")]
+#[command(name = "noted", about = "Noted - local dictation and meeting notes")]
 pub struct CliArgs {
     /// Start with the main window hidden
     #[arg(long)]
@@ -19,6 +19,17 @@ pub struct CliArgs {
     /// Toggle transcription with post-processing on/off (sent to running instance)
     #[arg(long)]
     pub toggle_post_process: bool,
+
+    /// Toggle a meeting-mode session on/off (sent to running instance).
+    /// The transcript is saved to history instead of being pasted.
+    #[arg(long)]
+    pub toggle_meeting: bool,
+
+    /// Run as a read-only MCP server over stdio, exposing meeting notes and
+    /// transcripts to AI assistants (Claude Code, Codex, ...). No window, no
+    /// tray; safe to run while the app is open.
+    #[arg(long)]
+    pub mcp_serve: bool,
 
     /// Cancel the current operation (sent to running instance)
     #[arg(long)]

@@ -54,15 +54,36 @@ pub trait ShortcutAction: Send + Sync {
 }
 
 // Transcribe Action
+#[derive(Clone, Copy)]
+enum TranscriptionOutput {
+    /// Dictation: paste the result into the focused app.
+    Paste { post_process: bool },
+    /// Meeting mode: save the transcript to history only.
+    SaveToHistory,
+}
+
 struct TranscribeAction {
-    post_process: bool,
+    output: TranscriptionOutput,
+}
+
+impl TranscribeAction {
+    fn post_process(&self) -> bool {
+        matches!(
+            self.output,
+            TranscriptionOutput::Paste { post_process: true }
+        )
+    }
+
+    fn is_meeting(&self) -> bool {
+        matches!(self.output, TranscriptionOutput::SaveToHistory)
+    }
 }
 
 /// Field name for structured output JSON schema
 const TRANSCRIPTION_FIELD: &str = "transcription";
 
 /// Strip invisible Unicode characters that some LLMs may insert
-fn strip_invisible_chars(s: &str) -> String {
+pub(crate) fn strip_invisible_chars(s: &str) -> String {
     s.replace(['\u{200B}', '\u{200C}', '\u{200D}', '\u{FEFF}'], "")
 }
 
@@ -70,7 +91,7 @@ fn strip_invisible_chars(s: &str) -> String {
 /// reasoning, and some local servers put the reasoning text into `content`
 /// instead of a separate field — without this the user would get the model's
 /// chain of thought pasted along with the cleaned transcription.
-fn strip_think_block(s: &str) -> &str {
+pub(crate) fn strip_think_block(s: &str) -> &str {
     if let Some(rest) = s.trim_start().strip_prefix("<think>") {
         if let Some(end) = rest.find("</think>") {
             return rest[end + "</think>".len()..].trim_start();
@@ -538,6 +559,10 @@ impl ShortcutAction for TranscribeAction {
         );
         debug!("Microphone mode - always_on: {}", is_always_on);
 
+        // Meeting sessions must never mute the computer's output: on a call
+        // that would silence the very audio being listened to.
+        let mute_for_session = !self.is_meeting();
+
         let mut recording_error: Option<String> = None;
         let recording_start_time = Instant::now();
         match rm.try_start_recording(&binding_id, vad_policy) {
@@ -585,7 +610,7 @@ impl ShortcutAction for TranscribeAction {
                     if rm_clone.is_recording_readiness_current(generation) {
                         play_feedback_sound_blocking(&app_clone, SoundType::Start);
                     }
-                    if rm_clone.is_recording_readiness_current(generation) {
+                    if mute_for_session && rm_clone.is_recording_readiness_current(generation) {
                         rm_clone.apply_mute();
                     }
                 });
@@ -597,8 +622,15 @@ impl ShortcutAction for TranscribeAction {
         }
 
         if recording_error.is_none() {
-            // Dynamically register the cancel shortcut in a separate task to avoid deadlock
-            shortcut::register_cancel_shortcut(app);
+            // Dynamically register the cancel shortcut in a separate task to avoid deadlock.
+            // Meeting sessions skip it: a global Escape binding held for an hour is an
+            // accidental way to silently discard a whole recording (the tray's meeting
+            // menu offers Discard instead).
+            if self.is_meeting() {
+                crate::meeting::begin_session(app, model_supports_streaming);
+            } else {
+                shortcut::register_cancel_shortcut(app);
+            }
         } else {
             // Starting failed (for example due to blocked microphone permissions).
             // Revert UI state so we don't stay stuck in the recording overlay.
@@ -635,8 +667,15 @@ impl ShortcutAction for TranscribeAction {
         app.state::<Arc<AudioRecordingManager>>()
             .invalidate_recording_readiness();
 
-        // Unregister the cancel shortcut when transcription stops
-        shortcut::unregister_cancel_shortcut(app);
+        // Unregister the cancel shortcut when transcription stops (meeting
+        // sessions never registered it, and skip the paired secure-input
+        // fallback bookkeeping too). A meeting session ends here — recording
+        // is over even though transcription is still running.
+        if self.is_meeting() {
+            crate::meeting::end_session(app);
+        } else {
+            shortcut::unregister_cancel_shortcut(app);
+        }
 
         let stop_time = Instant::now();
         debug!("TranscribeAction::stop called for binding: {}", binding_id);
@@ -668,7 +707,8 @@ impl ShortcutAction for TranscribeAction {
         play_feedback_sound(app, SoundType::Stop);
 
         let binding_id = binding_id.to_string(); // Clone binding_id for the async task
-        let post_process = self.post_process;
+        let post_process = self.post_process();
+        let is_meeting = self.is_meeting();
         let cancel_generation = rm.cancel_generation();
 
         tauri::async_runtime::spawn(async move {
@@ -794,19 +834,64 @@ impl ShortcutAction for TranscribeAction {
                             }
 
                             // Save to history if WAV was saved
+                            let mut history_saved = false;
                             if wav_saved {
-                                if let Err(err) = hm.save_entry(
-                                    file_name,
-                                    transcription,
-                                    post_process,
-                                    processed.post_processed_text.clone(),
-                                    processed.post_process_prompt.clone(),
-                                ) {
-                                    error!("Failed to save history entry: {}", err);
+                                let save_result = if is_meeting {
+                                    // History is a meeting's only output, so store
+                                    // the processed text (custom-word corrections,
+                                    // Chinese variant conversion), not the raw ASR
+                                    // output that dictation archives alongside its
+                                    // pasted result.
+                                    hm.save_meeting_entry(file_name, processed.final_text.clone())
+                                } else {
+                                    hm.save_entry(
+                                        file_name,
+                                        transcription,
+                                        post_process,
+                                        processed.post_processed_text.clone(),
+                                        processed.post_process_prompt.clone(),
+                                    )
+                                };
+                                match save_result {
+                                    Ok(entry) => {
+                                        history_saved = true;
+                                        // Kick off AI note generation in the
+                                        // background; the Notes UI follows along
+                                        // via notes-status + history events.
+                                        if is_meeting && !entry.transcription_text.trim().is_empty()
+                                        {
+                                            crate::notes::spawn_generation(&ah, entry.id);
+                                        }
+                                    }
+                                    Err(err) => error!("Failed to save history entry: {}", err),
                                 }
                             }
 
-                            if processed.final_text.is_empty() {
+                            if is_meeting {
+                                // Meeting sessions never paste — History is the
+                                // outcome. Confirm only when the entry actually
+                                // landed; otherwise rescue the transcript to the
+                                // clipboard instead of silently discarding it.
+                                if history_saved {
+                                    let _ = ah.emit("meeting-saved", ());
+                                } else {
+                                    let rescued = !processed.final_text.is_empty()
+                                        && crate::clipboard::write_text_to_clipboard(
+                                            &ah,
+                                            &processed.final_text,
+                                        )
+                                        .map_err(|e| {
+                                            error!(
+                                                "Failed to rescue meeting transcript to clipboard: {}",
+                                                e
+                                            )
+                                        })
+                                        .is_ok();
+                                    let _ = ah.emit("meeting-save-failed", rescued);
+                                }
+                                utils::hide_recording_overlay(&ah);
+                                set_tray_state(&ah, TrayIconState::Idle);
+                            } else if processed.final_text.is_empty() {
                                 utils::hide_recording_overlay(&ah);
                                 set_tray_state(&ah, TrayIconState::Idle);
                             } else {
@@ -858,13 +943,18 @@ impl ShortcutAction for TranscribeAction {
                             let _ = ah.emit("transcription-error", err.to_string());
                             // Save entry with empty text so user can retry
                             if wav_saved {
-                                if let Err(save_err) = hm.save_entry(
-                                    file_name,
-                                    String::new(),
-                                    post_process,
-                                    None,
-                                    None,
-                                ) {
+                                let save_result = if is_meeting {
+                                    hm.save_meeting_entry(file_name, String::new())
+                                } else {
+                                    hm.save_entry(
+                                        file_name,
+                                        String::new(),
+                                        post_process,
+                                        None,
+                                        None,
+                                    )
+                                };
+                                if let Err(save_err) = save_result {
                                     error!("Failed to save failed history entry: {}", save_err);
                                 }
                             }
@@ -931,12 +1021,22 @@ pub static ACTION_MAP: Lazy<HashMap<String, Arc<dyn ShortcutAction>>> = Lazy::ne
     map.insert(
         "transcribe".to_string(),
         Arc::new(TranscribeAction {
-            post_process: false,
+            output: TranscriptionOutput::Paste {
+                post_process: false,
+            },
         }) as Arc<dyn ShortcutAction>,
     );
     map.insert(
         "transcribe_with_post_process".to_string(),
-        Arc::new(TranscribeAction { post_process: true }) as Arc<dyn ShortcutAction>,
+        Arc::new(TranscribeAction {
+            output: TranscriptionOutput::Paste { post_process: true },
+        }) as Arc<dyn ShortcutAction>,
+    );
+    map.insert(
+        "meeting".to_string(),
+        Arc::new(TranscribeAction {
+            output: TranscriptionOutput::SaveToHistory,
+        }) as Arc<dyn ShortcutAction>,
     );
     map.insert(
         "cancel".to_string(),

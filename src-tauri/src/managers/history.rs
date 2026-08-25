@@ -31,7 +31,15 @@ static MIGRATIONS: &[M] = &[
     M::up("ALTER TABLE transcription_history ADD COLUMN post_processed_text TEXT;"),
     M::up("ALTER TABLE transcription_history ADD COLUMN post_process_prompt TEXT;"),
     M::up("ALTER TABLE transcription_history ADD COLUMN post_process_requested BOOLEAN NOT NULL DEFAULT 0;"),
+    M::up("ALTER TABLE transcription_history ADD COLUMN source TEXT NOT NULL DEFAULT 'dictation';"),
+    M::up("ALTER TABLE transcription_history ADD COLUMN ai_notes TEXT;"),
+    M::up("ALTER TABLE transcription_history ADD COLUMN user_notes TEXT;"),
 ];
+
+/// Where a history entry came from. Stored as TEXT so future sources
+/// (e.g. imported audio files) don't need schema changes.
+pub const SOURCE_DICTATION: &str = "dictation";
+pub const SOURCE_MEETING: &str = "meeting";
 
 #[derive(Clone, Debug, Serialize, Deserialize, Type)]
 pub struct PaginatedHistory {
@@ -63,6 +71,11 @@ pub struct HistoryEntry {
     pub post_processed_text: Option<String>,
     pub post_process_prompt: Option<String>,
     pub post_process_requested: bool,
+    pub source: String,
+    /// AI-generated meeting notes (None until generated).
+    pub ai_notes: Option<String>,
+    /// The user's own notes for this entry.
+    pub user_notes: Option<String>,
 }
 
 pub struct HistoryManager {
@@ -207,6 +220,9 @@ impl HistoryManager {
             post_processed_text: row.get("post_processed_text")?,
             post_process_prompt: row.get("post_process_prompt")?,
             post_process_requested: row.get("post_process_requested")?,
+            source: row.get("source")?,
+            ai_notes: row.get("ai_notes")?,
+            user_notes: row.get("user_notes")?,
         })
     }
 
@@ -214,7 +230,7 @@ impl HistoryManager {
         &self.recordings_dir
     }
 
-    /// Save a new history entry to the database.
+    /// Save a new dictation history entry to the database.
     /// The WAV file should already have been written to the recordings directory.
     pub fn save_entry(
         &self,
@@ -223,6 +239,46 @@ impl HistoryManager {
         post_process_requested: bool,
         post_processed_text: Option<String>,
         post_process_prompt: Option<String>,
+    ) -> Result<HistoryEntry> {
+        self.save_entry_with_source(
+            file_name,
+            transcription_text,
+            post_process_requested,
+            post_processed_text,
+            post_process_prompt,
+            SOURCE_DICTATION,
+            false,
+        )
+    }
+
+    /// Save a meeting-session entry. Marked `saved` from the start so retention
+    /// cleanup never deletes a long recording to make room for quick dictations.
+    pub fn save_meeting_entry(
+        &self,
+        file_name: String,
+        transcription_text: String,
+    ) -> Result<HistoryEntry> {
+        self.save_entry_with_source(
+            file_name,
+            transcription_text,
+            false,
+            None,
+            None,
+            SOURCE_MEETING,
+            true,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn save_entry_with_source(
+        &self,
+        file_name: String,
+        transcription_text: String,
+        post_process_requested: bool,
+        post_processed_text: Option<String>,
+        post_process_prompt: Option<String>,
+        source: &str,
+        saved: bool,
     ) -> Result<HistoryEntry> {
         let timestamp = Utc::now().timestamp();
         let title = self.format_timestamp_title(timestamp);
@@ -237,17 +293,19 @@ impl HistoryManager {
                 transcription_text,
                 post_processed_text,
                 post_process_prompt,
-                post_process_requested
-            ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)",
+                post_process_requested,
+                source
+            ) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)",
             params![
                 &file_name,
                 timestamp,
-                false,
+                saved,
                 &title,
                 &transcription_text,
                 &post_processed_text,
                 &post_process_prompt,
                 post_process_requested,
+                source,
             ],
         )?;
 
@@ -255,12 +313,15 @@ impl HistoryManager {
             id: conn.last_insert_rowid(),
             file_name,
             timestamp,
-            saved: false,
+            saved,
             title,
             transcription_text,
             post_processed_text,
             post_process_prompt,
             post_process_requested,
+            source: source.to_string(),
+            ai_notes: None,
+            user_notes: None,
         };
 
         debug!("Saved history entry with id {}", entry.id);
@@ -308,7 +369,7 @@ impl HistoryManager {
 
         let entry = conn
             .query_row(
-                "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested
+                "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested, source, ai_notes, user_notes
                  FROM transcription_history WHERE id = ?1",
                 params![id],
                 Self::map_history_entry,
@@ -324,6 +385,63 @@ impl HistoryManager {
             error!("Failed to emit history-updated event: {}", e);
         }
 
+        Ok(entry)
+    }
+
+    /// Store (or clear) the AI-generated notes for an entry and notify the UI.
+    pub fn set_ai_notes(&self, id: i64, notes: Option<String>) -> Result<HistoryEntry> {
+        let conn = self.get_connection()?;
+        let updated = conn.execute(
+            "UPDATE transcription_history SET ai_notes = ?1 WHERE id = ?2",
+            params![notes, id],
+        )?;
+        if updated == 0 {
+            return Err(anyhow!("History entry {} not found", id));
+        }
+        drop(conn);
+        self.fetch_and_emit_updated(id)
+    }
+
+    /// Store the user's own notes for an entry. Deliberately does NOT emit an
+    /// update event: the only writer is the notes editor itself, and an echo
+    /// event would clobber text the user is still typing.
+    pub fn set_user_notes(&self, id: i64, notes: String) -> Result<()> {
+        let conn = self.get_connection()?;
+        let updated = conn.execute(
+            "UPDATE transcription_history SET user_notes = ?1 WHERE id = ?2",
+            params![notes, id],
+        )?;
+        if updated == 0 {
+            return Err(anyhow!("History entry {} not found", id));
+        }
+        Ok(())
+    }
+
+    /// Rename an entry and notify the UI.
+    pub fn set_title(&self, id: i64, title: String) -> Result<HistoryEntry> {
+        let conn = self.get_connection()?;
+        let updated = conn.execute(
+            "UPDATE transcription_history SET title = ?1 WHERE id = ?2",
+            params![title, id],
+        )?;
+        if updated == 0 {
+            return Err(anyhow!("History entry {} not found", id));
+        }
+        drop(conn);
+        self.fetch_and_emit_updated(id)
+    }
+
+    fn fetch_and_emit_updated(&self, id: i64) -> Result<HistoryEntry> {
+        let entry = self
+            .get_entry_by_id_sync(id)?
+            .ok_or_else(|| anyhow!("History entry {} not found", id))?;
+        if let Err(e) = (HistoryUpdatePayload::Updated {
+            entry: entry.clone(),
+        })
+        .emit(&self.app_handle)
+        {
+            error!("Failed to emit history-updated event: {}", e);
+        }
         Ok(entry)
     }
 
@@ -459,7 +577,7 @@ impl HistoryManager {
             (Some(cursor_id), Some(lim)) => {
                 let fetch_count = (lim + 1) as i64;
                 let mut stmt = conn.prepare(
-                    "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested
+                    "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested, source, ai_notes, user_notes
                      FROM transcription_history
                      WHERE id < ?1
                      ORDER BY id DESC
@@ -473,7 +591,7 @@ impl HistoryManager {
             (None, Some(lim)) => {
                 let fetch_count = (lim + 1) as i64;
                 let mut stmt = conn.prepare(
-                    "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested
+                    "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested, source, ai_notes, user_notes
                      FROM transcription_history
                      ORDER BY id DESC
                      LIMIT ?1",
@@ -485,8 +603,69 @@ impl HistoryManager {
             }
             (_, None) => {
                 let mut stmt = conn.prepare(
-                    "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested
+                    "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested, source, ai_notes, user_notes
                      FROM transcription_history
+                     ORDER BY id DESC",
+                )?;
+                let result = stmt
+                    .query_map([], Self::map_history_entry)?
+                    .collect::<std::result::Result<Vec<_>, _>>()?;
+                result
+            }
+        };
+
+        let has_more = limit.is_some_and(|lim| entries.len() > lim);
+        if has_more {
+            entries.pop();
+        }
+
+        Ok(PaginatedHistory { entries, has_more })
+    }
+
+    /// Keyset-paginated meeting entries (source = 'meeting'), newest first.
+    /// Mirrors [`Self::get_history_entries`] with a source filter.
+    pub async fn get_meeting_entries(
+        &self,
+        cursor: Option<i64>,
+        limit: Option<usize>,
+    ) -> Result<PaginatedHistory> {
+        let conn = self.get_connection()?;
+        let limit = limit.map(|l| l.min(100));
+
+        let mut entries: Vec<HistoryEntry> = match (cursor, limit) {
+            (Some(cursor_id), Some(lim)) => {
+                let fetch_count = (lim + 1) as i64;
+                let mut stmt = conn.prepare(
+                    "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested, source, ai_notes, user_notes
+                     FROM transcription_history
+                     WHERE source = 'meeting' AND id < ?1
+                     ORDER BY id DESC
+                     LIMIT ?2",
+                )?;
+                let result = stmt
+                    .query_map(params![cursor_id, fetch_count], Self::map_history_entry)?
+                    .collect::<std::result::Result<Vec<_>, _>>()?;
+                result
+            }
+            (None, Some(lim)) => {
+                let fetch_count = (lim + 1) as i64;
+                let mut stmt = conn.prepare(
+                    "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested, source, ai_notes, user_notes
+                     FROM transcription_history
+                     WHERE source = 'meeting'
+                     ORDER BY id DESC
+                     LIMIT ?1",
+                )?;
+                let result = stmt
+                    .query_map(params![fetch_count], Self::map_history_entry)?
+                    .collect::<std::result::Result<Vec<_>, _>>()?;
+                result
+            }
+            (_, None) => {
+                let mut stmt = conn.prepare(
+                    "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested, source, ai_notes, user_notes
+                     FROM transcription_history
+                     WHERE source = 'meeting'
                      ORDER BY id DESC",
                 )?;
                 let result = stmt
@@ -516,7 +695,10 @@ impl HistoryManager {
                 transcription_text,
                 post_processed_text,
                 post_process_prompt,
-                post_process_requested
+                post_process_requested,
+                source,
+                ai_notes,
+                user_notes
              FROM transcription_history
              ORDER BY timestamp DESC
              LIMIT 1",
@@ -543,7 +725,10 @@ impl HistoryManager {
                 transcription_text,
                 post_processed_text,
                 post_process_prompt,
-                post_process_requested
+                post_process_requested,
+                source,
+                ai_notes,
+                user_notes
              FROM transcription_history
              WHERE transcription_text != ''
              ORDER BY timestamp DESC
@@ -586,6 +771,10 @@ impl HistoryManager {
     }
 
     pub async fn get_entry_by_id(&self, id: i64) -> Result<Option<HistoryEntry>> {
+        self.get_entry_by_id_sync(id)
+    }
+
+    pub fn get_entry_by_id_sync(&self, id: i64) -> Result<Option<HistoryEntry>> {
         let conn = self.get_connection()?;
         let mut stmt = conn.prepare(
             "SELECT
@@ -597,7 +786,10 @@ impl HistoryManager {
                 transcription_text,
                 post_processed_text,
                 post_process_prompt,
-                post_process_requested
+                post_process_requested,
+                source,
+                ai_notes,
+                user_notes
              FROM transcription_history
              WHERE id = ?1",
         )?;
@@ -666,7 +858,10 @@ mod tests {
                 transcription_text TEXT NOT NULL,
                 post_processed_text TEXT,
                 post_process_prompt TEXT,
-                post_process_requested BOOLEAN NOT NULL DEFAULT 0
+                post_process_requested BOOLEAN NOT NULL DEFAULT 0,
+                source TEXT NOT NULL DEFAULT 'dictation',
+                ai_notes TEXT,
+                user_notes TEXT
             );",
         )
         .expect("create transcription_history table");

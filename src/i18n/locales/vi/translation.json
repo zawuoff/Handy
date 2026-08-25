@@ -7,7 +7,15 @@
     "model": "Mô hình",
     "quit": "Thoát",
     "cancel": "Hủy",
-    "secureInputWarning": "⚠ Phím tắt bị Secure Input chặn"
+    "secureInputWarning": "⚠ Phím tắt bị Secure Input chặn",
+    "meeting": "Cuộc họp",
+    "meetingStop": "Dừng và lưu cuộc họp",
+    "meetingCopy": "Sao chép bản ghi đến hiện tại",
+    "meetingCopied": "Đã sao chép ✓",
+    "meetingCaptionsShow": "Hiện phụ đề trực tiếp",
+    "meetingCaptionsHide": "Ẩn phụ đề trực tiếp",
+    "meetingDiscard": "Hủy bản ghi âm",
+    "meetingListening": "Đang nghe…"
   },
   "sidebar": {
     "general": "Chung",
@@ -16,7 +24,8 @@
     "postProcessing": "Xử lý sau",
     "history": "Lịch sử",
     "debug": "Gỡ lỗi",
-    "about": "Giới thiệu"
+    "about": "Giới thiệu",
+    "notes": "Ghi chú"
   },
   "onboarding": {
     "subtitle": "Để bắt đầu, hãy chọn một mô hình chuyển đổi giọng nói",
@@ -101,7 +110,7 @@
     },
     "permissions": {
       "title": "Cần cấp quyền",
-      "description": "Handy cần một số quyền để hoạt động bình thường.",
+      "description": "Noted cần một số quyền để hoạt động bình thường.",
       "microphone": {
         "title": "Quyền truy cập Micrô",
         "description": "Cần thiết để nghe giọng nói của bạn để chuyển đổi."
@@ -175,13 +184,13 @@
       "searchPlaceholder": "Tìm mô hình theo tên…",
       "rescan": {
         "label": "Quét lại",
-        "tooltip": "Quét lại các mô hình được thêm vào thư mục mô hình hoặc bộ nhớ đệm Hugging Face bên ngoài Handy"
+        "tooltip": "Quét lại các mô hình được thêm vào thư mục mô hình hoặc bộ nhớ đệm Hugging Face bên ngoài Noted"
       }
     },
     "general": {
       "title": "Chung",
       "shortcut": {
-        "title": "Phím tắt Handy",
+        "title": "Phím tắt Noted",
         "description": "Cấu hình phím tắt để kích hoạt ghi âm chuyển đổi giọng nói thành văn bản",
         "loading": "Đang tải phím tắt...",
         "none": "Chưa cấu hình phím tắt",
@@ -199,6 +208,10 @@
           "transcribe_with_post_process": {
             "name": "Phím tắt xử lý sau",
             "description": "Tùy chọn: Phím tắt chuyên dụng luôn áp dụng xử lý sau bằng AI cho bản chuyển đổi của bạn."
+          },
+          "meeting": {
+            "name": "Phím tắt chế độ cuộc họp",
+            "description": "Bắt đầu và dừng một phiên họp. Bản ghi được lưu vào lịch sử thay vì được dán, và giữ lại cho đến khi bạn xóa."
           }
         },
         "errors": {
@@ -283,11 +296,11 @@
       },
       "autostart": {
         "label": "Khởi động cùng hệ thống",
-        "description": "Tự động khởi động Handy khi bạn đăng nhập vào máy tính."
+        "description": "Tự động khởi động Noted khi bạn đăng nhập vào máy tính."
       },
       "showTrayIcon": {
         "label": "Hiển thị biểu tượng khay",
-        "description": "Hiển thị biểu tượng Handy trong khay hệ thống."
+        "description": "Hiển thị biểu tượng Noted trong khay hệ thống."
       },
       "overlay": {
         "style": {
@@ -457,7 +470,8 @@
       "retranscribe": "Phiên âm lại",
       "retranscribeError": "Không thể phiên âm lại. Vui lòng thử lại.",
       "transcribing": "Đang phiên âm...",
-      "transcriptionFailed": "Phiên âm thất bại. Bạn có thể phiên âm lại bằng biểu tượng thử lại."
+      "transcriptionFailed": "Phiên âm thất bại. Bạn có thể phiên âm lại bằng biểu tượng thử lại.",
+      "meetingBadge": "Cuộc họp"
     },
     "debug": {
       "title": "Gỡ lỗi",
@@ -482,7 +496,7 @@
       },
       "updateChecks": {
         "label": "Kiểm tra cập nhật",
-        "description": "Tự động kiểm tra phiên bản mới của Handy"
+        "description": "Tự động kiểm tra phiên bản mới của Noted"
       },
       "soundTheme": {
         "label": "Chủ đề âm thanh",
@@ -555,7 +569,7 @@
       },
       "keyboardDiagnostic": {
         "title": "Chẩn đoán bàn phím",
-        "description": "Kiểm tra xem các sự kiện bàn phím có đến được Handy hay không. Chỉ số lượng sự kiện được ghi lại — không bao giờ ghi lại bạn bấm phím nào.",
+        "description": "Kiểm tra xem các sự kiện bàn phím có đến được Noted hay không. Chỉ số lượng sự kiện được ghi lại — không bao giờ ghi lại bạn bấm phím nào.",
         "run": "Chạy chẩn đoán 10 giây",
         "running": "Đang lắng nghe… hãy bấm phím tắt của bạn vài lần (ví dụ: Option+Space)",
         "secureInputLabel": "Secure Input",
@@ -569,7 +583,7 @@
         "mouse": "Chuột",
         "verdictBlocked": "Secure Input đang chặn các sự kiện phím — phím tắt có chứa phím thường không thể hoạt động cho đến khi vấn đề này được xử lý.",
         "verdictSuspicious": "Có sự kiện phím bổ trợ nhưng không có sự kiện phím nào — thứ gì đó đang chặn phím dù Secure Input báo là đang tắt. Vui lòng báo cáo việc này trên GitHub.",
-        "verdictOk": "Các sự kiện phím đang đến Handy bình thường.",
+        "verdictOk": "Các sự kiện phím đang đến Noted bình thường.",
         "verdictNoEvents": "Không ghi nhận sự kiện nào — bạn có bấm phím nào trong lúc kiểm tra không?",
         "failed": "Chẩn đoán thất bại: {{error}}"
       },
@@ -585,11 +599,11 @@
       "title": "Giới thiệu",
       "version": {
         "title": "Phiên bản",
-        "description": "Phiên bản hiện tại của Handy"
+        "description": "Phiên bản hiện tại của Noted"
       },
       "appDataDirectory": {
         "title": "Thư mục dữ liệu ứng dụng",
-        "description": "Vị trí Handy lưu trữ dữ liệu"
+        "description": "Vị trí Noted lưu trữ dữ liệu"
       },
       "sourceCode": {
         "title": "Mã nguồn",
@@ -598,7 +612,7 @@
       },
       "supportDevelopment": {
         "title": "Hỗ trợ phát triển",
-        "description": "Giúp chúng tôi tiếp tục xây dựng Handy",
+        "description": "Giúp chúng tôi tiếp tục xây dựng Noted",
         "button": "Quyên góp"
       },
       "acknowledgments": {
@@ -606,12 +620,12 @@
         "ggml": {
           "title": "ggml",
           "description": "Suy luận hiệu suất cao của mô hình nhận dạng giọng nói tự động Whisper của OpenAI",
-          "details": "Handy sử dụng ggml để xử lý chuyển đổi giọng nói thành văn bản nhanh, cục bộ. Cảm ơn công việc tuyệt vời của Georgi Gerganov và các cộng tác viên."
+          "details": "Noted sử dụng ggml để xử lý chuyển đổi giọng nói thành văn bản nhanh, cục bộ. Cảm ơn công việc tuyệt vời của Georgi Gerganov và các cộng tác viên."
         }
       },
       "whatsNewUpdates": {
         "label": "Hiển thị điểm mới",
-        "description": "Hiển thị ghi chú phát hành sau khi Handy cập nhật"
+        "description": "Hiển thị ghi chú phát hành sau khi Noted cập nhật"
       }
     }
   },
@@ -640,7 +654,7 @@
     "noOptionsFound": "Không tìm thấy tùy chọn"
   },
   "accessibility": {
-    "permissionsDescription": "Handy cần quyền truy cập để gõ văn bản đã chuyển đổi.",
+    "permissionsDescription": "Noted cần quyền truy cập để gõ văn bản đã chuyển đổi.",
     "openSettings": "Mở Cài đặt Hệ thống"
   },
   "errors": {
@@ -663,11 +677,11 @@
   },
   "appLanguage": {
     "title": "Ngôn ngữ ứng dụng",
-    "description": "Thay đổi ngôn ngữ giao diện của Handy"
+    "description": "Thay đổi ngôn ngữ giao diện của Noted"
   },
   "theme": {
     "title": "Giao diện ứng dụng",
-    "description": "Chọn xem Handy theo chủ đề hệ thống hay giữ ở chế độ sáng hoặc tối",
+    "description": "Chọn xem Noted theo chủ đề hệ thống hay giữ ở chế độ sáng hoặc tối",
     "options": {
       "system": "Hệ thống",
       "light": "Sáng",
@@ -679,7 +693,7 @@
     "processing": "Đang xử lý..."
   },
   "whatsNew": {
-    "title": "Điểm mới trong Handy v{{version}}"
+    "title": "Điểm mới trong Noted v{{version}}"
   },
   "secureInput": {
     "blockedWithCulprit_one": "{{name}} có thể đang chặn 1 phím tắt",
@@ -691,5 +705,68 @@
     "learnMore": "Cách khắc phục",
     "recorderBlocked": "Hiện không thể ghi phím tắt — Secure Input của macOS đang chặn các sự kiện phím. Hãy xử lý cảnh báo Secure Input trước.",
     "dismiss": "Bỏ qua"
+  },
+  "meeting": {
+    "savedTitle": "Đã lưu cuộc họp",
+    "savedDescription": "Bản ghi nằm trong lịch sử và được đánh dấu để không bị tự động xóa.",
+    "saveFailedTitle": "Không thể lưu cuộc họp",
+    "saveFailedClipboard": "Lưu thất bại nên bản ghi đã được sao chép vào bộ nhớ tạm — hãy dán vào nơi an toàn.",
+    "saveFailedNoRescue": "Lưu thất bại và không có bản ghi nào được tạo. Xem nhật ký để biết chi tiết."
+  },
+  "notes": {
+    "title": "Ghi chú",
+    "loading": "Đang tải ghi chú…",
+    "empty": "Chưa có ghi chú cuộc họp nào",
+    "emptyHint": "Bắt đầu cuộc họp bằng phím tắt cuộc họp, ghi chú sẽ xuất hiện ở đây.",
+    "loadMore": "Tải thêm",
+    "back": "Quay lại",
+    "titlePlaceholder": "Cuộc họp không tiêu đề",
+    "aiNotes": "Ghi chú AI",
+    "writing": "Đang viết ghi chú…",
+    "noNotesYet": "Chưa có ghi chú — nhấn biểu tượng thử lại để tạo.",
+    "noTranscript": "Bản ghi này không có bản chép lời.",
+    "regenerate": "Tạo lại ghi chú",
+    "copy": "Sao chép",
+    "yourNotes": "Ghi chú của bạn",
+    "yourNotesPlaceholder": "Viết ghi chú của riêng bạn ở đây — chúng được lưu tự động.",
+    "transcript": "Bản chép lời và bản ghi âm",
+    "delete": "Xóa ghi chú",
+    "deleteConfirm": "Xóa ghi chú này cùng bản chép lời và bản ghi âm? Không thể hoàn tác.",
+    "promptTitle": "Phong cách ghi chú",
+    "promptDescription": "Các hướng dẫn này quyết định cách ghi chú được viết từ bản chép lời. Chỉnh sửa để thay đổi cấu trúc và giọng văn.",
+    "promptReset": "Đặt lại mặc định",
+    "readyToast": "Ghi chú cuộc họp đã sẵn sàng",
+    "failedToast": "Không thể viết ghi chú. Kiểm tra nhà cung cấp trong cài đặt hậu xử lý.",
+    "transcriptChip": "Bản chép lời",
+    "onThisDevice": "Trên thiết bị này",
+    "docPlaceholder": "Viết bất cứ điều gì…"
+  },
+  "shell": {
+    "appName": "Noted",
+    "home": "Trang chủ",
+    "settings": "Cài đặt",
+    "dictationReady": "Sẵn sàng đọc chính tả",
+    "dictationHintHold": "Giữ {{keys}} để nói",
+    "dictationHintPress": "Nhấn {{keys}} để nói",
+    "goodMorning": "Chào buổi sáng",
+    "goodAfternoon": "Chào buổi chiều",
+    "goodEvening": "Chào buổi tối",
+    "startMeeting": "Bắt đầu cuộc họp",
+    "stopMeeting": "Dừng cuộc họp",
+    "recentNotes": "Ghi chú gần đây",
+    "today": "Hôm nay",
+    "yesterday": "Hôm qua",
+    "meetingMeta": "Cuộc họp",
+    "enhanced": "Đã nâng cao"
+  },
+  "live": {
+    "title": "Cuộc họp đang diễn ra",
+    "recording": "Đang ghi âm",
+    "stop": "Dừng",
+    "captions": "Phụ đề",
+    "liveTranscript": "Bản chép lời trực tiếp",
+    "listening": "Đang nghe…",
+    "noStreamingModel": "Đang ghi âm. Văn bản trực tiếp cần mô hình streaming — bản chép lời sẽ sẵn sàng khi bạn dừng.",
+    "privacy": "Được chép lời trên thiết bị này. Không gì rời khỏi máy tính của bạn."
   }
 }

@@ -7,7 +7,15 @@
     "model": "Modelo",
     "quit": "Salir",
     "cancel": "Cancelar",
-    "secureInputWarning": "⚠ Atajos bloqueados por Secure Input"
+    "secureInputWarning": "⚠ Atajos bloqueados por Secure Input",
+    "meeting": "Reunión",
+    "meetingStop": "Detener y guardar reunión",
+    "meetingCopy": "Copiar transcripción hasta ahora",
+    "meetingCopied": "Copiado ✓",
+    "meetingCaptionsShow": "Mostrar subtítulos en vivo",
+    "meetingCaptionsHide": "Ocultar subtítulos en vivo",
+    "meetingDiscard": "Descartar grabación",
+    "meetingListening": "Escuchando…"
   },
   "sidebar": {
     "general": "General",
@@ -16,7 +24,8 @@
     "postProcessing": "Post proceso",
     "history": "Historial",
     "debug": "Depuración",
-    "about": "Acerca de"
+    "about": "Acerca de",
+    "notes": "Notas"
   },
   "onboarding": {
     "subtitle": "Para comenzar, elige un modelo de transcripción",
@@ -101,7 +110,7 @@
     },
     "permissions": {
       "title": "Permisos requeridos",
-      "description": "Handy necesita algunos permisos para funcionar correctamente.",
+      "description": "Noted necesita algunos permisos para funcionar correctamente.",
       "microphone": {
         "title": "Acceso al micrófono",
         "description": "Necesario para escuchar tu voz para la transcripción."
@@ -175,13 +184,13 @@
       "searchPlaceholder": "Buscar modelos por nombre…",
       "rescan": {
         "label": "Volver a escanear",
-        "tooltip": "Vuelve a escanear en busca de modelos añadidos a la carpeta de modelos o a la caché de Hugging Face fuera de Handy"
+        "tooltip": "Vuelve a escanear en busca de modelos añadidos a la carpeta de modelos o a la caché de Hugging Face fuera de Noted"
       }
     },
     "general": {
       "title": "General",
       "shortcut": {
-        "title": "Atajos de Handy",
+        "title": "Atajos de Noted",
         "description": "Configura atajos de teclado para activar la grabación de voz a texto",
         "loading": "Cargando atajos...",
         "none": "No hay atajos configurados",
@@ -199,6 +208,10 @@
           "transcribe_with_post_process": {
             "name": "Tecla de post procesamiento",
             "description": "Opcional: Una tecla de acceso rápido dedicada que siempre aplica post procesamiento con IA a tu transcripción."
+          },
+          "meeting": {
+            "name": "Atajo del modo reunión",
+            "description": "Inicia y detiene una sesión de reunión. La transcripción se guarda en el historial en lugar de pegarse y se conserva hasta que la elimines."
           }
         },
         "errors": {
@@ -283,11 +296,11 @@
       },
       "autostart": {
         "label": "Iniciar al arranque",
-        "description": "Iniciar Handy automáticamente cuando inicies sesión en tu computadora."
+        "description": "Iniciar Noted automáticamente cuando inicies sesión en tu computadora."
       },
       "showTrayIcon": {
         "label": "Mostrar icono de bandeja",
-        "description": "Mostrar el icono de Handy en la bandeja del sistema."
+        "description": "Mostrar el icono de Noted en la bandeja del sistema."
       },
       "overlay": {
         "style": {
@@ -457,7 +470,8 @@
       "retranscribe": "Re-transcribir",
       "retranscribeError": "No se pudo re-transcribir. Por favor, inténtalo de nuevo.",
       "transcribing": "Transcribiendo...",
-      "transcriptionFailed": "La transcripción falló. Puedes re-transcribir usando el icono de reintentar."
+      "transcriptionFailed": "La transcripción falló. Puedes re-transcribir usando el icono de reintentar.",
+      "meetingBadge": "Reunión"
     },
     "debug": {
       "title": "Depuración",
@@ -482,7 +496,7 @@
       },
       "updateChecks": {
         "label": "Buscar actualizaciones",
-        "description": "Buscar automáticamente nuevas versiones de Handy"
+        "description": "Buscar automáticamente nuevas versiones de Noted"
       },
       "soundTheme": {
         "label": "Tema de sonido",
@@ -555,7 +569,7 @@
       },
       "keyboardDiagnostic": {
         "title": "Diagnóstico del teclado",
-        "description": "Comprueba si los eventos de teclado llegan a Handy. Solo se registra el número de eventos, nunca qué teclas pulsas.",
+        "description": "Comprueba si los eventos de teclado llegan a Noted. Solo se registra el número de eventos, nunca qué teclas pulsas.",
         "run": "Ejecutar diagnóstico de 10 s",
         "running": "Escuchando… pulsa tu atajo varias veces (p. ej. Option+Space)",
         "secureInputLabel": "Secure Input",
@@ -569,7 +583,7 @@
         "mouse": "Ratón",
         "verdictBlocked": "Secure Input está bloqueando los eventos de teclado: los atajos que incluyen una tecla normal no pueden funcionar hasta que se resuelva.",
         "verdictSuspicious": "Llegaron eventos de modificadores, pero ningún evento de tecla: algo está suprimiendo las teclas aunque Secure Input aparezca como desactivado. Por favor, repórtalo en GitHub.",
-        "verdictOk": "Los eventos de teclado llegan a Handy con normalidad.",
+        "verdictOk": "Los eventos de teclado llegan a Noted con normalidad.",
         "verdictNoEvents": "No se capturó ningún evento: ¿pulsaste alguna tecla durante la prueba?",
         "failed": "El diagnóstico falló: {{error}}"
       },
@@ -585,11 +599,11 @@
       "title": "Acerca de",
       "version": {
         "title": "Versión",
-        "description": "Versión actual de Handy"
+        "description": "Versión actual de Noted"
       },
       "appDataDirectory": {
         "title": "Directorio de datos de la aplicación",
-        "description": "Ubicación donde Handy almacena sus datos"
+        "description": "Ubicación donde Noted almacena sus datos"
       },
       "sourceCode": {
         "title": "Código fuente",
@@ -598,7 +612,7 @@
       },
       "supportDevelopment": {
         "title": "Apoyar el desarrollo",
-        "description": "Ayúdanos a continuar construyendo Handy",
+        "description": "Ayúdanos a continuar construyendo Noted",
         "button": "Donar"
       },
       "acknowledgments": {
@@ -606,12 +620,12 @@
         "ggml": {
           "title": "ggml",
           "description": "Biblioteca de tensores de alto rendimiento para inferencia de aprendizaje automático en el dispositivo",
-          "details": "El habla a texto local de Handy está construido sobre transcribe.cpp y ggml. Gracias al increíble trabajo de Georgi Gerganov y colaboradores."
+          "details": "El habla a texto local de Noted está construido sobre transcribe.cpp y ggml. Gracias al increíble trabajo de Georgi Gerganov y colaboradores."
         }
       },
       "whatsNewUpdates": {
         "label": "Mostrar novedades",
-        "description": "Mostrar notas de la versión después de las actualizaciones de Handy"
+        "description": "Mostrar notas de la versión después de las actualizaciones de Noted"
       }
     }
   },
@@ -640,7 +654,7 @@
     "noOptionsFound": "No se encontraron opciones"
   },
   "accessibility": {
-    "permissionsDescription": "Handy necesita permisos de accesibilidad para escribir texto transcrito.",
+    "permissionsDescription": "Noted necesita permisos de accesibilidad para escribir texto transcrito.",
     "openSettings": "Abrir Ajustes del Sistema"
   },
   "errors": {
@@ -663,11 +677,11 @@
   },
   "appLanguage": {
     "title": "Idioma de la aplicación",
-    "description": "Cambia el idioma de la interfaz de Handy"
+    "description": "Cambia el idioma de la interfaz de Noted"
   },
   "theme": {
     "title": "Tema de la aplicación",
-    "description": "Elige si Handy sigue el tema del sistema o permanece claro u oscuro",
+    "description": "Elige si Noted sigue el tema del sistema o permanece claro u oscuro",
     "options": {
       "system": "Sistema",
       "light": "Claro",
@@ -679,7 +693,7 @@
     "processing": "Procesando..."
   },
   "whatsNew": {
-    "title": "Nuevo en Handy v{{version}}"
+    "title": "Nuevo en Noted v{{version}}"
   },
   "secureInput": {
     "blockedWithCulprit_one": "{{name}} puede estar bloqueando 1 atajo",
@@ -691,5 +705,68 @@
     "learnMore": "Cómo solucionarlo",
     "recorderBlocked": "Ahora mismo no se pueden grabar atajos: Secure Input de macOS está bloqueando los eventos de teclado. Resuelve primero el aviso de Secure Input.",
     "dismiss": "Descartar"
+  },
+  "meeting": {
+    "savedTitle": "Reunión guardada",
+    "savedDescription": "La transcripción está en el historial, marcada para que no se elimine automáticamente.",
+    "saveFailedTitle": "No se pudo guardar la reunión",
+    "saveFailedClipboard": "El guardado falló, así que la transcripción se copió al portapapeles: pégala en un lugar seguro.",
+    "saveFailedNoRescue": "El guardado falló y no se produjo ninguna transcripción. Revisa los registros para más detalles."
+  },
+  "notes": {
+    "title": "Notas",
+    "loading": "Cargando notas…",
+    "empty": "Aún no hay notas de reuniones",
+    "emptyHint": "Inicia una reunión con el atajo de reunión y sus notas aparecerán aquí.",
+    "loadMore": "Cargar más",
+    "back": "Atrás",
+    "titlePlaceholder": "Reunión sin título",
+    "aiNotes": "Notas de IA",
+    "writing": "Escribiendo notas…",
+    "noNotesYet": "Aún no hay notas: pulsa el icono de reintentar para generarlas.",
+    "noTranscript": "Esta grabación no tiene transcripción.",
+    "regenerate": "Regenerar notas",
+    "copy": "Copiar",
+    "yourNotes": "Tus notas",
+    "yourNotesPlaceholder": "Escribe aquí tus propias notas: se guardan automáticamente.",
+    "transcript": "Transcripción y grabación",
+    "delete": "Eliminar nota",
+    "deleteConfirm": "¿Eliminar esta nota de reunión, su transcripción y su grabación? No se puede deshacer.",
+    "promptTitle": "Estilo de las notas",
+    "promptDescription": "Estas instrucciones definen cómo se escriben las notas a partir de la transcripción. Edítalas para cambiar la estructura y el tono.",
+    "promptReset": "Restablecer valor predeterminado",
+    "readyToast": "Las notas de la reunión están listas",
+    "failedToast": "No se pudieron escribir las notas. Revisa tu proveedor en los ajustes de posprocesamiento.",
+    "transcriptChip": "Transcripción",
+    "onThisDevice": "En este dispositivo",
+    "docPlaceholder": "Escribe lo que quieras…"
+  },
+  "shell": {
+    "appName": "Noted",
+    "home": "Inicio",
+    "settings": "Ajustes",
+    "dictationReady": "Dictado listo",
+    "dictationHintHold": "Mantén {{keys}} para hablar",
+    "dictationHintPress": "Pulsa {{keys}} para hablar",
+    "goodMorning": "Buenos días",
+    "goodAfternoon": "Buenas tardes",
+    "goodEvening": "Buenas noches",
+    "startMeeting": "Iniciar reunión",
+    "stopMeeting": "Detener reunión",
+    "recentNotes": "Notas recientes",
+    "today": "Hoy",
+    "yesterday": "Ayer",
+    "meetingMeta": "Reunión",
+    "enhanced": "Mejorado"
+  },
+  "live": {
+    "title": "Reunión en curso",
+    "recording": "Grabando",
+    "stop": "Detener",
+    "captions": "Subtítulos",
+    "liveTranscript": "Transcripción en vivo",
+    "listening": "Escuchando…",
+    "noStreamingModel": "Grabando. El texto en vivo requiere un modelo de streaming; la transcripción estará lista al detener.",
+    "privacy": "Transcrito en este dispositivo. Nada sale de tu ordenador."
   }
 }

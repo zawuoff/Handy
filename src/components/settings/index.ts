@@ -3,6 +3,8 @@ export { GeneralSettings } from "./general/GeneralSettings";
 export { AdvancedSettings } from "./advanced/AdvancedSettings";
 export { DebugSettings } from "./debug/DebugSettings";
 export { HistorySettings } from "./history/HistorySettings";
+export { NotesSettings } from "./notes/NotesSettings";
+export { NotesStyleSettings } from "./notes/NotesStyleSettings";
 export { AboutSettings } from "./about/AboutSettings";
 export { PostProcessingSettings } from "./post-processing/PostProcessingSettings";
 export { ModelsSettings } from "./models/ModelsSettings";

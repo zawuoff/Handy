@@ -87,6 +87,7 @@ Handy supports command-line flags for controlling a running instance and customi
 ```bash
 handy --toggle-transcription    # Toggle recording on/off
 handy --toggle-post-process     # Toggle recording with post-processing on/off
+handy --toggle-meeting          # Toggle a meeting session (saved to History, not pasted)
 handy --cancel                  # Cancel the current operation
 ```
 

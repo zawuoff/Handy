@@ -7,7 +7,15 @@
     "model": "Model",
     "quit": "Quit",
     "cancel": "Cancel",
-    "secureInputWarning": "⚠ Shortcuts blocked by Secure Input"
+    "secureInputWarning": "⚠ Shortcuts blocked by Secure Input",
+    "meeting": "Meeting",
+    "meetingStop": "Stop & Save Meeting",
+    "meetingCopy": "Copy Transcript So Far",
+    "meetingCopied": "Copied ✓",
+    "meetingCaptionsShow": "Show Live Captions",
+    "meetingCaptionsHide": "Hide Live Captions",
+    "meetingDiscard": "Discard Recording",
+    "meetingListening": "Listening…"
   },
   "sidebar": {
     "general": "General",
@@ -16,7 +24,8 @@
     "postProcessing": "Post Process",
     "history": "History",
     "debug": "Debug",
-    "about": "About"
+    "about": "About",
+    "notes": "Notes"
   },
   "onboarding": {
     "subtitle": "To get started, choose a transcription model",
@@ -101,7 +110,7 @@
     },
     "permissions": {
       "title": "Permissions Required",
-      "description": "Handy needs a couple of permissions to work properly.",
+      "description": "Noted needs a couple of permissions to work properly.",
       "microphone": {
         "title": "Microphone Access",
         "description": "Required to hear your voice for transcription."
@@ -161,7 +170,7 @@
     "general": {
       "title": "General",
       "shortcut": {
-        "title": "Handy Shortcuts",
+        "title": "Noted Shortcuts",
         "description": "Configure keyboard shortcuts to trigger speech-to-text recording",
         "loading": "Loading shortcuts...",
         "none": "No shortcuts configured",
@@ -179,6 +188,10 @@
           "transcribe_with_post_process": {
             "name": "Post-Processing Hotkey",
             "description": "Optional: A dedicated hotkey that always applies AI post-processing to your transcription."
+          },
+          "meeting": {
+            "name": "Meeting Mode Shortcut",
+            "description": "Starts and stops a meeting session. The transcript is saved to History instead of being pasted, and it is kept until you delete it."
           }
         },
         "errors": {
@@ -215,7 +228,7 @@
       },
       "rescan": {
         "label": "Rescan",
-        "tooltip": "Rescan for models added to the models folder or Hugging Face cache outside Handy"
+        "tooltip": "Rescan for models added to the models folder or Hugging Face cache outside Noted"
       },
       "noModelsMatch": "No models match this filter."
     },
@@ -283,11 +296,11 @@
       },
       "autostart": {
         "label": "Launch on Startup",
-        "description": "Automatically start Handy when you log in to your computer."
+        "description": "Automatically start Noted when you log in to your computer."
       },
       "showTrayIcon": {
         "label": "Show Tray Icon",
-        "description": "Display the Handy icon in the system tray."
+        "description": "Display the Noted icon in the system tray."
       },
       "overlay": {
         "style": {
@@ -457,7 +470,8 @@
       "retranscribe": "Re-transcribe",
       "retranscribeError": "Failed to re-transcribe. Please try again.",
       "transcribing": "Transcribing...",
-      "transcriptionFailed": "Transcription failed. You can re-transcribe using the retry icon."
+      "transcriptionFailed": "Transcription failed. You can re-transcribe using the retry icon.",
+      "meetingBadge": "Meeting"
     },
     "debug": {
       "title": "Debug",
@@ -482,7 +496,7 @@
       },
       "updateChecks": {
         "label": "Check for Updates",
-        "description": "Automatically check for new versions of Handy"
+        "description": "Automatically check for new versions of Noted"
       },
       "whatsNewPreview": {
         "title": "Preview What's New",
@@ -562,7 +576,7 @@
       },
       "keyboardDiagnostic": {
         "title": "Keyboard Diagnostic",
-        "description": "Checks whether keyboard events reach Handy. Only event counts are recorded — never which keys you press.",
+        "description": "Checks whether keyboard events reach Noted. Only event counts are recorded — never which keys you press.",
         "run": "Run 10s diagnostic",
         "running": "Listening… press your shortcut a few times (e.g. Option+Space)",
         "secureInputLabel": "Secure Input",
@@ -576,7 +590,7 @@
         "mouse": "Mouse",
         "verdictBlocked": "Secure Input is blocking key events — keyed shortcuts cannot work until it is resolved.",
         "verdictSuspicious": "Modifier events arrived but no key events — something is suppressing keys even though Secure Input reports disabled. Please report this on GitHub.",
-        "verdictOk": "Key events are reaching Handy normally.",
+        "verdictOk": "Key events are reaching Noted normally.",
         "verdictNoEvents": "No events captured — did you press any keys during the test?",
         "failed": "Diagnostic failed: {{error}}"
       }
@@ -585,15 +599,15 @@
       "title": "About",
       "version": {
         "title": "Version",
-        "description": "Current version of Handy"
+        "description": "Current version of Noted"
       },
       "whatsNewUpdates": {
         "label": "Show What's New",
-        "description": "Show release notes after Handy updates"
+        "description": "Show release notes after Noted updates"
       },
       "appDataDirectory": {
         "title": "App Data Directory",
-        "description": "Location where Handy stores its data"
+        "description": "Location where Noted stores its data"
       },
       "sourceCode": {
         "title": "Source Code",
@@ -602,7 +616,7 @@
       },
       "supportDevelopment": {
         "title": "Support Development",
-        "description": "Help us continue building Handy",
+        "description": "Help us continue building Noted",
         "button": "Donate"
       },
       "acknowledgments": {
@@ -610,7 +624,7 @@
         "ggml": {
           "title": "ggml",
           "description": "High-performance tensor library for on-device machine learning inference",
-          "details": "Handy's local speech-to-text is built on transcribe.cpp and ggml. Thanks to the amazing work by Georgi Gerganov and contributors."
+          "details": "Noted's local speech-to-text is built on transcribe.cpp and ggml. Thanks to the amazing work by Georgi Gerganov and contributors."
         }
       }
     }
@@ -631,7 +645,7 @@
     "portableUpdateBrowseButton": "Open GitHub Releases"
   },
   "whatsNew": {
-    "title": "New in Handy v{{version}}"
+    "title": "New in Noted v{{version}}"
   },
   "common": {
     "loading": "Loading...",
@@ -643,7 +657,7 @@
     "noOptionsFound": "No options found"
   },
   "accessibility": {
-    "permissionsDescription": "Handy needs accessibility permissions to type transcribed text.",
+    "permissionsDescription": "Noted needs accessibility permissions to type transcribed text.",
     "openSettings": "Open System Settings"
   },
   "errors": {
@@ -666,11 +680,11 @@
   },
   "appLanguage": {
     "title": "Application Language",
-    "description": "Change the language of the Handy interface"
+    "description": "Change the language of the Noted interface"
   },
   "theme": {
     "title": "Application Theme",
-    "description": "Choose whether Handy follows your system theme or stays light or dark",
+    "description": "Choose whether Noted follows your system theme or stays light or dark",
     "options": {
       "system": "System",
       "light": "Light",
@@ -691,5 +705,68 @@
     "learnMore": "How to fix",
     "recorderBlocked": "Can't record shortcuts right now — macOS Secure Input is blocking key events. Resolve the Secure Input warning first.",
     "dismiss": "Dismiss"
+  },
+  "meeting": {
+    "savedTitle": "Meeting saved",
+    "savedDescription": "The transcript is in History, marked so it won't be auto-deleted.",
+    "saveFailedTitle": "Couldn't save the meeting",
+    "saveFailedClipboard": "Saving failed, so the transcript was copied to your clipboard — paste it somewhere safe.",
+    "saveFailedNoRescue": "Saving failed and no transcript was produced. Check the logs for details."
+  },
+  "notes": {
+    "title": "Notes",
+    "loading": "Loading notes…",
+    "empty": "No meeting notes yet",
+    "emptyHint": "Start a meeting with the meeting shortcut, and its notes will appear here.",
+    "loadMore": "Load more",
+    "back": "Back",
+    "titlePlaceholder": "Untitled meeting",
+    "aiNotes": "AI notes",
+    "writing": "Writing notes…",
+    "noNotesYet": "No notes yet — press the retry icon to generate them.",
+    "noTranscript": "This recording has no transcript.",
+    "regenerate": "Regenerate notes",
+    "copy": "Copy",
+    "yourNotes": "Your notes",
+    "yourNotesPlaceholder": "Write your own notes here — they save automatically.",
+    "transcript": "Transcript & recording",
+    "delete": "Delete note",
+    "deleteConfirm": "Delete this meeting note, its transcript and its recording? This cannot be undone.",
+    "promptTitle": "Note style",
+    "promptDescription": "These instructions shape how meeting notes are written from the transcript. Edit them to change the structure and tone.",
+    "promptReset": "Reset to default",
+    "readyToast": "Meeting notes are ready",
+    "failedToast": "Couldn't write meeting notes. Check your provider in Post Process settings.",
+    "transcriptChip": "Transcript",
+    "onThisDevice": "On this device",
+    "docPlaceholder": "Write anything…"
+  },
+  "shell": {
+    "appName": "Noted",
+    "home": "Home",
+    "settings": "Settings",
+    "dictationReady": "Dictation ready",
+    "dictationHintHold": "Hold {{keys}} to speak",
+    "dictationHintPress": "Press {{keys}} to speak",
+    "goodMorning": "Good morning",
+    "goodAfternoon": "Good afternoon",
+    "goodEvening": "Good evening",
+    "startMeeting": "Start meeting",
+    "stopMeeting": "Stop meeting",
+    "recentNotes": "Recent notes",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "meetingMeta": "Meeting",
+    "enhanced": "Enhanced"
+  },
+  "live": {
+    "title": "Meeting in progress",
+    "recording": "Recording",
+    "stop": "Stop",
+    "captions": "Captions",
+    "liveTranscript": "Live transcript",
+    "listening": "Listening…",
+    "noStreamingModel": "Recording. Live text needs a streaming model — the transcript will be ready when you stop.",
+    "privacy": "Transcribed on this device. Nothing leaves your computer."
   }
 }

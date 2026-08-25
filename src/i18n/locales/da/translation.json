@@ -7,7 +7,15 @@
     "model": "Model",
     "quit": "Afslut",
     "cancel": "Annuller",
-    "secureInputWarning": "⚠ Genveje blokeret af Secure Input"
+    "secureInputWarning": "⚠ Genveje blokeret af Secure Input",
+    "meeting": "Møde",
+    "meetingStop": "Stop og gem møde",
+    "meetingCopy": "Kopiér udskrift indtil nu",
+    "meetingCopied": "Kopieret ✓",
+    "meetingCaptionsShow": "Vis live-undertekster",
+    "meetingCaptionsHide": "Skjul live-undertekster",
+    "meetingDiscard": "Kassér optagelse",
+    "meetingListening": "Lytter…"
   },
   "sidebar": {
     "general": "Generelt",
@@ -16,7 +24,8 @@
     "postProcessing": "Efterbehandling",
     "history": "Historik",
     "debug": "Fejlfinding",
-    "about": "Om"
+    "about": "Om",
+    "notes": "Noter"
   },
   "onboarding": {
     "subtitle": "For at komme i gang skal du vælge en transskriptionsmodel",
@@ -101,7 +110,7 @@
     },
     "permissions": {
       "title": "Tilladelser påkrævet",
-      "description": "Handy har brug for et par tilladelser for at fungere korrekt.",
+      "description": "Noted har brug for et par tilladelser for at fungere korrekt.",
       "microphone": {
         "title": "Mikrofonadgang",
         "description": "Påkrævet for at høre din stemme til transskription."
@@ -161,7 +170,7 @@
     "general": {
       "title": "Generelt",
       "shortcut": {
-        "title": "Handy-genveje",
+        "title": "Noted-genveje",
         "description": "Konfigurer tastaturgenveje til at udløse tale-til-tekst-optagelse",
         "loading": "Indlæser genveje...",
         "none": "Ingen genveje konfigureret",
@@ -179,6 +188,10 @@
           "transcribe_with_post_process": {
             "name": "Genvej til efterbehandling",
             "description": "Valgfrit: En dedikeret genvej, der altid anvender AI-efterbehandling på din transskription."
+          },
+          "meeting": {
+            "name": "Genvej til mødetilstand",
+            "description": "Starter og stopper en mødesession. Udskriften gemmes i historikken i stedet for at blive indsat og beholdes, indtil du sletter den."
           }
         },
         "errors": {
@@ -215,7 +228,7 @@
       },
       "rescan": {
         "label": "Søg igen",
-        "tooltip": "Søg igen efter modeller, der er tilføjet til modelmappen eller Hugging Face-cachen uden for Handy"
+        "tooltip": "Søg igen efter modeller, der er tilføjet til modelmappen eller Hugging Face-cachen uden for Noted"
       },
       "noModelsMatch": "Ingen modeller matcher dette filter."
     },
@@ -283,11 +296,11 @@
       },
       "autostart": {
         "label": "Start ved opstart",
-        "description": "Start Handy automatisk, når du logger ind på din computer."
+        "description": "Start Noted automatisk, når du logger ind på din computer."
       },
       "showTrayIcon": {
         "label": "Vis proceslinjeikon",
-        "description": "Vis Handy-ikonet i meddelelsesområdet."
+        "description": "Vis Noted-ikonet i meddelelsesområdet."
       },
       "overlay": {
         "style": {
@@ -457,7 +470,8 @@
       "retranscribe": "Transskribér igen",
       "retranscribeError": "Kunne ikke transskribere igen. Prøv igen.",
       "transcribing": "Transskriberer...",
-      "transcriptionFailed": "Transskription mislykkedes. Du kan transskribere igen ved hjælp af genforsøgsikonet."
+      "transcriptionFailed": "Transskription mislykkedes. Du kan transskribere igen ved hjælp af genforsøgsikonet.",
+      "meetingBadge": "Møde"
     },
     "debug": {
       "title": "Fejlfinding",
@@ -482,7 +496,7 @@
       },
       "updateChecks": {
         "label": "Tjek for opdateringer",
-        "description": "Tjek automatisk for nye versioner af Handy"
+        "description": "Tjek automatisk for nye versioner af Noted"
       },
       "whatsNewPreview": {
         "title": "Forhåndsvisning af nyheder",
@@ -562,7 +576,7 @@
       },
       "keyboardDiagnostic": {
         "title": "Tastaturdiagnostik",
-        "description": "Kontrollerer, om tastaturhændelser når frem til Handy. Kun antallet af hændelser registreres — aldrig hvilke taster du trykker på.",
+        "description": "Kontrollerer, om tastaturhændelser når frem til Noted. Kun antallet af hændelser registreres — aldrig hvilke taster du trykker på.",
         "run": "Kør 10 s diagnostik",
         "running": "Lytter… tryk på din genvej et par gange (f.eks. Option+Space)",
         "secureInputLabel": "Secure Input",
@@ -576,7 +590,7 @@
         "mouse": "Mus",
         "verdictBlocked": "Secure Input blokerer tastehændelser — genveje med en almindelig tast kan ikke fungere, før det er løst.",
         "verdictSuspicious": "Der kom modifikatorhændelser, men ingen tastehændelser — noget undertrykker taster, selvom Secure Input rapporteres som deaktiveret. Rapportér det gerne på GitHub.",
-        "verdictOk": "Tastehændelser når frem til Handy som normalt.",
+        "verdictOk": "Tastehændelser når frem til Noted som normalt.",
         "verdictNoEvents": "Ingen hændelser registreret — trykkede du på nogen taster under testen?",
         "failed": "Diagnostik mislykkedes: {{error}}"
       }
@@ -585,15 +599,15 @@
       "title": "Om",
       "version": {
         "title": "Version",
-        "description": "Nuværende version af Handy"
+        "description": "Nuværende version af Noted"
       },
       "whatsNewUpdates": {
         "label": "Vis nyheder",
-        "description": "Vis udgivelsesnoter, efter Handy opdateres"
+        "description": "Vis udgivelsesnoter, efter Noted opdateres"
       },
       "appDataDirectory": {
         "title": "Appdatamappe",
-        "description": "Placering, hvor Handy gemmer sine data"
+        "description": "Placering, hvor Noted gemmer sine data"
       },
       "sourceCode": {
         "title": "Kildekode",
@@ -602,7 +616,7 @@
       },
       "supportDevelopment": {
         "title": "Støt udviklingen",
-        "description": "Hjælp os med at fortsætte udviklingen af Handy",
+        "description": "Hjælp os med at fortsætte udviklingen af Noted",
         "button": "Donér"
       },
       "acknowledgments": {
@@ -631,7 +645,7 @@
     "portableUpdateBrowseButton": "Åbn GitHub Releases"
   },
   "whatsNew": {
-    "title": "Nyt i Handy v{{version}}"
+    "title": "Nyt i Noted v{{version}}"
   },
   "common": {
     "loading": "Indlæser...",
@@ -643,7 +657,7 @@
     "noOptionsFound": "Ingen muligheder fundet"
   },
   "accessibility": {
-    "permissionsDescription": "Handy har brug for tilgængelighedstilladelser for at skrive den transskriberede tekst.",
+    "permissionsDescription": "Noted har brug for tilgængelighedstilladelser for at skrive den transskriberede tekst.",
     "openSettings": "Åbn systemindstillinger"
   },
   "errors": {
@@ -666,11 +680,11 @@
   },
   "appLanguage": {
     "title": "Applikationssprog",
-    "description": "Skift sproget for Handy-grænsefladen"
+    "description": "Skift sproget for Noted-grænsefladen"
   },
   "theme": {
     "title": "Applikationstema",
-    "description": "Vælg om Handy skal følge dit systemtema eller forblive lyst eller mørkt",
+    "description": "Vælg om Noted skal følge dit systemtema eller forblive lyst eller mørkt",
     "options": {
       "system": "System",
       "light": "Lys",
@@ -691,5 +705,68 @@
     "learnMore": "Sådan løser du det",
     "recorderBlocked": "Genveje kan ikke optages lige nu — macOS Secure Input blokerer tastehændelser. Løs advarslen om Secure Input først.",
     "dismiss": "Afvis"
+  },
+  "meeting": {
+    "savedTitle": "Møde gemt",
+    "savedDescription": "Udskriften ligger i historikken og er markeret, så den ikke slettes automatisk.",
+    "saveFailedTitle": "Mødet kunne ikke gemmes",
+    "saveFailedClipboard": "Lagring mislykkedes, så udskriften blev kopieret til udklipsholderen — indsæt den et sikkert sted.",
+    "saveFailedNoRescue": "Lagring mislykkedes, og der blev ikke lavet nogen udskrift. Se logfilerne for detaljer."
+  },
+  "notes": {
+    "title": "Noter",
+    "loading": "Indlæser noter…",
+    "empty": "Ingen mødenoter endnu",
+    "emptyHint": "Start et møde med mødegenvejen, så vises dets noter her.",
+    "loadMore": "Indlæs flere",
+    "back": "Tilbage",
+    "titlePlaceholder": "Møde uden titel",
+    "aiNotes": "AI-noter",
+    "writing": "Skriver noter…",
+    "noNotesYet": "Ingen noter endnu — tryk på gentag-ikonet for at oprette dem.",
+    "noTranscript": "Denne optagelse har ingen udskrift.",
+    "regenerate": "Generér noter igen",
+    "copy": "Kopiér",
+    "yourNotes": "Dine noter",
+    "yourNotesPlaceholder": "Skriv dine egne noter her — de gemmes automatisk.",
+    "transcript": "Udskrift og optagelse",
+    "delete": "Slet note",
+    "deleteConfirm": "Slet denne mødenote, dens udskrift og optagelse? Kan ikke fortrydes.",
+    "promptTitle": "Notestil",
+    "promptDescription": "Disse instruktioner styrer, hvordan mødenoter skrives ud fra udskriften. Redigér dem for at ændre struktur og tone.",
+    "promptReset": "Nulstil til standard",
+    "readyToast": "Mødenoterne er klar",
+    "failedToast": "Kunne ikke skrive mødenoter. Tjek din udbyder i efterbehandlingsindstillingerne.",
+    "transcriptChip": "Udskrift",
+    "onThisDevice": "På denne enhed",
+    "docPlaceholder": "Skriv hvad som helst…"
+  },
+  "shell": {
+    "appName": "Noted",
+    "home": "Hjem",
+    "settings": "Indstillinger",
+    "dictationReady": "Diktering klar",
+    "dictationHintHold": "Hold {{keys}} nede for at tale",
+    "dictationHintPress": "Tryk {{keys}} for at tale",
+    "goodMorning": "Godmorgen",
+    "goodAfternoon": "God eftermiddag",
+    "goodEvening": "Godaften",
+    "startMeeting": "Start møde",
+    "stopMeeting": "Stop møde",
+    "recentNotes": "Seneste noter",
+    "today": "I dag",
+    "yesterday": "I går",
+    "meetingMeta": "Møde",
+    "enhanced": "Forbedret"
+  },
+  "live": {
+    "title": "Møde i gang",
+    "recording": "Optager",
+    "stop": "Stop",
+    "captions": "Undertekster",
+    "liveTranscript": "Live-transskription",
+    "listening": "Lytter…",
+    "noStreamingModel": "Optager. Live-tekst kræver en streamingmodel — udskriften er klar, når du stopper.",
+    "privacy": "Transskriberet på denne enhed. Intet forlader din computer."
   }
 }

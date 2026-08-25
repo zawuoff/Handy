@@ -613,6 +613,16 @@ pub fn show_streaming_overlay(app_handle: &AppHandle) {
     show_overlay_state(app_handle, "streaming");
 }
 
+/// Shows the live-captions (streaming) overlay regardless of the
+/// overlay_style setting. Used by the tray's meeting menu: `overlay_style:
+/// None` (the Linux default) disables dictation overlays, but an explicitly
+/// requested captions view should still appear. Callers are responsible for
+/// flipping the overlay-enabled cache (see `meeting::toggle_captions`).
+pub fn show_captions_overlay_forced(app_handle: &AppHandle) {
+    let handle = app_handle.clone();
+    let _ = app_handle.run_on_main_thread(move || show_overlay_state_on_main(&handle, "streaming"));
+}
+
 /// Shows the transcribing overlay window
 pub fn show_transcribing_overlay(app_handle: &AppHandle) {
     show_overlay_state(app_handle, "transcribing");

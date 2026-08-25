@@ -7,7 +7,15 @@
     "model": "מודל",
     "quit": "יציאה",
     "cancel": "ביטול",
-    "secureInputWarning": "⚠ קיצורי המקשים חסומים על ידי Secure Input"
+    "secureInputWarning": "⚠ קיצורי המקשים חסומים על ידי Secure Input",
+    "meeting": "פגישה",
+    "meetingStop": "עצירת הפגישה ושמירתה",
+    "meetingCopy": "העתקת התמליל עד כה",
+    "meetingCopied": "הועתק ✓",
+    "meetingCaptionsShow": "הצגת כתוביות חיות",
+    "meetingCaptionsHide": "הסתרת כתוביות חיות",
+    "meetingDiscard": "מחיקת ההקלטה",
+    "meetingListening": "מאזין…"
   },
   "sidebar": {
     "general": "כללי",
@@ -16,7 +24,8 @@
     "postProcessing": "עיבוד משלים",
     "history": "היסטוריה",
     "debug": "ניפוי שגיאות",
-    "about": "אודות"
+    "about": "אודות",
+    "notes": "הערות"
   },
   "onboarding": {
     "subtitle": "כדי להתחיל, בחר מודל תמלול",
@@ -101,7 +110,7 @@
     },
     "permissions": {
       "title": "נדרשות הרשאות",
-      "description": "Handy צריך כמה הרשאות כדי לעבוד כמו שצריך.",
+      "description": "Noted צריך כמה הרשאות כדי לעבוד כמו שצריך.",
       "microphone": {
         "title": "גישה למיקרופון",
         "description": "נדרש כדי לשמוע את הקול שלך לצורך תמלול."
@@ -161,7 +170,7 @@
     "general": {
       "title": "כללי",
       "shortcut": {
-        "title": "קיצורי מקשים של Handy",
+        "title": "קיצורי מקשים של Noted",
         "description": "הגדר קיצורי מקשים כדי להפעיל הקלטה ותמלול דיבור",
         "loading": "טוען קיצורי מקשים...",
         "none": "לא הוגדרו קיצורי מקשים",
@@ -179,6 +188,10 @@
           "transcribe_with_post_process": {
             "name": "קיצור לעיבוד משלים",
             "description": "אופציונלי: קיצור מקשים ייעודי שתמיד מפעיל עיבוד AI על התמלול."
+          },
+          "meeting": {
+            "name": "קיצור מצב פגישה",
+            "description": "מתחיל ומסיים הקלטת פגישה. התמליל נשמר בהיסטוריה במקום להיות מודבק, ונשמר עד שתמחקו אותו."
           }
         },
         "errors": {
@@ -216,7 +229,7 @@
       "searchPlaceholder": "חיפוש מודלים לפי שם…",
       "rescan": {
         "label": "סריקה מחדש",
-        "tooltip": "סריקה מחדש לאיתור מודלים שנוספו לתיקיית המודלים או למטמון של Hugging Face מחוץ ל-Handy"
+        "tooltip": "סריקה מחדש לאיתור מודלים שנוספו לתיקיית המודלים או למטמון של Hugging Face מחוץ ל-Noted"
       }
     },
     "sound": {
@@ -283,11 +296,11 @@
       },
       "autostart": {
         "label": "הפעל עם עליית המערכת",
-        "description": "הפעל את Handy אוטומטית כשאתה מתחבר למחשב."
+        "description": "הפעל את Noted אוטומטית כשאתה מתחבר למחשב."
       },
       "showTrayIcon": {
         "label": "הצג אייקון במגש",
-        "description": "הצג את האייקון של Handy במגש המערכת."
+        "description": "הצג את האייקון של Noted במגש המערכת."
       },
       "overlay": {
         "style": {
@@ -457,7 +470,8 @@
       "retranscribe": "תמלל מחדש",
       "retranscribeError": "תמלול מחדש נכשל. נסה שוב.",
       "transcribing": "מתמלל...",
-      "transcriptionFailed": "התמלול נכשל. אפשר לתמלל מחדש באמצעות אייקון הניסיון החוזר."
+      "transcriptionFailed": "התמלול נכשל. אפשר לתמלל מחדש באמצעות אייקון הניסיון החוזר.",
+      "meetingBadge": "פגישה"
     },
     "debug": {
       "title": "ניפוי שגיאות",
@@ -482,7 +496,7 @@
       },
       "updateChecks": {
         "label": "בדוק עדכונים",
-        "description": "בדוק אוטומטית אם קיימות גרסאות חדשות של Handy"
+        "description": "בדוק אוטומטית אם קיימות גרסאות חדשות של Noted"
       },
       "soundTheme": {
         "label": "ערכת צלילים",
@@ -555,7 +569,7 @@
       },
       "keyboardDiagnostic": {
         "title": "אבחון מקלדת",
-        "description": "בודק אם אירועי מקלדת מגיעים ל-Handy. נרשם רק מספר האירועים — לעולם לא אילו מקשים הקשת.",
+        "description": "בודק אם אירועי מקלדת מגיעים ל-Noted. נרשם רק מספר האירועים — לעולם לא אילו מקשים הקשת.",
         "run": "הרצת אבחון של 10 שניות",
         "running": "מאזין… הקש על קיצור המקשים שלך כמה פעמים (למשל Option+Space)",
         "secureInputLabel": "Secure Input",
@@ -569,7 +583,7 @@
         "mouse": "עכבר",
         "verdictBlocked": "Secure Input חוסם אירועי מקשים — קיצורים הכוללים מקש רגיל לא יוכלו לפעול עד שהבעיה תיפתר.",
         "verdictSuspicious": "הגיעו אירועים של מקשי החלפה אך לא אירועי מקשים — משהו מדכא מקשים למרות ש-Secure Input מדווח כמושבת. אנא דווח על כך ב-GitHub.",
-        "verdictOk": "אירועי מקשים מגיעים ל-Handy כרגיל.",
+        "verdictOk": "אירועי מקשים מגיעים ל-Noted כרגיל.",
         "verdictNoEvents": "לא נקלטו אירועים — האם הקשת על מקשים במהלך הבדיקה?",
         "failed": "האבחון נכשל: {{error}}"
       },
@@ -585,11 +599,11 @@
       "title": "אודות",
       "version": {
         "title": "גרסה",
-        "description": "הגרסה הנוכחית של Handy"
+        "description": "הגרסה הנוכחית של Noted"
       },
       "appDataDirectory": {
         "title": "תיקיית נתוני אפליקציה",
-        "description": "המיקום שבו Handy שומר את הנתונים שלו"
+        "description": "המיקום שבו Noted שומר את הנתונים שלו"
       },
       "sourceCode": {
         "title": "קוד מקור",
@@ -598,7 +612,7 @@
       },
       "supportDevelopment": {
         "title": "תמיכה בפיתוח",
-        "description": "עזור לנו להמשיך לבנות את Handy",
+        "description": "עזור לנו להמשיך לבנות את Noted",
         "button": "תרומה"
       },
       "acknowledgments": {
@@ -606,12 +620,12 @@
         "ggml": {
           "title": "ggml",
           "description": "הסקה מהירה לביצועים גבוהים עבור מודל זיהוי הדיבור Whisper של OpenAI",
-          "details": "Handy משתמש ב-ggml לתמלול מהיר ומקומי. תודה לעבודה המדהימה של Georgi Gerganov וכל התורמים."
+          "details": "Noted משתמש ב-ggml לתמלול מהיר ומקומי. תודה לעבודה המדהימה של Georgi Gerganov וכל התורמים."
         }
       },
       "whatsNewUpdates": {
         "label": "הצג מה חדש",
-        "description": "הצג הערות גרסה לאחר עדכוני Handy"
+        "description": "הצג הערות גרסה לאחר עדכוני Noted"
       }
     }
   },
@@ -640,7 +654,7 @@
     "noOptionsFound": "לא נמצאו אפשרויות"
   },
   "accessibility": {
-    "permissionsDescription": "Handy צריך הרשאות נגישות כדי להקליד את הטקסט המתומלל.",
+    "permissionsDescription": "Noted צריך הרשאות נגישות כדי להקליד את הטקסט המתומלל.",
     "openSettings": "פתח את הגדרות המערכת"
   },
   "errors": {
@@ -663,11 +677,11 @@
   },
   "appLanguage": {
     "title": "שפת האפליקציה",
-    "description": "שנה את שפת הממשק של Handy"
+    "description": "שנה את שפת הממשק של Noted"
   },
   "theme": {
     "title": "ערכת נושא של האפליקציה",
-    "description": "בחר אם Handy יעקוב אחר ערכת הנושא של המערכת או יישאר בהיר או כהה",
+    "description": "בחר אם Noted יעקוב אחר ערכת הנושא של המערכת או יישאר בהיר או כהה",
     "options": {
       "system": "מערכת",
       "light": "בהיר",
@@ -679,7 +693,7 @@
     "processing": "מעבד..."
   },
   "whatsNew": {
-    "title": "חדש ב-Handy v{{version}}"
+    "title": "חדש ב-Noted v{{version}}"
   },
   "secureInput": {
     "blockedWithCulprit_one": "ייתכן ש-{{name}} חוסם קיצור דרך אחד",
@@ -691,5 +705,68 @@
     "learnMore": "איך לתקן את זה",
     "recorderBlocked": "לא ניתן להקליט קיצורים כרגע — Secure Input של macOS חוסם אירועי מקשים. פתור תחילה את אזהרת Secure Input.",
     "dismiss": "התעלם"
+  },
+  "meeting": {
+    "savedTitle": "הפגישה נשמרה",
+    "savedDescription": "התמליל נמצא בהיסטוריה ומסומן כך שלא יימחק אוטומטית.",
+    "saveFailedTitle": "לא ניתן לשמור את הפגישה",
+    "saveFailedClipboard": "השמירה נכשלה, ולכן התמליל הועתק ללוח — הדביקו אותו במקום בטוח.",
+    "saveFailedNoRescue": "השמירה נכשלה ולא נוצר תמליל. בדקו את היומנים לפרטים."
+  },
+  "notes": {
+    "title": "הערות",
+    "loading": "טוען הערות…",
+    "empty": "אין עדיין הערות פגישה",
+    "emptyHint": "התחילו פגישה עם קיצור הפגישה וההערות שלה יופיעו כאן.",
+    "loadMore": "טען עוד",
+    "back": "חזרה",
+    "titlePlaceholder": "פגישה ללא כותרת",
+    "aiNotes": "הערות AI",
+    "writing": "כותב הערות…",
+    "noNotesYet": "אין עדיין הערות — לחצו על סמל הרענון כדי ליצור אותן.",
+    "noTranscript": "להקלטה זו אין תמליל.",
+    "regenerate": "צור הערות מחדש",
+    "copy": "העתק",
+    "yourNotes": "ההערות שלך",
+    "yourNotesPlaceholder": "כתבו כאן את ההערות שלכם — הן נשמרות אוטומטית.",
+    "transcript": "תמליל והקלטה",
+    "delete": "מחק הערה",
+    "deleteConfirm": "למחוק הערת פגישה זו, את התמליל ואת ההקלטה? לא ניתן לבטל.",
+    "promptTitle": "סגנון ההערות",
+    "promptDescription": "ההוראות האלה קובעות איך נכתבות הערות הפגישה מהתמליל. ערכו אותן כדי לשנות מבנה וטון.",
+    "promptReset": "אפס לברירת מחדל",
+    "readyToast": "הערות הפגישה מוכנות",
+    "failedToast": "לא ניתן היה לכתוב את ההערות. בדקו את הספק בהגדרות העיבוד.",
+    "transcriptChip": "תמליל",
+    "onThisDevice": "במכשיר הזה",
+    "docPlaceholder": "כתבו כל דבר…"
+  },
+  "shell": {
+    "appName": "Noted",
+    "home": "בית",
+    "settings": "הגדרות",
+    "dictationReady": "הכתבה מוכנה",
+    "dictationHintHold": "החזיקו {{keys}} כדי לדבר",
+    "dictationHintPress": "לחצו {{keys}} כדי לדבר",
+    "goodMorning": "בוקר טוב",
+    "goodAfternoon": "צהריים טובים",
+    "goodEvening": "ערב טוב",
+    "startMeeting": "התחל פגישה",
+    "stopMeeting": "עצור פגישה",
+    "recentNotes": "הערות אחרונות",
+    "today": "היום",
+    "yesterday": "אתמול",
+    "meetingMeta": "פגישה",
+    "enhanced": "משופר"
+  },
+  "live": {
+    "title": "פגישה מתקיימת",
+    "recording": "מקליט",
+    "stop": "עצור",
+    "captions": "כתוביות",
+    "liveTranscript": "תמליל חי",
+    "listening": "מאזין…",
+    "noStreamingModel": "מקליט. טקסט חי דורש מודל סטרימינג — התמליל יהיה מוכן בעצירה.",
+    "privacy": "תומלל במכשיר זה. שום דבר לא עוזב את המחשב שלך."
   }
 }

@@ -10,7 +10,7 @@ use tauri::{AppHandle, Manager};
 use crate::actions::ACTION_MAP;
 use crate::managers::audio::AudioRecordingManager;
 use crate::settings::get_settings;
-use crate::transcription_coordinator::is_transcribe_binding;
+use crate::transcription_coordinator::{is_toggle_only_binding, is_transcribe_binding};
 use crate::TranscriptionCoordinator;
 
 /// Handle a shortcut event from either implementation.
@@ -36,8 +36,11 @@ pub fn handle_shortcut_event(
 
     // Transcribe bindings are handled by the coordinator.
     if is_transcribe_binding(binding_id) {
+        // Long-session bindings (meeting mode) always toggle regardless of
+        // the global push-to-talk setting.
+        let push_to_talk = settings.push_to_talk && !is_toggle_only_binding(binding_id);
         if let Some(coordinator) = app.try_state::<TranscriptionCoordinator>() {
-            coordinator.send_input(binding_id, hotkey_string, is_pressed, settings.push_to_talk);
+            coordinator.send_input(binding_id, hotkey_string, is_pressed, push_to_talk);
         } else {
             warn!("TranscriptionCoordinator is not initialized");
         }

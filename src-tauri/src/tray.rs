@@ -56,6 +56,12 @@ impl TrayIconState {
 #[derive(Clone, Debug, PartialEq, Eq)]
 struct MenuInputs {
     busy: bool,
+    /// A meeting session is active: the busy menu becomes the meeting menu
+    /// (timer, live transcript lines, stop/copy/captions/discard).
+    meeting: bool,
+    /// The meeting's model streams live text (enables transcript lines,
+    /// copy-so-far and the captions toggle).
+    meeting_streaming: bool,
     warning: bool,
     model_loaded: bool,
     selected_model: String,
@@ -63,6 +69,27 @@ struct MenuInputs {
     downloaded_models: Vec<(String, String)>,
     locale: String,
     update_checks_enabled: bool,
+}
+
+/// Live handles to the meeting menu's mutable items, plus the localized
+/// labels their text is rebuilt from on every ticker pass. Main-thread only:
+/// both the menu applier and `update_meeting_readout_on_main` run there.
+struct MeetingMenuItems {
+    status: MenuItem<tauri::Wry>,
+    lines: Option<(MenuItem<tauri::Wry>, MenuItem<tauri::Wry>)>,
+    copy: Option<MenuItem<tauri::Wry>>,
+    captions: Option<MenuItem<tauri::Wry>>,
+    status_label: String,
+    listening_label: String,
+    copy_label: String,
+    copied_label: String,
+    captions_show_label: String,
+    captions_hide_label: String,
+}
+
+thread_local! {
+    static MEETING_MENU_ITEMS: std::cell::RefCell<Option<MeetingMenuItems>> =
+        const { std::cell::RefCell::new(None) };
 }
 
 /// Complete description of what the tray should look like.
@@ -324,10 +351,17 @@ fn compute_desired(app: &AppHandle, icon_state: TrayIconState) -> TrayDesired {
         .collect();
     downloaded_models.sort_by(|a, b| a.1.cmp(&b.1));
 
+    let (meeting, meeting_streaming) = match app.try_state::<crate::meeting::MeetingSession>() {
+        Some(session) => (session.is_active(), session.is_streaming()),
+        None => (false, false),
+    };
+
     TrayDesired {
         icon_path: get_icon_path(theme, icon_state, warning),
         menu: MenuInputs {
             busy: icon_state.is_busy(),
+            meeting: meeting && icon_state.is_busy(),
+            meeting_streaming,
             warning,
             model_loaded,
             selected_model: settings.selected_model,
@@ -393,9 +427,17 @@ fn apply_on_main(app: &AppHandle) {
     let mut menu_ok = false;
     if menu_changed {
         match build_menu(app, &desired.menu) {
-            Ok((menu, tooltip)) => match tray.set_menu(Some(menu)) {
+            Ok((menu, tooltip, meeting_items)) => match tray.set_menu(Some(menu)) {
                 Ok(()) => {
                     menu_ok = true;
+                    // Swap in (or clear) the live meeting item handles, then
+                    // refresh the readout so freshly built items don't sit at
+                    // their placeholder text until the next ticker pass.
+                    let has_meeting_items = meeting_items.is_some();
+                    MEETING_MENU_ITEMS.with(|cell| *cell.borrow_mut() = meeting_items);
+                    if has_meeting_items {
+                        update_meeting_readout_on_main(app);
+                    }
                     // Best-effort: logged, not retried. The tooltip is cosmetic
                     // and can only fail on Windows, where a failing
                     // Shell_NotifyIcon call means the icon is failing too.
@@ -445,15 +487,20 @@ pub fn tray_tooltip() -> String {
 
 fn version_label() -> String {
     if cfg!(debug_assertions) {
-        format!("Handy v{} (Dev)", env!("CARGO_PKG_VERSION"))
+        format!("Noted v{} (Dev)", env!("CARGO_PKG_VERSION"))
     } else {
-        format!("Handy v{}", env!("CARGO_PKG_VERSION"))
+        format!("Noted v{}", env!("CARGO_PKG_VERSION"))
     }
 }
 
 /// Builds the tray menu and tooltip for the given inputs. Pure with respect
-/// to app state: everything it depends on is in `inputs`.
-fn build_menu(app: &AppHandle, inputs: &MenuInputs) -> tauri::Result<(Menu<tauri::Wry>, String)> {
+/// to app state: everything it depends on is in `inputs`. When the meeting
+/// menu is built, the third element carries the live-updatable item handles
+/// for the readout ticker.
+fn build_menu(
+    app: &AppHandle,
+    inputs: &MenuInputs,
+) -> tauri::Result<(Menu<tauri::Wry>, String, Option<MeetingMenuItems>)> {
     let strings = get_tray_translations(Some(inputs.locale.clone()));
 
     // Secure Input warning entry (macOS): clicking opens the settings window
@@ -510,7 +557,111 @@ fn build_menu(app: &AppHandle, inputs: &MenuInputs) -> tauri::Result<(Menu<tauri
     let quit_i = MenuItem::with_id(app, "quit", &strings.quit, true, quit_accelerator)?;
     let separator = || PredefinedMenuItem::separator(app);
 
-    let menu = if inputs.busy {
+    let mut meeting_items = None;
+    let menu = if inputs.busy && inputs.meeting {
+        // Meeting session menu: live status/transcript lines (disabled rows
+        // the ticker rewrites in place) plus the session actions.
+        let status_i =
+            MenuItem::with_id(app, "meeting_status", &strings.meeting, false, None::<&str>)?;
+        let stop_i = MenuItem::with_id(
+            app,
+            "meeting_stop",
+            &strings.meeting_stop,
+            true,
+            None::<&str>,
+        )?;
+        let discard_i = MenuItem::with_id(
+            app,
+            "meeting_discard",
+            &strings.meeting_discard,
+            true,
+            None::<&str>,
+        )?;
+
+        let mut lines = None;
+        let mut copy = None;
+        let mut captions = None;
+
+        let menu = if inputs.meeting_streaming {
+            let line1_i = MenuItem::with_id(app, "meeting_line1", "", false, None::<&str>)?;
+            let line2_i = MenuItem::with_id(
+                app,
+                "meeting_line2",
+                &strings.meeting_listening,
+                false,
+                None::<&str>,
+            )?;
+            let copy_i = MenuItem::with_id(
+                app,
+                "meeting_copy",
+                &strings.meeting_copy,
+                true,
+                None::<&str>,
+            )?;
+            let captions_i = MenuItem::with_id(
+                app,
+                "meeting_captions",
+                &strings.meeting_captions_show,
+                true,
+                None::<&str>,
+            )?;
+            let menu = Menu::with_items(
+                app,
+                &[
+                    &version_i,
+                    &separator()?,
+                    &status_i,
+                    &line1_i,
+                    &line2_i,
+                    &separator()?,
+                    &stop_i,
+                    &copy_i,
+                    &captions_i,
+                    &discard_i,
+                    &separator()?,
+                    &settings_i,
+                    &check_updates_i,
+                    &separator()?,
+                    &quit_i,
+                ],
+            )?;
+            lines = Some((line1_i, line2_i));
+            copy = Some(copy_i);
+            captions = Some(captions_i);
+            menu
+        } else {
+            Menu::with_items(
+                app,
+                &[
+                    &version_i,
+                    &separator()?,
+                    &status_i,
+                    &separator()?,
+                    &stop_i,
+                    &discard_i,
+                    &separator()?,
+                    &settings_i,
+                    &check_updates_i,
+                    &separator()?,
+                    &quit_i,
+                ],
+            )?
+        };
+
+        meeting_items = Some(MeetingMenuItems {
+            status: status_i,
+            lines,
+            copy,
+            captions,
+            status_label: strings.meeting.clone(),
+            listening_label: strings.meeting_listening.clone(),
+            copy_label: strings.meeting_copy.clone(),
+            copied_label: strings.meeting_copied.clone(),
+            captions_show_label: strings.meeting_captions_show.clone(),
+            captions_hide_label: strings.meeting_captions_hide.clone(),
+        });
+        menu
+    } else if inputs.busy {
         let cancel_i = MenuItem::with_id(app, "cancel", &strings.cancel, true, None::<&str>)?;
         Menu::with_items(
             app,
@@ -579,7 +730,75 @@ fn build_menu(app: &AppHandle, inputs: &MenuInputs) -> tauri::Result<(Menu<tauri
         tooltip = format!("{} — {}", tooltip, warning_item.text().unwrap_or_default());
     }
 
-    Ok((menu, tooltip))
+    Ok((menu, tooltip, meeting_items))
+}
+
+/// Refreshes the live meeting readout: the ticker text next to the tray icon
+/// (timer + latest words) and the mutable meeting menu items. Safe to call
+/// from any thread; hops to the main thread where the item handles live.
+/// Clears the tray-icon label when no meeting session is active.
+pub fn update_meeting_readout(app: &AppHandle) {
+    let handle = app.clone();
+    let _ = app.run_on_main_thread(move || update_meeting_readout_on_main(&handle));
+}
+
+fn update_meeting_readout_on_main(app: &AppHandle) {
+    let Some(tray) = app.try_state::<TrayIcon>() else {
+        return;
+    };
+    let readout = app
+        .try_state::<crate::meeting::MeetingSession>()
+        .and_then(|session| session.readout());
+
+    let Some(readout) = readout else {
+        // Session over (or never started): clear the tray-icon label.
+        let _ = tray.set_title(None::<&str>);
+        return;
+    };
+
+    let title = match &readout.title_tail {
+        Some(tail) => format!("● {} · {}", readout.elapsed_label, tail),
+        None => format!("● {}", readout.elapsed_label),
+    };
+    if let Err(err) = tray.set_title(Some(title)) {
+        debug!("Failed to set tray title: {err}");
+    }
+
+    MEETING_MENU_ITEMS.with(|cell| {
+        let Some(items) = &*cell.borrow() else {
+            return;
+        };
+        let _ = items.status.set_text(format!(
+            "{} — {}",
+            items.status_label, readout.elapsed_label
+        ));
+        if let Some((line1, line2)) = &items.lines {
+            match &readout.lines {
+                Some((first, second)) => {
+                    let _ = line1.set_text(first.as_str());
+                    let _ = line2.set_text(second.as_str());
+                }
+                None => {
+                    let _ = line1.set_text("");
+                    let _ = line2.set_text(items.listening_label.as_str());
+                }
+            }
+        }
+        if let Some(copy) = &items.copy {
+            let _ = copy.set_text(if readout.copied_flash {
+                items.copied_label.as_str()
+            } else {
+                items.copy_label.as_str()
+            });
+        }
+        if let Some(captions) = &items.captions {
+            let _ = captions.set_text(if readout.captions_visible {
+                items.captions_hide_label.as_str()
+            } else {
+                items.captions_show_label.as_str()
+            });
+        }
+    });
 }
 
 fn last_transcript_text(entry: &HistoryEntry) -> &str {
@@ -670,12 +889,17 @@ mod tests {
             post_processed_text: post_processed.map(|text| text.to_string()),
             post_process_prompt: None,
             post_process_requested: false,
+            source: crate::managers::history::SOURCE_DICTATION.to_string(),
+            ai_notes: None,
+            user_notes: None,
         }
     }
 
     fn inputs(busy: bool) -> MenuInputs {
         MenuInputs {
             busy,
+            meeting: false,
+            meeting_streaming: false,
             warning: false,
             model_loaded: true,
             selected_model: "small".to_string(),

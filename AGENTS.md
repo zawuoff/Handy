@@ -67,6 +67,7 @@ Handy is a cross-platform desktop speech-to-text application built with Tauri 2.
 - `commands/` - Tauri command handlers for frontend communication
 - `cli.rs` - CLI argument definitions (clap derive)
 - `shortcut.rs` - Global keyboard shortcut handling
+- `meeting.rs` - Meeting-session state (tray readout, live transcript feed, captions toggle)
 - `settings.rs` - Application settings management
 - `overlay.rs` - Recording overlay window (platform-specific)
 - `signal_handle.rs` - `send_transcription_input()` reusable function
@@ -179,6 +180,7 @@ Handy supports command-line parameters on all platforms for integration with scr
 | ------------------------ | ---------------------------------------------------------- |
 | `--toggle-transcription` | Toggle recording on/off on a running instance              |
 | `--toggle-post-process`  | Toggle recording with post-processing on/off               |
+| `--toggle-meeting`       | Toggle a meeting session (transcript saved to History, not pasted) |
 | `--cancel`               | Cancel the current operation on a running instance         |
 | `--start-hidden`         | Launch without showing the main window (tray icon visible) |
 | `--no-tray`              | Launch without system tray (closing window quits the app)  |

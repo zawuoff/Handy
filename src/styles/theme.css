@@ -1,31 +1,50 @@
-/* Handy Colors */
+/* Noted Colors — warm charcoal / cream / brass palette from the Paper mockups */
 
 :root {
   /* Palette source of truth. Each themed color is defined once as a
      light/dark pair; the active tokens below and the `data-theme` overrides
      in App.css reference these, so a hex value lives in exactly one place. */
-  --light-color-text: #0f0f0f;
-  --light-color-background: #fbfbfb;
-  --light-color-logo-primary: #faa2ca;
-  --light-color-logo-stroke: #382731;
+  --light-color-text: #262419;
+  --light-color-background: #f7f4ed;
+  --light-color-logo-primary: #c9a55c;
+  --light-color-logo-stroke: #4a4436;
+  --light-color-surface: #f0ece2;
+  --light-color-card: #fffdf8;
+  --light-color-card2: #f1ede3;
+  --light-color-border: #e2dccc;
+  --light-color-border-strong: #d6cfbc;
+  --light-color-muted: #6e675a;
+  --light-color-faint: #99927f;
+  --light-color-accent: #8a6b2f;
+  --light-color-record: #c25b42;
+  --light-color-background-ui: #8a6b2f;
 
-  --dark-color-text: #fbfbfb;
-  --dark-color-background: #2c2b29;
-  --dark-color-logo-primary: #f28cbb;
-  --dark-color-logo-stroke: #fad1ed;
+  --dark-color-text: #e9e5da;
+  --dark-color-background: #1c1b17;
+  --dark-color-logo-primary: #c9a55c;
+  --dark-color-logo-stroke: #e9e5da;
+  --dark-color-surface: #161512;
+  --dark-color-card: #24231e;
+  --dark-color-card2: #22211c;
+  --dark-color-border: #2a2822;
+  --dark-color-border-strong: #33312a;
+  --dark-color-muted: #9b9689;
+  --dark-color-faint: #6e6a5e;
+  --dark-color-accent: #c9a55c;
+  --dark-color-record: #d96a4f;
+  --dark-color-background-ui: #c9a55c;
 
   /* Semantic status colors. First used by SecureInputWarning; intended to
      replace the ad-hoc yellow-500/red-500 usages (e.g. ui/Alert.tsx) over
      time so status styling is themeable from one place. */
   --light-color-warning: #d97706;
-  --light-color-error: #dc2626;
-  --dark-color-warning: #fbbf24;
-  --dark-color-error: #f87171;
+  --light-color-error: #c2412c;
+  --dark-color-warning: #e0b25c;
+  --dark-color-error: #d96a4f;
 
   /* Tokens that do not change between light and dark */
-  --color-background-ui: #da5893;
   --color-text-stroke: #f6f6f6;
-  --color-mid-gray: #808080;
+  --color-mid-gray: #8b8578;
 
   /* Active palette — defaults to light, follows the OS via the media query
      below, or is forced by `data-theme` (see the overrides below). */
@@ -33,6 +52,16 @@
   --color-background: var(--light-color-background);
   --color-logo-primary: var(--light-color-logo-primary);
   --color-logo-stroke: var(--light-color-logo-stroke);
+  --color-surface: var(--light-color-surface);
+  --color-card: var(--light-color-card);
+  --color-card2: var(--light-color-card2);
+  --color-border: var(--light-color-border);
+  --color-border-strong: var(--light-color-border-strong);
+  --color-muted: var(--light-color-muted);
+  --color-faint: var(--light-color-faint);
+  --color-accent: var(--light-color-accent);
+  --color-record: var(--light-color-record);
+  --color-background-ui: var(--light-color-background-ui);
   --color-warning: var(--light-color-warning);
   --color-error: var(--light-color-error);
 }
@@ -43,6 +72,16 @@
     --color-background: var(--dark-color-background);
     --color-logo-primary: var(--dark-color-logo-primary);
     --color-logo-stroke: var(--dark-color-logo-stroke);
+    --color-surface: var(--dark-color-surface);
+    --color-card: var(--dark-color-card);
+    --color-card2: var(--dark-color-card2);
+    --color-border: var(--dark-color-border);
+    --color-border-strong: var(--dark-color-border-strong);
+    --color-muted: var(--dark-color-muted);
+    --color-faint: var(--dark-color-faint);
+    --color-accent: var(--dark-color-accent);
+    --color-record: var(--dark-color-record);
+    --color-background-ui: var(--dark-color-background-ui);
     --color-warning: var(--dark-color-warning);
     --color-error: var(--dark-color-error);
   }
@@ -52,7 +91,7 @@
  * Explicit theme override, driven by the `theme` setting via
  * `document.documentElement.dataset.theme`. When set, the higher-specificity
  * attribute selectors win over the `prefers-color-scheme` media query above,
- * so a user can keep Handy light or dark regardless of the OS setting.
+ * so a user can keep the app light or dark regardless of the OS setting.
  * `system` (or no attribute) leaves the OS in charge.
  *
  * Lives here (not in App.css) so every window that imports the shared palette —
@@ -63,6 +102,16 @@
   --color-background: var(--light-color-background);
   --color-logo-primary: var(--light-color-logo-primary);
   --color-logo-stroke: var(--light-color-logo-stroke);
+  --color-surface: var(--light-color-surface);
+  --color-card: var(--light-color-card);
+  --color-card2: var(--light-color-card2);
+  --color-border: var(--light-color-border);
+  --color-border-strong: var(--light-color-border-strong);
+  --color-muted: var(--light-color-muted);
+  --color-faint: var(--light-color-faint);
+  --color-accent: var(--light-color-accent);
+  --color-record: var(--light-color-record);
+  --color-background-ui: var(--light-color-background-ui);
   --color-warning: var(--light-color-warning);
   --color-error: var(--light-color-error);
 }
@@ -72,6 +121,16 @@
   --color-background: var(--dark-color-background);
   --color-logo-primary: var(--dark-color-logo-primary);
   --color-logo-stroke: var(--dark-color-logo-stroke);
+  --color-surface: var(--dark-color-surface);
+  --color-card: var(--dark-color-card);
+  --color-card2: var(--dark-color-card2);
+  --color-border: var(--dark-color-border);
+  --color-border-strong: var(--dark-color-border-strong);
+  --color-muted: var(--dark-color-muted);
+  --color-faint: var(--dark-color-faint);
+  --color-accent: var(--dark-color-accent);
+  --color-record: var(--dark-color-record);
+  --color-background-ui: var(--dark-color-background-ui);
   --color-warning: var(--dark-color-warning);
   --color-error: var(--dark-color-error);
 }

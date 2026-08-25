@@ -11,10 +11,14 @@ import { ModelStateEvent, RecordingErrorEvent } from "./lib/types/events";
 import "./App.css";
 import AccessibilityPermissions from "./components/AccessibilityPermissions";
 import SecureInputWarning from "./components/SecureInputWarning";
-import Footer from "./components/footer";
 import Onboarding, { AccessibilityOnboarding } from "./components/onboarding";
 import { ErrorBoundary } from "./components/ErrorBoundary";
-import { Sidebar, SidebarSection, SECTIONS_CONFIG } from "./components/Sidebar";
+import { HomeView } from "./components/shell/HomeView";
+import { LiveMeetingView } from "./components/shell/LiveMeetingView";
+import { SettingsModal } from "./components/shell/SettingsModal";
+import { ShellSidebar, type ShellView } from "./components/shell/ShellSidebar";
+import { useMeetingState } from "./components/shell/useMeetingState";
+import { HistorySettings, NotesSettings } from "./components/settings";
 import { WhatsNewGate } from "./components/whats-new";
 import { useSettings } from "./hooks/useSettings";
 import { useSettingsStore } from "./stores/settingsStore";
@@ -22,12 +26,6 @@ import { commands } from "@/bindings";
 import { getLanguageDirection, initializeRTL } from "@/lib/utils/rtl";
 
 type OnboardingStep = "accessibility" | "model" | "done";
-
-const renderSettingsContent = (section: SidebarSection) => {
-  const ActiveComponent =
-    SECTIONS_CONFIG[section]?.component || SECTIONS_CONFIG.general.component;
-  return <ActiveComponent />;
-};
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -37,8 +35,10 @@ function App() {
   // Track if this is a returning user who just needs to grant permissions
   // (vs a new user who needs full onboarding including model selection)
   const [isReturningUser, setIsReturningUser] = useState(false);
-  const [currentSection, setCurrentSection] =
-    useState<SidebarSection>("general");
+  const [view, setView] = useState<ShellView>("home");
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [openNote, setOpenNote] = useState<{ id: number } | null>(null);
+  const meeting = useMeetingState();
   const { settings, updateSetting } = useSettings();
   const direction = getLanguageDirection(i18n.language);
   const refreshAudioDevices = useSettingsStore(
@@ -133,6 +133,51 @@ function App() {
     const unlisten = listen("paste-error", () => {
       toast.error(t("errors.pasteFailedTitle"), {
         description: t("errors.pasteFailed"),
+      });
+    });
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, [t]);
+
+  // Confirm a finished meeting session with a toast — meeting transcripts are
+  // saved to History instead of being pasted, so this is the visible outcome.
+  useEffect(() => {
+    const unlisten = listen("meeting-saved", () => {
+      toast.success(t("meeting.savedTitle"), {
+        description: t("meeting.savedDescription"),
+      });
+    });
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, [t]);
+
+  // Background note generation outcome (started after a meeting is saved).
+  useEffect(() => {
+    const unlisten = listen<{ id: number; status: string }>(
+      "notes-status",
+      (event) => {
+        if (event.payload.status === "done") {
+          toast.success(t("notes.readyToast"));
+        } else if (event.payload.status === "failed") {
+          toast.error(t("notes.failedToast"));
+        }
+      },
+    );
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, [t]);
+
+  // A meeting that could not be saved has no paste fallback; the backend
+  // rescues the transcript to the clipboard (payload: whether that worked).
+  useEffect(() => {
+    const unlisten = listen<boolean>("meeting-save-failed", (event) => {
+      toast.error(t("meeting.saveFailedTitle"), {
+        description: event.payload
+          ? t("meeting.saveFailedClipboard")
+          : t("meeting.saveFailedNoRescue"),
       });
     });
     return () => {
@@ -289,33 +334,47 @@ function App() {
   } else if (onboardingStep === "model") {
     content = <Onboarding onModelSelected={handleModelSelected} />;
   } else {
+    const openNoteById = (id: number) => {
+      setOpenNote({ id });
+      setView("notes");
+    };
+
     content = (
       <div
         dir={direction}
-        className="h-screen flex flex-col select-none cursor-default"
+        className="h-screen flex flex-col select-none cursor-default bg-background"
       >
         <ErrorBoundary context="What's New">
           <WhatsNewGate />
         </ErrorBoundary>
-        {/* Main content area that takes remaining space */}
-        <div className="flex-1 flex overflow-hidden">
-          <Sidebar
-            activeSection={currentSection}
-            onSectionChange={setCurrentSection}
-          />
-          {/* Scrollable content area */}
-          <div className="flex-1 flex flex-col overflow-hidden">
-            <div className="flex-1 overflow-y-auto">
-              <div className="flex flex-col items-center p-4 gap-4">
-                <AccessibilityPermissions />
-                <SecureInputWarning />
-                {renderSettingsContent(currentSection)}
+        {meeting.active ? (
+          <LiveMeetingView meeting={meeting} />
+        ) : (
+          <div className="flex-1 flex overflow-hidden">
+            <ShellSidebar
+              view={view}
+              onViewChange={(next) => {
+                setOpenNote(null);
+                setView(next);
+              }}
+              onOpenSettings={() => setSettingsOpen(true)}
+            />
+            <div className="flex-1 flex flex-col overflow-hidden">
+              <div className="flex-1 overflow-y-auto">
+                <div className="flex flex-col items-center px-8 py-6 gap-4">
+                  <AccessibilityPermissions />
+                  <SecureInputWarning />
+                  {view === "home" && (
+                    <HomeView meeting={meeting} onOpenNote={openNoteById} />
+                  )}
+                  {view === "notes" && <NotesSettings openNote={openNote} />}
+                  {view === "history" && <HistorySettings />}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        {/* Fixed footer at bottom */}
-        <Footer />
+        )}
+        <SettingsModal open={settingsOpen} onOpenChange={setSettingsOpen} />
       </div>
     );
   }

@@ -7,7 +7,15 @@
     "model": "Model",
     "quit": "Çıkış",
     "cancel": "İptal",
-    "secureInputWarning": "⚠ Kısayollar Secure Input tarafından engelleniyor"
+    "secureInputWarning": "⚠ Kısayollar Secure Input tarafından engelleniyor",
+    "meeting": "Toplantı",
+    "meetingStop": "Toplantıyı durdur ve kaydet",
+    "meetingCopy": "Şimdiye kadarki transkripti kopyala",
+    "meetingCopied": "Kopyalandı ✓",
+    "meetingCaptionsShow": "Canlı altyazıları göster",
+    "meetingCaptionsHide": "Canlı altyazıları gizle",
+    "meetingDiscard": "Kaydı sil",
+    "meetingListening": "Dinleniyor…"
   },
   "sidebar": {
     "general": "Genel",
@@ -16,7 +24,8 @@
     "postProcessing": "Son İşlem",
     "history": "Geçmiş",
     "debug": "Hata Ayıklama",
-    "about": "Hakkında"
+    "about": "Hakkında",
+    "notes": "Notlar"
   },
   "onboarding": {
     "subtitle": "Başlamak için bir transkripsiyon modeli seçin",
@@ -101,7 +110,7 @@
     },
     "permissions": {
       "title": "İzinler Gerekli",
-      "description": "Handy'nin düzgün çalışabilmesi için birkaç izne ihtiyacı var.",
+      "description": "Noted'nin düzgün çalışabilmesi için birkaç izne ihtiyacı var.",
       "microphone": {
         "title": "Mikrofon Erişimi",
         "description": "Sesinizi transkripsiyon için alabilmek için gereklidir."
@@ -175,13 +184,13 @@
       "searchPlaceholder": "Modelleri ada göre ara…",
       "rescan": {
         "label": "Yeniden Tara",
-        "tooltip": "Handy dışında modeller klasörüne veya Hugging Face önbelleğine eklenen modelleri yeniden tara"
+        "tooltip": "Noted dışında modeller klasörüne veya Hugging Face önbelleğine eklenen modelleri yeniden tara"
       }
     },
     "general": {
       "title": "Genel",
       "shortcut": {
-        "title": "Handy Kısayolları",
+        "title": "Noted Kısayolları",
         "description": "Sesle yazma kaydını başlatmak için klavye kısayollarını yapılandırın",
         "loading": "Kısayollar yükleniyor...",
         "none": "Kısayol yapılandırılmadı",
@@ -199,6 +208,10 @@
           "transcribe_with_post_process": {
             "name": "Son İşlem Kısayolu",
             "description": "İsteğe bağlı: Transkripsiyonunuza her zaman yapay zekâ ile son işlem uygulayan özel bir kısayol tuşu."
+          },
+          "meeting": {
+            "name": "Toplantı modu kısayolu",
+            "description": "Bir toplantı oturumunu başlatır ve durdurur. Transkript yapıştırılmak yerine geçmişe kaydedilir ve siz silene kadar saklanır."
           }
         },
         "errors": {
@@ -283,11 +296,11 @@
       },
       "autostart": {
         "label": "Başlangıçta Çalıştır",
-        "description": "Bilgisayara giriş yaptığınızda Handy otomatik olarak başlatılır."
+        "description": "Bilgisayara giriş yaptığınızda Noted otomatik olarak başlatılır."
       },
       "showTrayIcon": {
         "label": "Tepsi Simgesini Göster",
-        "description": "Handy simgesini sistem tepsisinde göster."
+        "description": "Noted simgesini sistem tepsisinde göster."
       },
       "overlay": {
         "style": {
@@ -457,7 +470,8 @@
       "retranscribe": "Yeniden transkribe et",
       "retranscribeError": "Yeniden transkripsiyon başarısız oldu. Lütfen tekrar deneyin.",
       "transcribing": "Transkribe ediliyor...",
-      "transcriptionFailed": "Transkripsiyon başarısız oldu. Yeniden deneme simgesini kullanarak tekrar transkribe edebilirsiniz."
+      "transcriptionFailed": "Transkripsiyon başarısız oldu. Yeniden deneme simgesini kullanarak tekrar transkribe edebilirsiniz.",
+      "meetingBadge": "Toplantı"
     },
     "debug": {
       "title": "Hata Ayıklama",
@@ -482,7 +496,7 @@
       },
       "updateChecks": {
         "label": "Güncellemeleri Kontrol Et",
-        "description": "Handy için yeni sürümleri otomatik olarak kontrol eder"
+        "description": "Noted için yeni sürümleri otomatik olarak kontrol eder"
       },
       "soundTheme": {
         "label": "Ses Teması",
@@ -555,7 +569,7 @@
       },
       "keyboardDiagnostic": {
         "title": "Klavye Tanılaması",
-        "description": "Klavye olaylarının Handy'ye ulaşıp ulaşmadığını denetler. Yalnızca olay sayıları kaydedilir — hangi tuşlara bastığınız asla kaydedilmez.",
+        "description": "Klavye olaylarının Noted'ye ulaşıp ulaşmadığını denetler. Yalnızca olay sayıları kaydedilir — hangi tuşlara bastığınız asla kaydedilmez.",
         "run": "10 sn'lik tanılamayı çalıştır",
         "running": "Dinleniyor… kısayolunuza birkaç kez basın (ör. Option+Space)",
         "secureInputLabel": "Secure Input",
@@ -569,7 +583,7 @@
         "mouse": "Fare",
         "verdictBlocked": "Secure Input tuş olaylarını engelliyor — normal tuş içeren kısayollar bu sorun çözülene kadar çalışamaz.",
         "verdictSuspicious": "Değiştirici olayları geldi ancak hiç tuş olayı gelmedi — Secure Input devre dışı görünmesine rağmen bir şey tuşları bastırıyor. Lütfen bunu GitHub'da bildirin.",
-        "verdictOk": "Tuş olayları Handy'ye normal şekilde ulaşıyor.",
+        "verdictOk": "Tuş olayları Noted'ye normal şekilde ulaşıyor.",
         "verdictNoEvents": "Hiç olay yakalanmadı — test sırasında herhangi bir tuşa bastınız mı?",
         "failed": "Tanılama başarısız: {{error}}"
       },
@@ -585,11 +599,11 @@
       "title": "Hakkında",
       "version": {
         "title": "Sürüm",
-        "description": "Handy'nin mevcut sürümü"
+        "description": "Noted'nin mevcut sürümü"
       },
       "appDataDirectory": {
         "title": "Uygulama Veri Dizini",
-        "description": "Handy'nin verilerini sakladığı konum"
+        "description": "Noted'nin verilerini sakladığı konum"
       },
       "sourceCode": {
         "title": "Kaynak Kodu",
@@ -598,7 +612,7 @@
       },
       "supportDevelopment": {
         "title": "Geliştirmeyi Destekle",
-        "description": "Handy'yi geliştirmeye devam etmemize yardımcı olun",
+        "description": "Noted'yi geliştirmeye devam etmemize yardımcı olun",
         "button": "Bağış Yap"
       },
       "acknowledgments": {
@@ -606,12 +620,12 @@
         "ggml": {
           "title": "ggml",
           "description": "Cihaz üzerinde makine öğrenmesi çıkarımı için yüksek performanslı tensör kütüphanesi",
-          "details": "Handy'nin yerel konuşmadan metne dönüştürme özelliği transcribe.cpp ve ggml üzerine kuruludur. Georgi Gerganov'a ve katkıda bulunanlara harika çalışmaları için teşekkür ederiz."
+          "details": "Noted'nin yerel konuşmadan metne dönüştürme özelliği transcribe.cpp ve ggml üzerine kuruludur. Georgi Gerganov'a ve katkıda bulunanlara harika çalışmaları için teşekkür ederiz."
         }
       },
       "whatsNewUpdates": {
         "label": "Yenilikleri Göster",
-        "description": "Handy güncellemelerinden sonra sürüm notlarını göster"
+        "description": "Noted güncellemelerinden sonra sürüm notlarını göster"
       }
     }
   },
@@ -640,7 +654,7 @@
     "noOptionsFound": "Seçenek bulunamadı"
   },
   "accessibility": {
-    "permissionsDescription": "Handy, transkribe edilen metni yazabilmek için erişilebilirlik izinlerine ihtiyaç duyar.",
+    "permissionsDescription": "Noted, transkribe edilen metni yazabilmek için erişilebilirlik izinlerine ihtiyaç duyar.",
     "openSettings": "Sistem Ayarlarını Aç"
   },
   "errors": {
@@ -663,11 +677,11 @@
   },
   "appLanguage": {
     "title": "Uygulama Dili",
-    "description": "Handy arayüzünün dilini değiştirin"
+    "description": "Noted arayüzünün dilini değiştirin"
   },
   "theme": {
     "title": "Uygulama Teması",
-    "description": "Handy'nin sistem temasını izlemesini ya da açık veya koyu kalmasını seçin",
+    "description": "Noted'nin sistem temasını izlemesini ya da açık veya koyu kalmasını seçin",
     "options": {
       "system": "Sistem",
       "light": "Açık",
@@ -679,7 +693,7 @@
     "processing": "İşleniyor..."
   },
   "whatsNew": {
-    "title": "Handy v{{version}} yenilikleri"
+    "title": "Noted v{{version}} yenilikleri"
   },
   "secureInput": {
     "blockedWithCulprit_one": "{{name}} 1 kısayolu engelliyor olabilir",
@@ -691,5 +705,68 @@
     "learnMore": "Bu nasıl düzeltilir",
     "recorderBlocked": "Şu anda kısayol kaydedilemiyor — macOS Secure Input tuş olaylarını engelliyor. Önce Secure Input uyarısını giderin.",
     "dismiss": "Kapat"
+  },
+  "meeting": {
+    "savedTitle": "Toplantı kaydedildi",
+    "savedDescription": "Transkript geçmişte ve otomatik silinmeyecek şekilde işaretlendi.",
+    "saveFailedTitle": "Toplantı kaydedilemedi",
+    "saveFailedClipboard": "Kaydetme başarısız oldu, bu yüzden transkript panoya kopyalandı — güvenli bir yere yapıştırın.",
+    "saveFailedNoRescue": "Kaydetme başarısız oldu ve transkript oluşturulamadı. Ayrıntılar için günlüklere bakın."
+  },
+  "notes": {
+    "title": "Notlar",
+    "loading": "Notlar yükleniyor…",
+    "empty": "Henüz toplantı notu yok",
+    "emptyHint": "Toplantı kısayoluyla bir toplantı başlatın; notları burada görünecek.",
+    "loadMore": "Daha fazla yükle",
+    "back": "Geri",
+    "titlePlaceholder": "Başlıksız toplantı",
+    "aiNotes": "Yapay zeka notları",
+    "writing": "Notlar yazılıyor…",
+    "noNotesYet": "Henüz not yok — oluşturmak için yinele simgesine basın.",
+    "noTranscript": "Bu kaydın transkripti yok.",
+    "regenerate": "Notları yeniden oluştur",
+    "copy": "Kopyala",
+    "yourNotes": "Notlarınız",
+    "yourNotesPlaceholder": "Kendi notlarınızı buraya yazın — otomatik kaydedilir.",
+    "transcript": "Transkript ve kayıt",
+    "delete": "Notu sil",
+    "deleteConfirm": "Bu toplantı notu, transkripti ve kaydı silinsin mi? Geri alınamaz.",
+    "promptTitle": "Not stili",
+    "promptDescription": "Bu talimatlar, transkriptten toplantı notlarının nasıl yazılacağını belirler. Yapıyı ve tonu değiştirmek için düzenleyin.",
+    "promptReset": "Varsayılana sıfırla",
+    "readyToast": "Toplantı notları hazır",
+    "failedToast": "Notlar yazılamadı. Post-process ayarlarındaki sağlayıcınızı kontrol edin.",
+    "transcriptChip": "Transkript",
+    "onThisDevice": "Bu cihazda",
+    "docPlaceholder": "Herhangi bir şey yazın…"
+  },
+  "shell": {
+    "appName": "Noted",
+    "home": "Ana sayfa",
+    "settings": "Ayarlar",
+    "dictationReady": "Dikte hazır",
+    "dictationHintHold": "Konuşmak için {{keys}} basılı tutun",
+    "dictationHintPress": "Konuşmak için {{keys}} basın",
+    "goodMorning": "Günaydın",
+    "goodAfternoon": "İyi günler",
+    "goodEvening": "İyi akşamlar",
+    "startMeeting": "Toplantı başlat",
+    "stopMeeting": "Toplantıyı durdur",
+    "recentNotes": "Son notlar",
+    "today": "Bugün",
+    "yesterday": "Dün",
+    "meetingMeta": "Toplantı",
+    "enhanced": "Zenginleştirilmiş"
+  },
+  "live": {
+    "title": "Toplantı sürüyor",
+    "recording": "Kaydediliyor",
+    "stop": "Durdur",
+    "captions": "Altyazılar",
+    "liveTranscript": "Canlı transkript",
+    "listening": "Dinleniyor…",
+    "noStreamingModel": "Kayıt sürüyor. Canlı metin bir akış modeli gerektirir — transkript durdurduğunuzda hazır olur.",
+    "privacy": "Bu cihazda yazıya döküldü. Hiçbir şey bilgisayarınızdan çıkmaz."
   }
 }

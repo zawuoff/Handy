@@ -7,7 +7,15 @@
     "model": "モデル",
     "quit": "終了",
     "cancel": "キャンセル",
-    "secureInputWarning": "⚠ Secure Input でショートカットがブロック中"
+    "secureInputWarning": "⚠ Secure Input でショートカットがブロック中",
+    "meeting": "ミーティング",
+    "meetingStop": "ミーティングを停止して保存",
+    "meetingCopy": "ここまでの文字起こしをコピー",
+    "meetingCopied": "コピーしました ✓",
+    "meetingCaptionsShow": "ライブ字幕を表示",
+    "meetingCaptionsHide": "ライブ字幕を非表示",
+    "meetingDiscard": "録音を破棄",
+    "meetingListening": "聞き取り中…"
   },
   "sidebar": {
     "general": "一般",
@@ -16,7 +24,8 @@
     "postProcessing": "後処理",
     "history": "履歴",
     "debug": "デバッグ",
-    "about": "概要"
+    "about": "概要",
+    "notes": "ノート"
   },
   "onboarding": {
     "subtitle": "開始するには、文字起こしのモデルを選択してください",
@@ -101,7 +110,7 @@
     },
     "permissions": {
       "title": "権限が必要です",
-      "description": "Handy が正常に動作するにはいくつかの権限が必要です。",
+      "description": "Noted が正常に動作するにはいくつかの権限が必要です。",
       "microphone": {
         "title": "マイクへのアクセス",
         "description": "文字起こしのためにあなたの声を聞くために必要です。"
@@ -175,13 +184,13 @@
       "searchPlaceholder": "モデルを名前で検索…",
       "rescan": {
         "label": "再スキャン",
-        "tooltip": "Handy を使わずに models フォルダーまたは Hugging Face キャッシュに追加されたモデルを再スキャンします"
+        "tooltip": "Noted を使わずに models フォルダーまたは Hugging Face キャッシュに追加されたモデルを再スキャンします"
       }
     },
     "general": {
       "title": "一般",
       "shortcut": {
-        "title": "Handy ショートカット",
+        "title": "Noted ショートカット",
         "description": "音声録音を開始するキーボードショートカットを設定",
         "loading": "ショートカットを読み込み中…",
         "none": "ショートカットが設定されていません",
@@ -199,6 +208,10 @@
           "transcribe_with_post_process": {
             "name": "後処理のショートカット",
             "description": "文字起こしに常に AI 後処理を適用するキーボードショートカット。 (任意)"
+          },
+          "meeting": {
+            "name": "ミーティングモードのショートカット",
+            "description": "ミーティングセッションを開始・停止します。文字起こしは貼り付けられず履歴に保存され、削除するまで残ります。"
           }
         },
         "errors": {
@@ -283,11 +296,11 @@
       },
       "autostart": {
         "label": "起動時に実行",
-        "description": "コンピューターにログインしたときに Handy を自動的に起動。"
+        "description": "コンピューターにログインしたときに Noted を自動的に起動。"
       },
       "showTrayIcon": {
         "label": "トレイアイコンを表示",
-        "description": "システムトレイに Handy のアイコンを表示します。"
+        "description": "システムトレイに Noted のアイコンを表示します。"
       },
       "overlay": {
         "style": {
@@ -457,7 +470,8 @@
       "retranscribe": "再文字起こし",
       "retranscribeError": "再文字起こしに失敗しました。もう一度お試しください。",
       "transcribing": "文字起こし中…",
-      "transcriptionFailed": "文字起こしに失敗しました。リトライアイコンを使用して再文字起こしできます。"
+      "transcriptionFailed": "文字起こしに失敗しました。リトライアイコンを使用して再文字起こしできます。",
+      "meetingBadge": "ミーティング"
     },
     "debug": {
       "title": "デバッグ",
@@ -482,7 +496,7 @@
       },
       "updateChecks": {
         "label": "アップデートを確認",
-        "description": "Handy の新しいバージョンを自動的にチェック"
+        "description": "Noted の新しいバージョンを自動的にチェック"
       },
       "soundTheme": {
         "label": "サウンドテーマ",
@@ -555,7 +569,7 @@
       },
       "keyboardDiagnostic": {
         "title": "キーボード診断",
-        "description": "キーボードイベントが Handy に届いているかを確認します。記録されるのはイベント数のみで、押したキーの内容は記録されません。",
+        "description": "キーボードイベントが Noted に届いているかを確認します。記録されるのはイベント数のみで、押したキーの内容は記録されません。",
         "run": "10 秒間の診断を実行",
         "running": "待機中… ショートカットを数回押してください (例: Option+Space)",
         "secureInputLabel": "Secure Input",
@@ -569,7 +583,7 @@
         "mouse": "マウス",
         "verdictBlocked": "Secure Input がキーイベントをブロックしています。解消されるまで、通常キーを含むショートカットは動作しません。",
         "verdictSuspicious": "修飾キーのイベントは届いていますが、キーイベントは届いていません。Secure Input は無効と報告されているのに、何かがキーを抑制しています。GitHub で報告してください。",
-        "verdictOk": "キーイベントは Handy に正常に届いています。",
+        "verdictOk": "キーイベントは Noted に正常に届いています。",
         "verdictNoEvents": "イベントを検出できませんでした。テスト中にキーを押しましたか？",
         "failed": "診断に失敗しました: {{error}}"
       },
@@ -585,11 +599,11 @@
       "title": "概要",
       "version": {
         "title": "バージョン",
-        "description": "Handy の現在のバージョン"
+        "description": "Noted の現在のバージョン"
       },
       "appDataDirectory": {
         "title": "アプリデータディレクトリ",
-        "description": "Handy がデータを保存する場所"
+        "description": "Noted がデータを保存する場所"
       },
       "sourceCode": {
         "title": "ソースコード",
@@ -598,7 +612,7 @@
       },
       "supportDevelopment": {
         "title": "開発を支援",
-        "description": "Handy の開発を支援してください",
+        "description": "Noted の開発を支援してください",
         "button": "寄付する"
       },
       "acknowledgments": {
@@ -606,12 +620,12 @@
         "ggml": {
           "title": "ggml",
           "description": "オンデバイス機械学習推論のための高性能テンソルライブラリ",
-          "details": "Handy のローカルの音声からテキストへの文字起こしは transcribe.cpp と ggml を基盤としています。Georgi Gerganov 氏と貢献者の皆様の素晴らしい仕事に感謝します。"
+          "details": "Noted のローカルの音声からテキストへの文字起こしは transcribe.cpp と ggml を基盤としています。Georgi Gerganov 氏と貢献者の皆様の素晴らしい仕事に感謝します。"
         }
       },
       "whatsNewUpdates": {
         "label": "新機能を表示",
-        "description": "Handy のアップデート後にリリースノートを表示"
+        "description": "Noted のアップデート後にリリースノートを表示"
       }
     }
   },
@@ -640,7 +654,7 @@
     "noOptionsFound": "オプションが見つかりません"
   },
   "accessibility": {
-    "permissionsDescription": "Handy が文字起こしテキストを入力するには、アクセシビリティ権限が必要です。",
+    "permissionsDescription": "Noted が文字起こしテキストを入力するには、アクセシビリティ権限が必要です。",
     "openSettings": "システム設定を開く"
   },
   "errors": {
@@ -663,11 +677,11 @@
   },
   "appLanguage": {
     "title": "アプリの言語",
-    "description": "Handy インターフェースの言語を変更"
+    "description": "Noted インターフェースの言語を変更"
   },
   "theme": {
     "title": "アプリのテーマ",
-    "description": "Handy をシステムのテーマに合わせるか、ライトまたはダークで固定するかを選択します",
+    "description": "Noted をシステムのテーマに合わせるか、ライトまたはダークで固定するかを選択します",
     "options": {
       "system": "システム",
       "light": "ライト",
@@ -679,7 +693,7 @@
     "processing": "処理中…"
   },
   "whatsNew": {
-    "title": "Handy v{{version}} の新機能"
+    "title": "Noted v{{version}} の新機能"
   },
   "secureInput": {
     "blockedWithCulprit_one": "{{name}} が1個のショートカットをブロックしている可能性があります",
@@ -691,5 +705,68 @@
     "learnMore": "解決方法",
     "recorderBlocked": "現在ショートカットを記録できません。macOS の Secure Input がキーイベントをブロックしています。先に Secure Input の警告を解消してください。",
     "dismiss": "閉じる"
+  },
+  "meeting": {
+    "savedTitle": "ミーティングを保存しました",
+    "savedDescription": "文字起こしは履歴にあり、自動削除されないようマークされています。",
+    "saveFailedTitle": "ミーティングを保存できませんでした",
+    "saveFailedClipboard": "保存に失敗したため、文字起こしをクリップボードにコピーしました。安全な場所に貼り付けてください。",
+    "saveFailedNoRescue": "保存に失敗し、文字起こしも作成されませんでした。詳細はログを確認してください。"
+  },
+  "notes": {
+    "title": "ノート",
+    "loading": "ノートを読み込み中…",
+    "empty": "まだミーティングノートはありません",
+    "emptyHint": "ミーティングのショートカットで会議を開始すると、ノートがここに表示されます。",
+    "loadMore": "さらに読み込む",
+    "back": "戻る",
+    "titlePlaceholder": "無題のミーティング",
+    "aiNotes": "AIノート",
+    "writing": "ノートを作成中…",
+    "noNotesYet": "まだノートがありません。再試行アイコンを押して作成してください。",
+    "noTranscript": "この録音には文字起こしがありません。",
+    "regenerate": "ノートを再生成",
+    "copy": "コピー",
+    "yourNotes": "自分のメモ",
+    "yourNotesPlaceholder": "ここに自分のメモを書けます。自動的に保存されます。",
+    "transcript": "文字起こしと録音",
+    "delete": "ノートを削除",
+    "deleteConfirm": "このノート、文字起こし、録音を削除しますか？元に戻せません。",
+    "promptTitle": "ノートのスタイル",
+    "promptDescription": "この指示は、文字起こしからノートをどう書くかを決めます。編集すると構成や文体が変わります。",
+    "promptReset": "デフォルトに戻す",
+    "readyToast": "ミーティングノートができました",
+    "failedToast": "ノートを作成できませんでした。ポストプロセス設定でプロバイダーを確認してください。",
+    "transcriptChip": "文字起こし",
+    "onThisDevice": "この端末に保存",
+    "docPlaceholder": "何でも書いてください…"
+  },
+  "shell": {
+    "appName": "Noted",
+    "home": "ホーム",
+    "settings": "設定",
+    "dictationReady": "音声入力の準備完了",
+    "dictationHintHold": "{{keys}} を押しながら話す",
+    "dictationHintPress": "{{keys}} を押して話す",
+    "goodMorning": "おはようございます",
+    "goodAfternoon": "こんにちは",
+    "goodEvening": "こんばんは",
+    "startMeeting": "ミーティング開始",
+    "stopMeeting": "ミーティング停止",
+    "recentNotes": "最近のノート",
+    "today": "今日",
+    "yesterday": "昨日",
+    "meetingMeta": "ミーティング",
+    "enhanced": "強化済み"
+  },
+  "live": {
+    "title": "ミーティング進行中",
+    "recording": "録音中",
+    "stop": "停止",
+    "captions": "字幕",
+    "liveTranscript": "ライブ文字起こし",
+    "listening": "聞き取り中…",
+    "noStreamingModel": "録音中。ライブ表示にはストリーミングモデルが必要です。停止すると文字起こしが完成します。",
+    "privacy": "この端末で文字起こし。何も外部に送信されません。"
   }
 }

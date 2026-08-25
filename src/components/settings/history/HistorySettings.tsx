@@ -13,6 +13,7 @@ import {
 import { useOsType } from "@/hooks/useOsType";
 import { formatDateTime } from "@/utils/dateFormat";
 import { AudioPlayer, AudioPlayerGroup } from "../../ui/AudioPlayer";
+import Badge from "../../ui/Badge";
 import { Button } from "../../ui/Button";
 
 const IconButton: React.FC<{
@@ -358,7 +359,14 @@ const HistoryEntryComponent: React.FC<HistoryEntryProps> = ({
   return (
     <div className="px-4 py-2 pb-5 flex flex-col gap-3">
       <div className="flex justify-between items-center">
-        <p className="text-sm font-medium">{formattedDate}</p>
+        <div className="flex items-center gap-2">
+          <p className="text-sm font-medium">{formattedDate}</p>
+          {entry.source === "meeting" && (
+            <Badge variant="secondary">
+              {t("settings.history.meetingBadge")}
+            </Badge>
+          )}
+        </div>
         <div className="flex items-center">
           <IconButton
             onClick={handleCopyText}

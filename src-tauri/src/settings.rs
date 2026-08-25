@@ -439,6 +439,9 @@ pub struct AppSettings {
     pub mute_while_recording: bool,
     #[serde(default)]
     pub append_trailing_space: bool,
+    /// System prompt used to turn a meeting transcript into notes.
+    #[serde(default = "default_meeting_notes_prompt")]
+    pub meeting_notes_prompt: String,
     #[serde(default = "default_app_language")]
     pub app_language: String,
     #[serde(default = "default_theme")]
@@ -831,6 +834,22 @@ fn ensure_post_process_defaults(settings: &mut AppSettings) -> bool {
     changed
 }
 
+pub fn default_meeting_notes_prompt() -> String {
+    "You are a meeting note-taker. You will receive the raw transcript of a meeting or recording. Turn it into clear, useful notes.\n\n\
+Structure:\n\
+- Start with a short summary (2-4 sentences) of what this was about and what happened, under a '## Summary' heading.\n\
+- Then a '## Key points' section: short bullet points with the important topics, facts and numbers that came up.\n\
+- If any decisions were made, add a '## Decisions' section listing each one.\n\
+- If there are tasks, commitments or follow-ups, add a '## Action items' section listing each as '- **who**: what (deadline, if mentioned)'. Leave this section out if there are none.\n\n\
+Rules:\n\
+- Write in the same language as the transcript.\n\
+- Be concise and factual. Never invent anything that is not in the transcript.\n\
+- Ignore small talk, filler words and obvious transcription errors.\n\
+- Format in Markdown: '## ' for section headings, '-' for bullets, and **bold** for names, dates and amounts.\n\
+- Output only the notes — no preamble, no closing remarks."
+        .to_string()
+}
+
 pub const SETTINGS_STORE_PATH: &str = "settings_store.json";
 
 pub fn get_default_settings() -> AppSettings {
@@ -872,6 +891,23 @@ pub fn get_default_settings() -> AppSettings {
                 .to_string(),
             default_binding: default_post_process_shortcut.to_string(),
             current_binding: default_post_process_shortcut.to_string(),
+        },
+    );
+    #[cfg(target_os = "macos")]
+    let default_meeting_shortcut = "option+shift+m";
+    #[cfg(not(target_os = "macos"))]
+    let default_meeting_shortcut = "ctrl+alt+m";
+
+    bindings.insert(
+        "meeting".to_string(),
+        ShortcutBinding {
+            id: "meeting".to_string(),
+            name: "Meeting Mode".to_string(),
+            description:
+                "Records a long session and saves the transcript to History instead of pasting it."
+                    .to_string(),
+            default_binding: default_meeting_shortcut.to_string(),
+            current_binding: default_meeting_shortcut.to_string(),
         },
     );
     bindings.insert(
@@ -927,6 +963,7 @@ pub fn get_default_settings() -> AppSettings {
         post_process_selected_prompt_id: None,
         mute_while_recording: false,
         append_trailing_space: false,
+        meeting_notes_prompt: default_meeting_notes_prompt(),
         app_language: default_app_language(),
         theme: default_theme(),
         experimental_enabled: false,
@@ -1095,6 +1132,18 @@ fn apply_settings_migrations(
     // migration's explicit first-run-vs-upgrade decision.
     if settings_value.get("whats_new_last_seen_version").is_none() {
         settings.whats_new_last_seen_version = String::new();
+        updated = true;
+    }
+
+    // One-time meeting-notes prompt upgrade: the first shipped default asked
+    // for plain text; notes now render Markdown. Only an untouched old default
+    // (recognized by its plain-text rule line) is replaced — an edited prompt
+    // is the user's and stays.
+    if settings
+        .meeting_notes_prompt
+        .contains("Use plain text: section names on their own line")
+    {
+        settings.meeting_notes_prompt = default_meeting_notes_prompt();
         updated = true;
     }
 

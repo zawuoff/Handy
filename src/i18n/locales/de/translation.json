@@ -7,7 +7,15 @@
     "model": "Modell",
     "quit": "Beenden",
     "cancel": "Abbrechen",
-    "secureInputWarning": "⚠ Tastenkürzel durch Secure Input blockiert"
+    "secureInputWarning": "⚠ Tastenkürzel durch Secure Input blockiert",
+    "meeting": "Meeting",
+    "meetingStop": "Meeting beenden & speichern",
+    "meetingCopy": "Bisheriges Transkript kopieren",
+    "meetingCopied": "Kopiert ✓",
+    "meetingCaptionsShow": "Live-Untertitel anzeigen",
+    "meetingCaptionsHide": "Live-Untertitel ausblenden",
+    "meetingDiscard": "Aufnahme verwerfen",
+    "meetingListening": "Höre zu…"
   },
   "sidebar": {
     "general": "Allgemein",
@@ -16,7 +24,8 @@
     "postProcessing": "Nachbearbeitung",
     "history": "Verlauf",
     "debug": "Debug",
-    "about": "Info"
+    "about": "Info",
+    "notes": "Notizen"
   },
   "onboarding": {
     "subtitle": "Wähle ein Transkriptionsmodell, um loszulegen",
@@ -101,7 +110,7 @@
     },
     "permissions": {
       "title": "Berechtigungen erforderlich",
-      "description": "Handy benötigt einige Berechtigungen, um richtig zu funktionieren.",
+      "description": "Noted benötigt einige Berechtigungen, um richtig zu funktionieren.",
       "microphone": {
         "title": "Mikrofonzugriff",
         "description": "Erforderlich, um deine Stimme für die Transkription zu hören."
@@ -175,13 +184,13 @@
       "searchPlaceholder": "Modelle nach Namen suchen…",
       "rescan": {
         "label": "Neu scannen",
-        "tooltip": "Erneut nach Modellen scannen, die außerhalb von Handy zum Modellordner oder Hugging-Face-Cache hinzugefügt wurden"
+        "tooltip": "Erneut nach Modellen scannen, die außerhalb von Noted zum Modellordner oder Hugging-Face-Cache hinzugefügt wurden"
       }
     },
     "general": {
       "title": "Allgemein",
       "shortcut": {
-        "title": "Handy-Tastenkürzel",
+        "title": "Noted-Tastenkürzel",
         "description": "Tastenkürzel für die Sprachaufnahme konfigurieren",
         "loading": "Tastenkürzel werden geladen...",
         "none": "Keine Tastenkürzel konfiguriert",
@@ -199,6 +208,10 @@
           "transcribe_with_post_process": {
             "name": "Nachbearbeitungs-Tastenkürzel",
             "description": "Optional: Ein dediziertes Tastenkürzel, das immer die KI-Nachbearbeitung auf deine Transkription anwendet."
+          },
+          "meeting": {
+            "name": "Kurzbefehl für Meeting-Modus",
+            "description": "Startet und stoppt eine Meeting-Sitzung. Das Transkript wird im Verlauf gespeichert statt eingefügt und bleibt erhalten, bis du es löschst."
           }
         },
         "errors": {
@@ -283,11 +296,11 @@
       },
       "autostart": {
         "label": "Beim Start ausführen",
-        "description": "Handy automatisch beim Anmelden starten."
+        "description": "Noted automatisch beim Anmelden starten."
       },
       "showTrayIcon": {
         "label": "Taskleistensymbol anzeigen",
-        "description": "Das Handy-Symbol in der Taskleiste anzeigen."
+        "description": "Das Noted-Symbol in der Taskleiste anzeigen."
       },
       "overlay": {
         "style": {
@@ -457,7 +470,8 @@
       "retranscribe": "Erneut transkribieren",
       "retranscribeError": "Erneute Transkription fehlgeschlagen. Bitte versuche es erneut.",
       "transcribing": "Transkribiere...",
-      "transcriptionFailed": "Transkription fehlgeschlagen. Du kannst über das Wiederholen-Symbol erneut transkribieren."
+      "transcriptionFailed": "Transkription fehlgeschlagen. Du kannst über das Wiederholen-Symbol erneut transkribieren.",
+      "meetingBadge": "Meeting"
     },
     "debug": {
       "title": "Debug",
@@ -482,7 +496,7 @@
       },
       "updateChecks": {
         "label": "Nach Updates suchen",
-        "description": "Automatisch nach neuen Versionen von Handy suchen"
+        "description": "Automatisch nach neuen Versionen von Noted suchen"
       },
       "soundTheme": {
         "label": "Sound-Thema",
@@ -555,7 +569,7 @@
       },
       "keyboardDiagnostic": {
         "title": "Tastatur-Diagnose",
-        "description": "Prüft, ob Tastaturereignisse Handy erreichen. Es wird nur die Anzahl der Ereignisse erfasst — niemals, welche Tasten du drückst.",
+        "description": "Prüft, ob Tastaturereignisse Noted erreichen. Es wird nur die Anzahl der Ereignisse erfasst — niemals, welche Tasten du drückst.",
         "run": "10-Sekunden-Diagnose starten",
         "running": "Lauscht… drücke dein Tastenkürzel ein paar Mal (z. B. Option+Space)",
         "secureInputLabel": "Secure Input",
@@ -569,7 +583,7 @@
         "mouse": "Maus",
         "verdictBlocked": "Secure Input blockiert Tastenereignisse — Tastenkürzel mit einer normalen Taste können erst wieder funktionieren, wenn das behoben ist.",
         "verdictSuspicious": "Es kamen Modifikator-Ereignisse an, aber keine Tastenereignisse — irgendetwas unterdrückt Tasten, obwohl Secure Input als deaktiviert gemeldet wird. Bitte melde das auf GitHub.",
-        "verdictOk": "Tastenereignisse erreichen Handy normal.",
+        "verdictOk": "Tastenereignisse erreichen Noted normal.",
         "verdictNoEvents": "Keine Ereignisse erfasst — hast du während des Tests Tasten gedrückt?",
         "failed": "Diagnose fehlgeschlagen: {{error}}"
       },
@@ -585,11 +599,11 @@
       "title": "Info",
       "version": {
         "title": "Version",
-        "description": "Aktuelle Version von Handy"
+        "description": "Aktuelle Version von Noted"
       },
       "appDataDirectory": {
         "title": "App-Datenverzeichnis",
-        "description": "Speicherort der Handy-Daten"
+        "description": "Speicherort der Noted-Daten"
       },
       "sourceCode": {
         "title": "Quellcode",
@@ -598,7 +612,7 @@
       },
       "supportDevelopment": {
         "title": "Entwicklung unterstützen",
-        "description": "Hilf uns, Handy weiterzuentwickeln",
+        "description": "Hilf uns, Noted weiterzuentwickeln",
         "button": "Spenden"
       },
       "acknowledgments": {
@@ -606,12 +620,12 @@
         "ggml": {
           "title": "ggml",
           "description": "Hochleistungs-Inferenz des Whisper-Spracherkennungsmodells von OpenAI",
-          "details": "Handy verwendet ggml für schnelle, lokale Sprach-zu-Text-Verarbeitung. Dank an Georgi Gerganov und die Mitwirkenden für ihre großartige Arbeit."
+          "details": "Noted verwendet ggml für schnelle, lokale Sprach-zu-Text-Verarbeitung. Dank an Georgi Gerganov und die Mitwirkenden für ihre großartige Arbeit."
         }
       },
       "whatsNewUpdates": {
         "label": "Neuerungen anzeigen",
-        "description": "Versionshinweise nach Handy-Updates anzeigen"
+        "description": "Versionshinweise nach Noted-Updates anzeigen"
       }
     }
   },
@@ -640,7 +654,7 @@
     "noOptionsFound": "Keine Optionen gefunden"
   },
   "accessibility": {
-    "permissionsDescription": "Handy benötigt Bedienungshilfen-Berechtigungen, um transkribierten Text einzugeben.",
+    "permissionsDescription": "Noted benötigt Bedienungshilfen-Berechtigungen, um transkribierten Text einzugeben.",
     "openSettings": "Systemeinstellungen öffnen"
   },
   "errors": {
@@ -663,11 +677,11 @@
   },
   "appLanguage": {
     "title": "Anwendungssprache",
-    "description": "Sprache der Handy-Oberfläche ändern"
+    "description": "Sprache der Noted-Oberfläche ändern"
   },
   "theme": {
     "title": "Anwendungsdesign",
-    "description": "Wählen Sie, ob Handy dem Systemthema folgt oder hell bzw. dunkel bleibt",
+    "description": "Wählen Sie, ob Noted dem Systemthema folgt oder hell bzw. dunkel bleibt",
     "options": {
       "system": "System",
       "light": "Hell",
@@ -679,7 +693,7 @@
     "processing": "Verarbeite..."
   },
   "whatsNew": {
-    "title": "Neu in Handy v{{version}}"
+    "title": "Neu in Noted v{{version}}"
   },
   "secureInput": {
     "blockedWithCulprit_one": "{{name}} blockiert möglicherweise 1 Tastenkürzel",
@@ -691,5 +705,68 @@
     "learnMore": "So behebst du das",
     "recorderBlocked": "Tastenkürzel können gerade nicht aufgezeichnet werden — macOS Secure Input blockiert Tastenereignisse. Behebe zuerst die Secure-Input-Warnung.",
     "dismiss": "Ausblenden"
+  },
+  "meeting": {
+    "savedTitle": "Meeting gespeichert",
+    "savedDescription": "Das Transkript liegt im Verlauf und ist so markiert, dass es nicht automatisch gelöscht wird.",
+    "saveFailedTitle": "Meeting konnte nicht gespeichert werden",
+    "saveFailedClipboard": "Das Speichern ist fehlgeschlagen; das Transkript wurde in die Zwischenablage kopiert — füge es an einem sicheren Ort ein.",
+    "saveFailedNoRescue": "Das Speichern ist fehlgeschlagen und es wurde kein Transkript erzeugt. Details stehen in den Logs."
+  },
+  "notes": {
+    "title": "Notizen",
+    "loading": "Notizen werden geladen…",
+    "empty": "Noch keine Meeting-Notizen",
+    "emptyHint": "Starte ein Meeting mit dem Meeting-Kurzbefehl — die Notizen erscheinen dann hier.",
+    "loadMore": "Mehr laden",
+    "back": "Zurück",
+    "titlePlaceholder": "Meeting ohne Titel",
+    "aiNotes": "KI-Notizen",
+    "writing": "Notizen werden geschrieben…",
+    "noNotesYet": "Noch keine Notizen — mit dem Wiederholen-Symbol erstellen.",
+    "noTranscript": "Diese Aufnahme hat kein Transkript.",
+    "regenerate": "Notizen neu erstellen",
+    "copy": "Kopieren",
+    "yourNotes": "Deine Notizen",
+    "yourNotesPlaceholder": "Schreibe hier deine eigenen Notizen — sie werden automatisch gespeichert.",
+    "transcript": "Transkript & Aufnahme",
+    "delete": "Notiz löschen",
+    "deleteConfirm": "Diese Meeting-Notiz samt Transkript und Aufnahme löschen? Das kann nicht rückgängig gemacht werden.",
+    "promptTitle": "Notizstil",
+    "promptDescription": "Diese Anweisungen bestimmen, wie Meeting-Notizen aus dem Transkript geschrieben werden. Bearbeite sie, um Struktur und Ton zu ändern.",
+    "promptReset": "Auf Standard zurücksetzen",
+    "readyToast": "Meeting-Notizen sind fertig",
+    "failedToast": "Notizen konnten nicht geschrieben werden. Prüfe deinen Anbieter in den Nachbearbeitungs-Einstellungen.",
+    "transcriptChip": "Transkript",
+    "onThisDevice": "Auf diesem Gerät",
+    "docPlaceholder": "Schreib irgendetwas…"
+  },
+  "shell": {
+    "appName": "Noted",
+    "home": "Start",
+    "settings": "Einstellungen",
+    "dictationReady": "Diktat bereit",
+    "dictationHintHold": "{{keys}} halten und sprechen",
+    "dictationHintPress": "{{keys}} drücken und sprechen",
+    "goodMorning": "Guten Morgen",
+    "goodAfternoon": "Guten Tag",
+    "goodEvening": "Guten Abend",
+    "startMeeting": "Meeting starten",
+    "stopMeeting": "Meeting beenden",
+    "recentNotes": "Letzte Notizen",
+    "today": "Heute",
+    "yesterday": "Gestern",
+    "meetingMeta": "Meeting",
+    "enhanced": "Veredelt"
+  },
+  "live": {
+    "title": "Meeting läuft",
+    "recording": "Aufnahme",
+    "stop": "Stopp",
+    "captions": "Untertitel",
+    "liveTranscript": "Live-Transkript",
+    "listening": "Höre zu…",
+    "noStreamingModel": "Aufnahme läuft. Live-Text braucht ein Streaming-Modell — das Transkript ist nach dem Stopp fertig.",
+    "privacy": "Auf diesem Gerät transkribiert. Nichts verlässt deinen Computer."
   }
 }

@@ -1156,6 +1156,14 @@ impl TranscriptionManager {
     }
 
     fn emit_stream_text(&self, committed: &str, tentative: &str) {
+        // Mirror the live text into the meeting session (no-op outside a
+        // meeting) so the tray's readout and copy-so-far can use it.
+        if let Some(session) = self
+            .app_handle
+            .try_state::<crate::meeting::MeetingSession>()
+        {
+            session.update_text(committed, tentative);
+        }
         let _ = StreamTextEvent {
             committed: committed.to_string(),
             tentative: tentative.to_string(),

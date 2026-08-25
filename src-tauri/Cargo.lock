@@ -2507,6 +2507,7 @@ dependencies = [
  "chrono",
  "clap",
  "cpal",
+ "dirs 6.0.0",
  "earshot",
  "enigo",
  "env_filter",

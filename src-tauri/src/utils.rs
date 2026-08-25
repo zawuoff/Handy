@@ -98,6 +98,10 @@ pub fn cancel_current_operation(app: &AppHandle) {
     let tm = app.state::<Arc<TranscriptionManager>>();
     tm.cancel_stream();
 
+    // End any active meeting session (clears the tray readout and restores
+    // the overlay-enabled cache if captions had forced it on).
+    crate::meeting::end_session(app);
+
     // Update tray icon and hide overlay
     set_tray_state(app, crate::tray::TrayIconState::Idle);
     hide_recording_overlay(app);

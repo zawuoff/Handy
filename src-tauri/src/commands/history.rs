@@ -22,6 +22,57 @@ pub async fn get_history_entries(
 
 #[tauri::command]
 #[specta::specta]
+pub async fn get_meeting_entries(
+    _app: AppHandle,
+    history_manager: State<'_, Arc<HistoryManager>>,
+    cursor: Option<i64>,
+    limit: Option<usize>,
+) -> Result<PaginatedHistory, String> {
+    history_manager
+        .get_meeting_entries(cursor, limit)
+        .await
+        .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn set_history_entry_title(
+    _app: AppHandle,
+    history_manager: State<'_, Arc<HistoryManager>>,
+    id: i64,
+    title: String,
+) -> Result<(), String> {
+    history_manager
+        .set_title(id, title)
+        .map(|_| ())
+        .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn set_history_entry_user_notes(
+    _app: AppHandle,
+    history_manager: State<'_, Arc<HistoryManager>>,
+    id: i64,
+    notes: String,
+) -> Result<(), String> {
+    history_manager
+        .set_user_notes(id, notes)
+        .map_err(|e| e.to_string())
+}
+
+/// (Re)generate AI notes for an entry in the background. Returns immediately;
+/// progress arrives via the `notes-status` event and the history `Updated`
+/// event once the notes are stored.
+#[tauri::command]
+#[specta::specta]
+pub async fn generate_meeting_notes(app: AppHandle, id: i64) -> Result<(), String> {
+    crate::notes::spawn_generation(&app, id);
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
 pub async fn toggle_history_entry_saved(
     _app: AppHandle,
     history_manager: State<'_, Arc<HistoryManager>>,
