@@ -194,7 +194,26 @@ struct AutoOrganizedEvent {
 
 /// Extract action items from freshly generated notes with a second model
 /// call; dated ones become calendar events, undated ones become todos.
+fn normalized_title(title: &str) -> String {
+    title
+        .to_lowercase()
+        .chars()
+        .filter(|c| c.is_alphanumeric() || c.is_whitespace())
+        .collect::<String>()
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
+}
+
 async fn organize_action_items(app: &AppHandle, entry_id: i64, notes: &str) -> Result<(), String> {
+    // Regenerating notes must not re-create the same events and todos: each
+    // meeting is organized exactly once.
+    {
+        let hm = Arc::clone(&app.state::<Arc<HistoryManager>>());
+        if hm.action_items_organized(entry_id).unwrap_or(false) {
+            return Err("already organized".to_string());
+        }
+    }
     let settings = get_settings(app);
     let provider = settings
         .active_post_process_provider()
@@ -229,7 +248,9 @@ async fn organize_action_items(app: &AppHandle, entry_id: i64, notes: &str) -> R
          {shape}\n\
          Rules: resolve relative dates (tomorrow, Friday, next week) against today's date; \
          if only a day is known use 09:00 as the time; use null for \"when\" if the item has \
-         no clear date or deadline; keep titles under 10 words; return [] if there are none."
+         no clear date or deadline; keep titles under 10 words; each real-world action \
+         must appear exactly once — merge duplicates and near-duplicates; return [] if \
+         there are none."
     );
 
     let raw = crate::llm_client::send_chat_completion_with_schema(
@@ -252,11 +273,26 @@ async fn organize_action_items(app: &AppHandle, entry_id: i64, notes: &str) -> R
         serde_json::from_str(&raw[start..=end]).map_err(|e| format!("bad JSON: {e}"))?;
 
     let hm = Arc::clone(&app.state::<Arc<HistoryManager>>());
+    // Skip items already covered: seen in this run, or an existing open todo.
+    let mut seen: std::collections::HashSet<String> = hm
+        .get_todos()
+        .map(|existing| {
+            existing
+                .iter()
+                .filter(|todo| !todo.done)
+                .map(|todo| normalized_title(&todo.title))
+                .collect()
+        })
+        .unwrap_or_default();
     let mut events = 0u32;
     let mut todos = 0u32;
     for item in items.into_iter().take(10) {
         let title = item.title.trim().to_string();
         if title.is_empty() {
+            continue;
+        }
+        if !seen.insert(normalized_title(&title)) {
+            debug!("Skipping duplicate action item: '{title}'");
             continue;
         }
         let scheduled = match item.when.as_deref().map(str::trim) {
@@ -279,6 +315,9 @@ async fn organize_action_items(app: &AppHandle, entry_id: i64, notes: &str) -> R
         }
     }
 
+    if let Err(err) = hm.mark_action_items_organized(entry_id) {
+        debug!("Could not mark entry {entry_id} as organized: {err}");
+    }
     if events > 0 || todos > 0 {
         let _ = app.emit("auto-organized", AutoOrganizedEvent { events, todos });
         info!("Meeting {entry_id}: auto-created {events} events and {todos} todos");
