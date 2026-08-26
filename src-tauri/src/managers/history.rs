@@ -676,33 +676,50 @@ impl HistoryManager {
         Ok(())
     }
 
-    /// Case-insensitive substring search over meeting titles, notes and
-    /// transcripts; returns hits newest-first with a snippet around the
-    /// first match.
+    /// Keyword search over meeting titles, notes and transcripts: the query
+    /// is reduced to its meaningful words (a whole spoken question like "can
+    /// you tell me what I need to do with ucg videos" must still find the
+    /// meeting that mentions "UCG videos"), candidates matching ANY keyword
+    /// are scored by how many they contain (whole-phrase matches rank first),
+    /// and each hit carries a snippet around its best match.
     pub fn search_meeting_notes(&self, query: &str, limit: usize) -> Result<Vec<SearchHit>> {
         let query = query.trim();
         if query.is_empty() {
             return Ok(Vec::new());
         }
-        let pattern = format!(
-            "%{}%",
-            query
-                .replace('\\', "\\\\")
-                .replace('%', "\\%")
-                .replace('_', "\\_")
-        );
-        let conn = self.get_connection()?;
-        let mut stmt = conn.prepare(
+        let mut keywords = query_keywords(query);
+        if keywords.is_empty() {
+            keywords.push(query.to_lowercase());
+        }
+
+        let escape = |word: &str| {
+            format!(
+                "%{}%",
+                word.replace('\\', "\\\\")
+                    .replace('%', "\\%")
+                    .replace('_', "\\_")
+            )
+        };
+        let patterns: Vec<String> = keywords.iter().map(|word| escape(word)).collect();
+        let clauses: Vec<String> = (1..=patterns.len())
+            .map(|index| {
+                format!(
+                    "(title LIKE ?{index} ESCAPE '\\' OR ai_notes LIKE ?{index} ESCAPE '\\' \
+                     OR user_notes LIKE ?{index} ESCAPE '\\' OR transcription_text LIKE ?{index} ESCAPE '\\')"
+                )
+            })
+            .collect();
+        let sql = format!(
             "SELECT id, title, timestamp, transcription_text, ai_notes, user_notes
              FROM transcription_history
-             WHERE source = 'meeting' AND (
-                title LIKE ?1 ESCAPE '\\'
-                OR ai_notes LIKE ?1 ESCAPE '\\'
-                OR user_notes LIKE ?1 ESCAPE '\\'
-                OR transcription_text LIKE ?1 ESCAPE '\\')
-             ORDER BY id DESC LIMIT ?2",
-        )?;
-        let rows = stmt.query_map(params![pattern, limit.min(50) as i64], |row| {
+             WHERE source = 'meeting' AND ({})
+             ORDER BY id DESC LIMIT 40",
+            clauses.join(" OR ")
+        );
+
+        let conn = self.get_connection()?;
+        let mut stmt = conn.prepare(&sql)?;
+        let rows = stmt.query_map(rusqlite::params_from_iter(patterns.iter()), |row| {
             Ok((
                 row.get::<_, i64>("id")?,
                 row.get::<_, String>("title")?,
@@ -713,26 +730,58 @@ impl HistoryManager {
             ))
         })?;
 
-        let mut hits = Vec::new();
+        let phrase = query.to_lowercase();
+        let mut scored = Vec::new();
         for row in rows {
             let (id, title, timestamp, transcript, ai_notes, user_notes) = row?;
+            let haystack = format!(
+                "{}\n{}\n{}\n{}",
+                title,
+                user_notes.as_deref().unwrap_or(""),
+                ai_notes.as_deref().unwrap_or(""),
+                transcript
+            )
+            .to_lowercase();
+            let score = match_score(&haystack, &keywords, &phrase);
+            if score == 0 {
+                continue;
+            }
+            // Snippet around the whole phrase when present, else the first
+            // keyword that appears.
             let fields = [
                 user_notes.as_deref().unwrap_or(""),
                 ai_notes.as_deref().unwrap_or(""),
                 transcript.as_str(),
             ];
+            let needle = if haystack.contains(&phrase) {
+                phrase.clone()
+            } else {
+                keywords
+                    .iter()
+                    .find(|word| haystack.contains(word.as_str()))
+                    .cloned()
+                    .unwrap_or_else(|| keywords[0].clone())
+            };
             let snippet = fields
                 .iter()
-                .find_map(|field| snippet_around(field, query))
+                .find_map(|field| snippet_around(field, &needle))
                 .unwrap_or_default();
-            hits.push(SearchHit {
-                entry_id: id,
-                title,
-                timestamp,
-                snippet,
-            });
+            scored.push((
+                score,
+                SearchHit {
+                    entry_id: id,
+                    title,
+                    timestamp,
+                    snippet,
+                },
+            ));
         }
-        Ok(hits)
+        scored.sort_by(|a, b| b.0.cmp(&a.0).then(b.1.entry_id.cmp(&a.1.entry_id)));
+        Ok(scored
+            .into_iter()
+            .map(|(_, hit)| hit)
+            .take(limit.min(50))
+            .collect())
     }
 
     pub fn cleanup_old_entries(&self) -> Result<()> {
@@ -1131,6 +1180,108 @@ impl HistoryManager {
     }
 }
 
+/// The meaningful words of a query: lowercased, split on non-alphanumerics,
+/// filler words and one-character tokens dropped, capped at 8.
+fn query_keywords(query: &str) -> Vec<String> {
+    const STOPWORDS: &[&str] = &[
+        "the",
+        "a",
+        "an",
+        "and",
+        "or",
+        "to",
+        "of",
+        "in",
+        "on",
+        "for",
+        "with",
+        "about",
+        "was",
+        "were",
+        "is",
+        "are",
+        "am",
+        "be",
+        "been",
+        "did",
+        "do",
+        "does",
+        "what",
+        "when",
+        "where",
+        "who",
+        "why",
+        "how",
+        "can",
+        "could",
+        "will",
+        "would",
+        "should",
+        "you",
+        "your",
+        "me",
+        "my",
+        "we",
+        "our",
+        "us",
+        "tell",
+        "need",
+        "that",
+        "this",
+        "these",
+        "those",
+        "it",
+        "its",
+        "at",
+        "from",
+        "have",
+        "has",
+        "had",
+        "say",
+        "said",
+        "says",
+        "talk",
+        "talked",
+        "spoke",
+        "speak",
+        "discussed",
+        "discuss",
+        "meeting",
+        "meetings",
+        "note",
+        "notes",
+        "please",
+        "any",
+        "anything",
+        "there",
+        "recently",
+        "last",
+        "again",
+    ];
+    let mut seen = std::collections::HashSet::new();
+    query
+        .to_lowercase()
+        .split(|c: char| !c.is_alphanumeric())
+        .filter(|word| word.len() >= 2 && !STOPWORDS.contains(word))
+        .filter(|word| seen.insert(word.to_string()))
+        .map(str::to_string)
+        .take(8)
+        .collect()
+}
+
+/// Relevance of a lowercased haystack: keyword hits count once each, a
+/// whole-phrase match dominates everything.
+fn match_score(haystack_lower: &str, keywords: &[String], phrase_lower: &str) -> u32 {
+    let mut score = keywords
+        .iter()
+        .filter(|word| haystack_lower.contains(word.as_str()))
+        .count() as u32;
+    if !phrase_lower.is_empty() && haystack_lower.contains(phrase_lower) {
+        score += 100;
+    }
+    score
+}
+
 /// ~160 chars of context around the first case-insensitive match of
 /// `needle` in `haystack`, ellipsized on clipped ends. None when absent.
 fn snippet_around(haystack: &str, needle: &str) -> Option<String> {
@@ -1208,6 +1359,26 @@ mod tests {
             ],
         )
         .expect("insert history entry");
+    }
+
+    #[test]
+    fn spoken_questions_reduce_to_meaningful_keywords() {
+        let words = super::query_keywords("can you tell me what i need to do with ucg videos");
+        assert_eq!(words, vec!["ucg".to_string(), "videos".to_string()]);
+        // Non-English queries keep their words.
+        assert!(!super::query_keywords("Umsatz im Oktober").is_empty());
+    }
+
+    #[test]
+    fn scoring_prefers_more_keywords_and_phrase_matches() {
+        let kws = vec!["ucg".to_string(), "videos".to_string()];
+        assert_eq!(
+            super::match_score("we must finish the ucg videos", &kws, "zzz"),
+            2
+        );
+        assert_eq!(super::match_score("about the videos", &kws, "zzz"), 1);
+        assert_eq!(super::match_score("nothing relevant", &kws, "zzz"), 0);
+        assert!(super::match_score("finish ucg videos", &kws, "ucg videos") > 100);
     }
 
     #[test]
