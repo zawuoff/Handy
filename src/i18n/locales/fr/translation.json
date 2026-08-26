@@ -794,7 +794,8 @@
     "speakerUnknown": "Intervenant",
     "speakersButton": "Nommer les intervenants ({{count}})",
     "speakersHint": "Saisissez les vrais noms — ils remplacent les étiquettes partout, y compris les lignes précédentes.",
-    "saveNames": "Enregistrer les noms"
+    "saveNames": "Enregistrer les noms",
+    "speakersIdentifying": "Identification des intervenants…"
   },
   "todos": {
     "title": "Tâches",

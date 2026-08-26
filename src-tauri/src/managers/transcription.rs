@@ -1111,6 +1111,7 @@ impl TranscriptionManager {
             let mut total_fed_ms: i64 = 0;
             let mut segment_offset_ms: i64 = 0;
             let mut live_speaker: i32 = 0;
+            let mut last_attr_refresh = Instant::now();
             // Each iteration runs one stream segment. A long trailing silence
             // finalizes the segment and starts a fresh one so the decoder's
             // language bias resets (mixed Hindi/English/Arabic sessions were
@@ -1210,6 +1211,31 @@ impl TranscriptionManager {
                                 Err(e) => {
                                     perf.record_compute(feed_start.elapsed());
                                     warn!("stream feed failed: {}", e);
+                                }
+                            }
+                            // Refresh attribution every couple of seconds even
+                            // without new text, so speaker labels appear (and
+                            // retroactively correct) while people are quiet.
+                            if let Some(diar) = diarizer.as_ref() {
+                                if last_attr_refresh.elapsed() >= Duration::from_secs(2) {
+                                    last_attr_refresh = Instant::now();
+                                    let segs = diar.segments();
+                                    live_speaker =
+                                        crate::diarization::latest_speaker(&segs, total_fed_ms)
+                                            .unwrap_or(live_speaker);
+                                    let text = stream.text();
+                                    let mut live_turns = build_turns(&records, &segs);
+                                    push_turn(
+                                        &mut live_turns,
+                                        live_speaker,
+                                        &text.committed,
+                                        segment_offset_ms as i32,
+                                    );
+                                    self.emit_stream_text(
+                                        &join_stream_text(&carried, &text.committed),
+                                        &text.tentative,
+                                        live_turns,
+                                    );
                                 }
                             }
                             if silent_secs >= STREAM_PAUSE_RESET_SECS

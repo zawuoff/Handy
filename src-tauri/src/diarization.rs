@@ -135,9 +135,9 @@ impl Diarizer {
                         break;
                     }
                     Err(std::sync::mpsc::RecvTimeoutError::Timeout) => {
-                        // Idle cadence: refresh when ≥15s and ≥10% new audio.
+                        // Idle cadence: refresh when ≥10s and ≥10% new audio.
                         let new = audio.len() - last_run_len;
-                        if new >= 15 * 16_000 && new * 10 >= audio.len() {
+                        if new >= 10 * 16_000 && new * 10 >= audio.len() {
                             run(&audio, &mut last_run_len, &mut session);
                         }
                     }

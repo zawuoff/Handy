@@ -207,7 +207,7 @@ export const LiveMeetingView: React.FC<{ meeting: MeetingUiState }> = ({
               </p>
             )}
           </div>
-          {speakerIds.length > 0 && (
+          {turns.length > 0 && (
             <div className="px-4 pb-3 shrink-0">
               <div
                 className={`overflow-hidden transition-all duration-300 ease-out ${
@@ -248,11 +248,19 @@ export const LiveMeetingView: React.FC<{ meeting: MeetingUiState }> = ({
                 </div>
               </div>
               <button
-                className="w-full flex items-center gap-2 rounded-lg border border-border bg-card2 px-3 py-2 text-[12px] text-muted hover:text-text cursor-pointer transition-colors"
-                onClick={() => setNamesOpen((prev) => !prev)}
+                className={`w-full flex items-center gap-2 rounded-lg border border-border bg-card2 px-3 py-2 text-[12px] transition-colors ${
+                  speakerIds.length > 0
+                    ? "text-muted hover:text-text cursor-pointer"
+                    : "text-faint cursor-default"
+                }`}
+                onClick={() => {
+                  if (speakerIds.length > 0) setNamesOpen((prev) => !prev);
+                }}
               >
                 <Users size={13} />
-                {t("live.speakersButton", { count: speakerIds.length })}
+                {speakerIds.length > 0
+                  ? t("live.speakersButton", { count: speakerIds.length })
+                  : t("live.speakersIdentifying")}
               </button>
             </div>
           )}

@@ -794,7 +794,8 @@
     "speakerUnknown": "Talare",
     "speakersButton": "Namnge talare ({{count}})",
     "speakersHint": "Skriv riktiga namn — de ersätter etiketterna överallt, även i tidigare rader.",
-    "saveNames": "Spara namn"
+    "saveNames": "Spara namn",
+    "speakersIdentifying": "Identifierar talare…"
   },
   "todos": {
     "title": "Uppgifter",

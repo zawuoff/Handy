@@ -794,7 +794,8 @@
     "speakerUnknown": "说话人",
     "speakersButton": "为说话人命名（{{count}}）",
     "speakersHint": "输入真实姓名——所有标签都会被替换，包括之前的内容。",
-    "saveNames": "保存姓名"
+    "saveNames": "保存姓名",
+    "speakersIdentifying": "正在识别说话人…"
   },
   "todos": {
     "title": "待办",

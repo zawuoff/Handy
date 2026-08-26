@@ -794,7 +794,8 @@
     "speakerUnknown": "वक्ता",
     "speakersButton": "वक्ताओं के नाम लिखें ({{count}})",
     "speakersHint": "असली नाम लिखें — वे हर जगह लेबल की जगह ले लेंगे, पिछली पंक्तियों में भी।",
-    "saveNames": "नाम सहेजें"
+    "saveNames": "नाम सहेजें",
+    "speakersIdentifying": "वक्ताओं की पहचान हो रही है…"
   },
   "todos": {
     "title": "कार्य",

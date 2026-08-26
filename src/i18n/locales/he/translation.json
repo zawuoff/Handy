@@ -794,7 +794,8 @@
     "speakerUnknown": "דובר",
     "speakersButton": "תנו שמות לדוברים ({{count}})",
     "speakersHint": "הקלידו שמות אמיתיים — הם יחליפו את התוויות בכל מקום, כולל שורות קודמות.",
-    "saveNames": "שמירת שמות"
+    "saveNames": "שמירת שמות",
+    "speakersIdentifying": "מזהה דוברים…"
   },
   "todos": {
     "title": "משימות",

@@ -794,7 +794,8 @@
     "speakerUnknown": "화자",
     "speakersButton": "화자 이름 지정 ({{count}})",
     "speakersHint": "실제 이름을 입력하면 이전 줄을 포함해 모든 라벨이 대체됩니다.",
-    "saveNames": "이름 저장"
+    "saveNames": "이름 저장",
+    "speakersIdentifying": "화자 식별 중…"
   },
   "todos": {
     "title": "할 일",

@@ -794,7 +794,8 @@
     "speakerUnknown": "Speaker",
     "speakersButton": "Name speakers ({{count}})",
     "speakersHint": "Type real names — they replace the labels everywhere, including earlier lines.",
-    "saveNames": "Save names"
+    "saveNames": "Save names",
+    "speakersIdentifying": "Identifying speakers…"
   },
   "todos": {
     "title": "Todos",

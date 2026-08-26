@@ -794,7 +794,8 @@
     "speakerUnknown": "Taler",
     "speakersButton": "Navngiv talere ({{count}})",
     "speakersHint": "Skriv rigtige navne — de erstatter etiketterne overalt, også i tidligere linjer.",
-    "saveNames": "Gem navne"
+    "saveNames": "Gem navne",
+    "speakersIdentifying": "Identificerer talere…"
   },
   "todos": {
     "title": "Opgaver",

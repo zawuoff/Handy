@@ -794,7 +794,8 @@
     "speakerUnknown": "Spreker",
     "speakersButton": "Sprekers benoemen ({{count}})",
     "speakersHint": "Typ echte namen — ze vervangen de labels overal, ook in eerdere regels.",
-    "saveNames": "Namen opslaan"
+    "saveNames": "Namen opslaan",
+    "speakersIdentifying": "Sprekers identificeren…"
   },
   "todos": {
     "title": "Taken",

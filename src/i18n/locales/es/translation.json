@@ -794,7 +794,8 @@
     "speakerUnknown": "Hablante",
     "speakersButton": "Nombrar hablantes ({{count}})",
     "speakersHint": "Escribe los nombres reales: reemplazarán las etiquetas en todas partes, incluidas las líneas anteriores.",
-    "saveNames": "Guardar nombres"
+    "saveNames": "Guardar nombres",
+    "speakersIdentifying": "Identificando hablantes…"
   },
   "todos": {
     "title": "Tareas",

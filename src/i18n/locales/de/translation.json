@@ -794,7 +794,8 @@
     "speakerUnknown": "Sprecher",
     "speakersButton": "Sprecher benennen ({{count}})",
     "speakersHint": "Echte Namen eingeben — sie ersetzen die Bezeichnungen überall, auch in früheren Zeilen.",
-    "saveNames": "Namen speichern"
+    "saveNames": "Namen speichern",
+    "speakersIdentifying": "Sprecher werden erkannt…"
   },
   "todos": {
     "title": "Aufgaben",

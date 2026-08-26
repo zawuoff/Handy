@@ -794,7 +794,8 @@
     "speakerUnknown": "Мовець",
     "speakersButton": "Назвати мовців ({{count}})",
     "speakersHint": "Введіть справжні імена — вони замінять мітки всюди, зокрема в попередніх рядках.",
-    "saveNames": "Зберегти імена"
+    "saveNames": "Зберегти імена",
+    "speakersIdentifying": "Визначення мовців…"
   },
   "todos": {
     "title": "Завдання",

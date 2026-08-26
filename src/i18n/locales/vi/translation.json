@@ -794,7 +794,8 @@
     "speakerUnknown": "Người nói",
     "speakersButton": "Đặt tên người nói ({{count}})",
     "speakersHint": "Nhập tên thật — chúng sẽ thay thế nhãn ở mọi nơi, kể cả các dòng trước đó.",
-    "saveNames": "Lưu tên"
+    "saveNames": "Lưu tên",
+    "speakersIdentifying": "Đang nhận diện người nói…"
   },
   "todos": {
     "title": "Việc cần làm",

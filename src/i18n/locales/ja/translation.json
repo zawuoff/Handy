@@ -794,7 +794,8 @@
     "speakerUnknown": "話者",
     "speakersButton": "話者に名前を付ける（{{count}}）",
     "speakersHint": "実際の名前を入力すると、以前の行も含めてすべてのラベルが置き換わります。",
-    "saveNames": "名前を保存"
+    "saveNames": "名前を保存",
+    "speakersIdentifying": "話者を識別中…"
   },
   "todos": {
     "title": "タスク",

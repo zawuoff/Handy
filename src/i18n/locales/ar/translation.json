@@ -794,7 +794,8 @@
     "speakerUnknown": "متحدث",
     "speakersButton": "تسمية المتحدثين ({{count}})",
     "speakersHint": "اكتب الأسماء الحقيقية — ستحل محل التسميات في كل مكان، بما في ذلك السطور السابقة.",
-    "saveNames": "حفظ الأسماء"
+    "saveNames": "حفظ الأسماء",
+    "speakersIdentifying": "جارٍ التعرف على المتحدثين…"
   },
   "todos": {
     "title": "المهام",

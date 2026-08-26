@@ -794,7 +794,8 @@
     "speakerUnknown": "Konuşmacı",
     "speakersButton": "Konuşmacıları adlandır ({{count}})",
     "speakersHint": "Gerçek adları yazın — önceki satırlar dahil her yerde etiketlerin yerini alırlar.",
-    "saveNames": "Adları kaydet"
+    "saveNames": "Adları kaydet",
+    "speakersIdentifying": "Konuşmacılar tanımlanıyor…"
   },
   "todos": {
     "title": "Yapılacaklar",

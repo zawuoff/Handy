@@ -794,7 +794,8 @@
     "speakerUnknown": "Falante",
     "speakersButton": "Nomear falantes ({{count}})",
     "speakersHint": "Digite os nomes reais — eles substituem os rótulos em todo lugar, inclusive nas linhas anteriores.",
-    "saveNames": "Salvar nomes"
+    "saveNames": "Salvar nomes",
+    "speakersIdentifying": "Identificando falantes…"
   },
   "todos": {
     "title": "Tarefas",

@@ -794,7 +794,8 @@
     "speakerUnknown": "Mówca",
     "speakersButton": "Nazwij mówców ({{count}})",
     "speakersHint": "Wpisz prawdziwe imiona — zastąpią etykiety wszędzie, także we wcześniejszych wierszach.",
-    "saveNames": "Zapisz imiona"
+    "saveNames": "Zapisz imiona",
+    "speakersIdentifying": "Rozpoznawanie mówców…"
   },
   "todos": {
     "title": "Zadania",
