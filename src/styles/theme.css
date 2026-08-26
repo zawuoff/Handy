@@ -1,38 +1,38 @@
-/* Noted Colors — warm charcoal / cream / brass palette from the Paper mockups */
+/* Noted Colors — near-black / soft-blue palette from the Paper mockups */
 
 :root {
   /* Palette source of truth. Each themed color is defined once as a
      light/dark pair; the active tokens below and the `data-theme` overrides
      in App.css reference these, so a hex value lives in exactly one place. */
-  --light-color-text: #262419;
-  --light-color-background: #f7f4ed;
+  --light-color-text: #171715;
+  --light-color-background: #ffffff;
   --light-color-logo-primary: #c9a55c;
   --light-color-logo-stroke: #4a4436;
-  --light-color-surface: #f0ece2;
-  --light-color-card: #fffdf8;
-  --light-color-card2: #f1ede3;
-  --light-color-border: #e2dccc;
-  --light-color-border-strong: #d6cfbc;
-  --light-color-muted: #6e675a;
-  --light-color-faint: #99927f;
-  --light-color-accent: #8a6b2f;
-  --light-color-record: #c25b42;
-  --light-color-background-ui: #8a6b2f;
+  --light-color-surface: #f6f6f3;
+  --light-color-card: #fafaf8;
+  --light-color-card2: #efefeb;
+  --light-color-border: #e6e6e2;
+  --light-color-border-strong: #d2d2cc;
+  --light-color-muted: #62625c;
+  --light-color-faint: #8f8f88;
+  --light-color-accent: #3e7cc0;
+  --light-color-record: #3e7cc0;
+  --light-color-background-ui: #3e7cc0;
 
-  --dark-color-text: #e9e5da;
-  --dark-color-background: #1c1b17;
+  --dark-color-text: #efefe4;
+  --dark-color-background: #000000;
   --dark-color-logo-primary: #c9a55c;
-  --dark-color-logo-stroke: #e9e5da;
-  --dark-color-surface: #161512;
-  --dark-color-card: #24231e;
-  --dark-color-card2: #22211c;
-  --dark-color-border: #2a2822;
-  --dark-color-border-strong: #33312a;
-  --dark-color-muted: #9b9689;
-  --dark-color-faint: #6e6a5e;
-  --dark-color-accent: #c9a55c;
-  --dark-color-record: #d96a4f;
-  --dark-color-background-ui: #c9a55c;
+  --dark-color-logo-stroke: #efefe4;
+  --dark-color-surface: #0a0a0a;
+  --dark-color-card: #101010;
+  --dark-color-card2: #1a1a1a;
+  --dark-color-border: #222222;
+  --dark-color-border-strong: #333333;
+  --dark-color-muted: #94948b;
+  --dark-color-faint: #6c6c65;
+  --dark-color-accent: #72aeec;
+  --dark-color-record: #72aeec;
+  --dark-color-background-ui: #72aeec;
 
   /* Semantic status colors. First used by SecureInputWarning; intended to
      replace the ad-hoc yellow-500/red-500 usages (e.g. ui/Alert.tsx) over

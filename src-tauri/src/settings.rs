@@ -845,7 +845,9 @@ Structure:\n\
 - If any decisions were made, add a '## Decisions' section listing each one.\n\
 - If there are tasks, commitments or follow-ups, add a '## Action items' section listing each as '- **who**: what (deadline, if mentioned)'. Leave this section out if there are none.\n\n\
 Rules:\n\
-- Write in the same language as the transcript.\n\
+- Write the notes strictly in English, no matter what language or mix of languages the transcript is in (Hindi, Urdu, Arabic or anything else) — translate everything into natural English.\n\
+- The transcript may contain English words written in another script (for example English spelled in Devanagari letters). Read those as English and normalize them.\n\
+- Focus on the work. Keep everything genuinely work-related, including long discussions, debates and reasoning — those matter. Leave out personal chatter, jokes and off-topic tangents entirely.\n\
 - Be concise and factual. Never invent anything that is not in the transcript.\n\
 - Ignore small talk, filler words and obvious transcription errors.\n\
 - Format in Markdown: '## ' for section headings, '-' for bullets, and **bold** for names, dates and amounts.\n\
@@ -1146,6 +1148,17 @@ fn apply_settings_migrations(
     if settings
         .meeting_notes_prompt
         .contains("Use plain text: section names on their own line")
+    {
+        settings.meeting_notes_prompt = default_meeting_notes_prompt();
+        updated = true;
+    }
+
+    // Second prompt upgrade: notes are now English-only and work-focused.
+    // Again only an untouched previous default (recognized by its
+    // same-language rule line) is replaced — an edited prompt stays.
+    if settings
+        .meeting_notes_prompt
+        .contains("Write in the same language as the transcript.")
     {
         settings.meeting_notes_prompt = default_meeting_notes_prompt();
         updated = true;

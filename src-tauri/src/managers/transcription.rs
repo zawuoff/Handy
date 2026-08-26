@@ -98,6 +98,26 @@ pub struct StreamPhaseEvent {
 /// Commands sent to the streaming worker thread. Audio frames and the finalize
 /// request travel the same channel so FIFO ordering guarantees every fed frame
 /// is processed before finalize runs.
+/// RMS below this counts a fed chunk as silence (pause-reset detector).
+const STREAM_SILENCE_RMS: f32 = 0.01;
+/// Trailing silence that triggers a fresh stream segment. A fresh decode
+/// context stops one language from locking in for the rest of a long
+/// session — after a natural pause the language re-detects from audio alone.
+const STREAM_PAUSE_RESET_SECS: f32 = 1.5;
+
+/// Join committed text carried from earlier stream segments with the text of
+/// the current one.
+fn join_stream_text(prefix: &str, next: &str) -> String {
+    let next = next.trim_start();
+    if prefix.is_empty() {
+        return next.to_string();
+    }
+    if next.is_empty() {
+        return prefix.to_string();
+    }
+    format!("{} {}", prefix.trim_end(), next)
+}
+
 enum StreamCmd {
     Feed(Vec<f32>),
     /// Flush the stream and reply with the final text, or `None` if no stream
@@ -956,16 +976,6 @@ impl TranscriptionManager {
             // call `session.model()` once it exists.
             let backend = session.model().backend();
 
-            // StreamOptions::default() uses CommitPolicy::Auto and lets the
-            // family pick its own streaming strategy (no family-specific ext).
-            let mut stream = match session.stream(&run_options, &StreamOptions::default()) {
-                Ok(s) => s,
-                Err(e) => {
-                    error!("Failed to begin stream: {}", e);
-                    break 'stream false;
-                }
-            };
-
             self.stream_active.store(true, Ordering::Release);
             self.touch_activity();
             info!(
@@ -974,88 +984,161 @@ impl TranscriptionManager {
             );
 
             let mut perf = StreamPerf::new();
-            while let Ok(cmd) = rx.recv() {
-                match cmd {
-                    StreamCmd::Feed(pcm) => {
-                        self.touch_activity();
-                        perf.record_feed(pcm.len());
-                        let feed_start = Instant::now();
-                        match stream.feed(&pcm) {
-                            Ok(update) => {
-                                perf.record_compute(feed_start.elapsed());
-                                perf.record_update(
-                                    update.revision,
-                                    update.input_received_ms,
-                                    update.audio_committed_ms,
-                                    update.buffered_ms,
-                                );
-                                if update.committed_changed || update.tentative_changed {
-                                    let text = stream.text();
-                                    perf.record_emit();
-                                    self.emit_stream_text(&text.committed, &text.tentative);
+            // Committed text from earlier stream segments (pause resets below).
+            let mut carried = String::new();
+            let mut silent_secs: f32 = 0.0;
+            let mut first_segment = true;
+            // Each iteration runs one stream segment. A long trailing silence
+            // finalizes the segment and starts a fresh one so the decoder's
+            // language bias resets (mixed Hindi/English/Arabic sessions were
+            // locking into whichever script appeared first).
+            'segments: loop {
+                // StreamOptions::default() uses CommitPolicy::Auto and lets the
+                // family pick its own streaming strategy (no family-specific ext).
+                let mut stream = match session.stream(&run_options, &StreamOptions::default()) {
+                    Ok(s) => s,
+                    Err(e) => {
+                        error!("Failed to begin stream: {}", e);
+                        if first_segment {
+                            break 'stream false;
+                        }
+                        // A later segment failing to start still has carried
+                        // text to hand over; wait for the finalize handshake.
+                        while let Ok(cmd) = rx.recv() {
+                            match cmd {
+                                StreamCmd::Finalize(reply) => {
+                                    finalize_reply = Some(reply);
+                                    finalize_result = Some(Some(FinalizedStreamText {
+                                        text: carried.clone(),
+                                        output_language: output_language.clone(),
+                                        supported_languages: languages.clone(),
+                                    }));
+                                    break;
                                 }
-                                perf.maybe_log();
-                            }
-                            Err(e) => {
-                                perf.record_compute(feed_start.elapsed());
-                                warn!("stream feed failed: {}", e);
+                                StreamCmd::Cancel => break,
+                                StreamCmd::Feed(_) => {}
                             }
                         }
+                        break 'segments;
                     }
-                    StreamCmd::Finalize(reply) => {
-                        let finalize_start = Instant::now();
-                        let result = match stream.finalize() {
-                            // After finalize the committed prefix holds the full
-                            // text; display() = committed + tentative is the safe read.
-                            Ok(update) => {
-                                perf.record_compute(finalize_start.elapsed());
-                                perf.record_update(
-                                    update.revision,
-                                    update.input_received_ms,
-                                    update.audio_committed_ms,
-                                    update.buffered_ms,
-                                );
-                                // In auto mode the model's own LID is the best
-                                // remaining evidence; the snapshot is only
-                                // materialized when it can change the outcome.
-                                let output_language = match &output_language {
-                                    OutputLanguageEvidence::Unknown => {
-                                        with_model_detected_language(
-                                            OutputLanguageEvidence::Unknown,
-                                            stream.snapshot().language,
-                                        )
+                };
+                first_segment = false;
+                while let Ok(cmd) = rx.recv() {
+                    match cmd {
+                        StreamCmd::Feed(pcm) => {
+                            self.touch_activity();
+                            perf.record_feed(pcm.len());
+                            // Cheap trailing-silence tracking for the pause reset.
+                            let rms = (pcm.iter().map(|s| s * s).sum::<f32>()
+                                / pcm.len().max(1) as f32)
+                                .sqrt();
+                            if rms < STREAM_SILENCE_RMS {
+                                silent_secs += pcm.len() as f32 / 16_000.0;
+                            } else {
+                                silent_secs = 0.0;
+                            }
+                            let feed_start = Instant::now();
+                            match stream.feed(&pcm) {
+                                Ok(update) => {
+                                    perf.record_compute(feed_start.elapsed());
+                                    perf.record_update(
+                                        update.revision,
+                                        update.input_received_ms,
+                                        update.audio_committed_ms,
+                                        update.buffered_ms,
+                                    );
+                                    if update.committed_changed || update.tentative_changed {
+                                        let text = stream.text();
+                                        perf.record_emit();
+                                        self.emit_stream_text(
+                                            &join_stream_text(&carried, &text.committed),
+                                            &text.tentative,
+                                        );
                                     }
-                                    resolved => resolved.clone(),
-                                };
-                                Some(FinalizedStreamText {
-                                    text: stream.text().full,
-                                    output_language,
-                                    supported_languages: languages.clone(),
-                                })
+                                    perf.maybe_log();
+                                }
+                                Err(e) => {
+                                    perf.record_compute(feed_start.elapsed());
+                                    warn!("stream feed failed: {}", e);
+                                }
                             }
-                            Err(e) => {
-                                perf.record_compute(finalize_start.elapsed());
-                                error!(
-                                    "stream finalize failed: {}; falling back to batch transcription",
-                                    e
-                                );
-                                None
+                            if silent_secs >= STREAM_PAUSE_RESET_SECS
+                                && !stream.text().committed.trim().is_empty()
+                            {
+                                silent_secs = 0.0;
+                                match stream.finalize() {
+                                    Ok(_) => {
+                                        carried = join_stream_text(&carried, &stream.text().full);
+                                        info!(
+                                            "Stream pause reset ({} chars carried)",
+                                            carried.len()
+                                        );
+                                        self.emit_stream_text(&carried, "");
+                                        continue 'segments;
+                                    }
+                                    Err(e) => {
+                                        warn!("pause-reset finalize failed: {}", e);
+                                    }
+                                }
                             }
-                        };
-                        let chars = match &result {
-                            Some(finalized) => finalized.text.len(),
-                            _ => 0,
-                        };
-                        perf.log_finalized(chars);
-                        finalize_reply = Some(reply);
-                        finalize_result = Some(result);
-                        break;
-                    }
-                    StreamCmd::Cancel => {
-                        stream.reset();
-                        break;
+                        }
+                        StreamCmd::Finalize(reply) => {
+                            let finalize_start = Instant::now();
+                            let result = match stream.finalize() {
+                                // After finalize the committed prefix holds the full
+                                // text; display() = committed + tentative is the safe read.
+                                Ok(update) => {
+                                    perf.record_compute(finalize_start.elapsed());
+                                    perf.record_update(
+                                        update.revision,
+                                        update.input_received_ms,
+                                        update.audio_committed_ms,
+                                        update.buffered_ms,
+                                    );
+                                    // In auto mode the model's own LID is the best
+                                    // remaining evidence; the snapshot is only
+                                    // materialized when it can change the outcome.
+                                    let output_language = match &output_language {
+                                        OutputLanguageEvidence::Unknown => {
+                                            with_model_detected_language(
+                                                OutputLanguageEvidence::Unknown,
+                                                stream.snapshot().language,
+                                            )
+                                        }
+                                        resolved => resolved.clone(),
+                                    };
+                                    Some(FinalizedStreamText {
+                                        text: join_stream_text(&carried, &stream.text().full),
+                                        output_language,
+                                        supported_languages: languages.clone(),
+                                    })
+                                }
+                                Err(e) => {
+                                    perf.record_compute(finalize_start.elapsed());
+                                    error!(
+                                        "stream finalize failed: {}; falling back to batch transcription",
+                                        e
+                                    );
+                                    None
+                                }
+                            };
+                            let chars = match &result {
+                                Some(finalized) => finalized.text.len(),
+                                _ => 0,
+                            };
+                            perf.log_finalized(chars);
+                            finalize_reply = Some(reply);
+                            finalize_result = Some(result);
+                            break 'segments;
+                        }
+                        StreamCmd::Cancel => {
+                            stream.reset();
+                            break 'segments;
+                        }
                     }
                 }
+                // Command channel closed without a finalize; stop streaming.
+                break 'segments;
             }
 
             true
