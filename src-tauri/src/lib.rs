@@ -1,6 +1,7 @@
 mod actions;
 #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
 mod apple_intelligence;
+mod ask;
 mod audio_feedback;
 pub mod audio_toolkit;
 mod autostart;
@@ -756,6 +757,11 @@ pub fn run(cli_args: CliArgs) {
             commands::history::generate_meeting_notes,
             notes::get_generating_note_ids,
             shortcut::change_meeting_notes_prompt_setting,
+            commands::history::search_notes,
+            commands::history::create_ask_session,
+            commands::history::list_ask_sessions,
+            commands::history::delete_ask_session,
+            ask::answer_ask_session,
             commands::history::get_todos,
             commands::history::add_todo,
             commands::history::set_todo_done,

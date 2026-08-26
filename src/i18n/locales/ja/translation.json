@@ -788,5 +788,16 @@
     "eventAdded": "カレンダーに追加: {{title}}",
     "eventFallback": "日付を認識できず、タスクとして保存: {{title}}",
     "failed": "音声コマンドを実行できませんでした"
+  },
+  "ask": {
+    "placeholder": "ノートに何でも聞いてください…",
+    "answer": "回答",
+    "thinking": "ノートを読んでいます…",
+    "failed": "回答を作成できませんでした。再試行するかモデルを切り替えてください。",
+    "noMatches": "ノートに一致するものはまだありません。",
+    "sources": "会議から",
+    "regenerate": "もう一度聞く",
+    "providerHint": "回答に使うモデル",
+    "recent": "検索"
   }
 }

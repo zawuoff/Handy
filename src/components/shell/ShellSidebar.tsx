@@ -9,6 +9,7 @@ import {
   Settings,
 } from "lucide-react";
 import ModelSelector from "../model-selector";
+import { type AskSession } from "@/bindings";
 import { useOsType } from "@/hooks/useOsType";
 import { useSettings } from "@/hooks/useSettings";
 import { formatKeyCombination } from "@/lib/utils/keyboard";
@@ -38,7 +39,17 @@ export const ShellSidebar: React.FC<{
   view: ShellView;
   onViewChange: (view: ShellView) => void;
   onOpenSettings: () => void;
-}> = ({ view, onViewChange, onOpenSettings }) => {
+  askSessions: AskSession[];
+  activeAskId: number | null;
+  onOpenAsk: (id: number) => void;
+}> = ({
+  view,
+  onViewChange,
+  onOpenSettings,
+  askSessions,
+  activeAskId,
+  onOpenAsk,
+}) => {
   const { t } = useTranslation();
   const { getSetting } = useSettings();
   const osType = useOsType();
@@ -81,6 +92,27 @@ export const ShellSidebar: React.FC<{
         active={view === "history"}
         onClick={() => onViewChange("history")}
       />
+
+      {askSessions.length > 0 && (
+        <div className="flex flex-col gap-px pt-4 min-h-0 overflow-y-auto">
+          <span className="px-2.5 pb-1.5 text-[11px] font-semibold tracking-[0.06em] uppercase text-faint">
+            {t("ask.recent")}
+          </span>
+          {askSessions.slice(0, 8).map((session) => (
+            <button
+              key={session.id}
+              className={`px-2.5 py-[6px] rounded-[7px] text-[12.5px] cursor-pointer transition-colors text-start truncate ${
+                activeAskId === session.id
+                  ? "bg-card text-text"
+                  : "text-muted hover:bg-card2 hover:text-text"
+              }`}
+              onClick={() => onOpenAsk(session.id)}
+            >
+              {session.query}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="flex-1" />
 

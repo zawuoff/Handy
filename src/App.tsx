@@ -18,12 +18,13 @@ import { LiveMeetingView } from "./components/shell/LiveMeetingView";
 import { SettingsModal } from "./components/shell/SettingsModal";
 import { ShellSidebar, type ShellView } from "./components/shell/ShellSidebar";
 import { TodosView } from "./components/shell/TodosView";
+import { AskView } from "./components/shell/AskView";
 import { useMeetingState } from "./components/shell/useMeetingState";
 import { HistorySettings, NotesSettings } from "./components/settings";
 import { WhatsNewGate } from "./components/whats-new";
 import { useSettings } from "./hooks/useSettings";
 import { useSettingsStore } from "./stores/settingsStore";
-import { commands } from "@/bindings";
+import { commands, type AskSession } from "@/bindings";
 import { getLanguageDirection, initializeRTL } from "@/lib/utils/rtl";
 
 type OnboardingStep = "accessibility" | "model" | "done";
@@ -39,6 +40,8 @@ function App() {
   const [view, setView] = useState<ShellView>("home");
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [openNote, setOpenNote] = useState<{ id: number } | null>(null);
+  const [askSessionId, setAskSessionId] = useState<number | null>(null);
+  const [askSessions, setAskSessions] = useState<AskSession[]>([]);
   const meeting = useMeetingState();
   const { settings, updateSetting } = useSettings();
   const direction = getLanguageDirection(i18n.language);
@@ -170,6 +173,19 @@ function App() {
       unlisten.then((fn) => fn());
     };
   }, [t]);
+
+  // Recent ask sessions for the sidebar; kept fresh via backend events.
+  useEffect(() => {
+    const refresh = () =>
+      commands.listAskSessions().then((result) => {
+        if (result.status === "ok") setAskSessions(result.data);
+      });
+    refresh();
+    const unlisten = listen("ask-sessions-updated", refresh);
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, []);
 
   // Spoken commands ("add todo: ...", "add event: ...") execute instead of
   // pasting — confirm what happened.
@@ -378,8 +394,14 @@ function App() {
     content = <Onboarding onModelSelected={handleModelSelected} />;
   } else {
     const openNoteById = (id: number) => {
+      setAskSessionId(null);
       setOpenNote({ id });
       setView("notes");
+    };
+
+    const ask = async (query: string) => {
+      const result = await commands.createAskSession(query);
+      if (result.status === "ok") setAskSessionId(result.data.id);
     };
 
     content = (
@@ -398,21 +420,41 @@ function App() {
               view={view}
               onViewChange={(next) => {
                 setOpenNote(null);
+                setAskSessionId(null);
                 setView(next);
               }}
               onOpenSettings={() => setSettingsOpen(true)}
+              askSessions={askSessions}
+              activeAskId={askSessionId}
+              onOpenAsk={setAskSessionId}
             />
             <div className="flex-1 flex flex-col overflow-hidden">
               <div className="flex-1 overflow-y-auto">
                 <div className="flex flex-col items-center px-8 py-6 gap-4">
                   <AccessibilityPermissions />
                   <SecureInputWarning />
-                  {view === "home" && (
-                    <HomeView meeting={meeting} onOpenNote={openNoteById} />
+                  {askSessionId != null ? (
+                    <AskView
+                      sessionId={askSessionId}
+                      onBack={() => setAskSessionId(null)}
+                      onOpenNote={openNoteById}
+                    />
+                  ) : (
+                    <>
+                      {view === "home" && (
+                        <HomeView
+                          meeting={meeting}
+                          onOpenNote={openNoteById}
+                          onAsk={ask}
+                        />
+                      )}
+                      {view === "notes" && (
+                        <NotesSettings openNote={openNote} />
+                      )}
+                      {view === "todos" && <TodosView />}
+                      {view === "history" && <HistorySettings />}
+                    </>
                   )}
-                  {view === "notes" && <NotesSettings openNote={openNote} />}
-                  {view === "todos" && <TodosView />}
-                  {view === "history" && <HistorySettings />}
                 </div>
               </div>
             </div>

@@ -788,5 +788,16 @@
     "eventAdded": "Aggiunto al calendario: {{title}}",
     "eventFallback": "Data non riconosciuta — salvato come attività: {{title}}",
     "failed": "Impossibile eseguire il comando vocale"
+  },
+  "ask": {
+    "placeholder": "Chiedi qualsiasi cosa alle tue note…",
+    "answer": "Risposta",
+    "thinking": "Sto leggendo le tue note…",
+    "failed": "Impossibile scrivere una risposta. Riprova o cambia modello.",
+    "noMatches": "Nulla nelle tue note corrisponde ancora.",
+    "sources": "Dalle tue riunioni",
+    "regenerate": "Chiedi di nuovo",
+    "providerHint": "Modello per le risposte",
+    "recent": "Ricerche"
   }
 }

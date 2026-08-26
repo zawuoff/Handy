@@ -51,6 +51,15 @@ static MIGRATIONS: &[M] = &[
         "ALTER TABLE transcription_history ADD COLUMN action_items_organized BOOLEAN NOT NULL DEFAULT 0;
          UPDATE transcription_history SET action_items_organized = 1 WHERE source = 'meeting';",
     ),
+    M::up(
+        "CREATE TABLE IF NOT EXISTS ask_sessions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            query TEXT NOT NULL,
+            answer TEXT,
+            created_at INTEGER NOT NULL,
+            provider_id TEXT
+        );",
+    ),
 ];
 
 /// Where a history entry came from. Stored as TEXT so future sources
@@ -103,6 +112,26 @@ pub struct Todo {
     pub done: bool,
     /// Meeting this todo was extracted from (None for manually added ones).
     pub source_entry_id: Option<i64>,
+}
+
+/// A saved "ask your notes" session: one query, its (eventually) generated
+/// answer, listed in the shell sidebar like a chat thread.
+#[derive(Clone, Debug, Serialize, Deserialize, Type)]
+pub struct AskSession {
+    pub id: i64,
+    pub query: String,
+    pub answer: Option<String>,
+    pub created_at: i64,
+    pub provider_id: Option<String>,
+}
+
+/// One meeting matching a search query, with a snippet around the match.
+#[derive(Clone, Debug, Serialize, Deserialize, Type)]
+pub struct SearchHit {
+    pub entry_id: i64,
+    pub title: String,
+    pub timestamp: i64,
+    pub snippet: String,
 }
 
 pub struct HistoryManager {
@@ -565,6 +594,147 @@ impl HistoryManager {
         Ok(updated == 1)
     }
 
+    fn map_ask_session(row: &rusqlite::Row<'_>) -> rusqlite::Result<AskSession> {
+        Ok(AskSession {
+            id: row.get("id")?,
+            query: row.get("query")?,
+            answer: row.get("answer")?,
+            created_at: row.get("created_at")?,
+            provider_id: row.get("provider_id")?,
+        })
+    }
+
+    fn emit_ask_sessions_updated(&self) {
+        use tauri::Emitter;
+        let _ = self.app_handle.emit("ask-sessions-updated", ());
+    }
+
+    pub fn create_ask_session(&self, query: &str) -> Result<AskSession> {
+        let query = query.trim();
+        if query.is_empty() {
+            return Err(anyhow!("query is empty"));
+        }
+        let created_at = Utc::now().timestamp();
+        let conn = self.get_connection()?;
+        conn.execute(
+            "INSERT INTO ask_sessions (query, created_at) VALUES (?1, ?2)",
+            params![query, created_at],
+        )?;
+        let session = AskSession {
+            id: conn.last_insert_rowid(),
+            query: query.to_string(),
+            answer: None,
+            created_at,
+            provider_id: None,
+        };
+        self.emit_ask_sessions_updated();
+        Ok(session)
+    }
+
+    pub fn list_ask_sessions(&self, limit: usize) -> Result<Vec<AskSession>> {
+        let conn = self.get_connection()?;
+        let mut stmt = conn.prepare(
+            "SELECT id, query, answer, created_at, provider_id FROM ask_sessions
+             ORDER BY id DESC LIMIT ?1",
+        )?;
+        let sessions = stmt
+            .query_map([limit.min(100) as i64], Self::map_ask_session)?
+            .collect::<std::result::Result<Vec<_>, _>>()?;
+        Ok(sessions)
+    }
+
+    pub fn get_ask_session(&self, id: i64) -> Result<Option<AskSession>> {
+        let conn = self.get_connection()?;
+        let mut stmt = conn.prepare(
+            "SELECT id, query, answer, created_at, provider_id FROM ask_sessions WHERE id = ?1",
+        )?;
+        Ok(stmt.query_row([id], Self::map_ask_session).optional()?)
+    }
+
+    pub fn set_ask_answer(
+        &self,
+        id: i64,
+        answer: Option<&str>,
+        provider_id: Option<&str>,
+    ) -> Result<()> {
+        let conn = self.get_connection()?;
+        let updated = conn.execute(
+            "UPDATE ask_sessions SET answer = ?1, provider_id = ?2 WHERE id = ?3",
+            params![answer, provider_id, id],
+        )?;
+        if updated == 0 {
+            return Err(anyhow!("ask session {} not found", id));
+        }
+        self.emit_ask_sessions_updated();
+        Ok(())
+    }
+
+    pub fn delete_ask_session(&self, id: i64) -> Result<()> {
+        let conn = self.get_connection()?;
+        conn.execute("DELETE FROM ask_sessions WHERE id = ?1", params![id])?;
+        self.emit_ask_sessions_updated();
+        Ok(())
+    }
+
+    /// Case-insensitive substring search over meeting titles, notes and
+    /// transcripts; returns hits newest-first with a snippet around the
+    /// first match.
+    pub fn search_meeting_notes(&self, query: &str, limit: usize) -> Result<Vec<SearchHit>> {
+        let query = query.trim();
+        if query.is_empty() {
+            return Ok(Vec::new());
+        }
+        let pattern = format!(
+            "%{}%",
+            query
+                .replace('\\', "\\\\")
+                .replace('%', "\\%")
+                .replace('_', "\\_")
+        );
+        let conn = self.get_connection()?;
+        let mut stmt = conn.prepare(
+            "SELECT id, title, timestamp, transcription_text, ai_notes, user_notes
+             FROM transcription_history
+             WHERE source = 'meeting' AND (
+                title LIKE ?1 ESCAPE '\\'
+                OR ai_notes LIKE ?1 ESCAPE '\\'
+                OR user_notes LIKE ?1 ESCAPE '\\'
+                OR transcription_text LIKE ?1 ESCAPE '\\')
+             ORDER BY id DESC LIMIT ?2",
+        )?;
+        let rows = stmt.query_map(params![pattern, limit.min(50) as i64], |row| {
+            Ok((
+                row.get::<_, i64>("id")?,
+                row.get::<_, String>("title")?,
+                row.get::<_, i64>("timestamp")?,
+                row.get::<_, String>("transcription_text")?,
+                row.get::<_, Option<String>>("ai_notes")?,
+                row.get::<_, Option<String>>("user_notes")?,
+            ))
+        })?;
+
+        let mut hits = Vec::new();
+        for row in rows {
+            let (id, title, timestamp, transcript, ai_notes, user_notes) = row?;
+            let fields = [
+                user_notes.as_deref().unwrap_or(""),
+                ai_notes.as_deref().unwrap_or(""),
+                transcript.as_str(),
+            ];
+            let snippet = fields
+                .iter()
+                .find_map(|field| snippet_around(field, query))
+                .unwrap_or_default();
+            hits.push(SearchHit {
+                entry_id: id,
+                title,
+                timestamp,
+                snippet,
+            });
+        }
+        Ok(hits)
+    }
+
     pub fn cleanup_old_entries(&self) -> Result<()> {
         let retention_period = crate::settings::get_recording_retention_period(&self.app_handle);
 
@@ -961,6 +1131,32 @@ impl HistoryManager {
     }
 }
 
+/// ~160 chars of context around the first case-insensitive match of
+/// `needle` in `haystack`, ellipsized on clipped ends. None when absent.
+fn snippet_around(haystack: &str, needle: &str) -> Option<String> {
+    if haystack.is_empty() || needle.is_empty() {
+        return None;
+    }
+    let pos = haystack.to_lowercase().find(&needle.to_lowercase())?;
+    // Case-folding can shift byte offsets for exotic characters; clamp the
+    // position onto a char boundary of the original text.
+    let mut start = pos.saturating_sub(60).min(haystack.len());
+    while start > 0 && !haystack.is_char_boundary(start) {
+        start -= 1;
+    }
+    let mut end = (pos + needle.len() + 100).min(haystack.len());
+    while end < haystack.len() && !haystack.is_char_boundary(end) {
+        end += 1;
+    }
+    let core: String = haystack[start..end]
+        .split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ");
+    let prefix = if start > 0 { "…" } else { "" };
+    let suffix = if end < haystack.len() { "…" } else { "" };
+    Some(format!("{prefix}{core}{suffix}"))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -1012,6 +1208,14 @@ mod tests {
             ],
         )
         .expect("insert history entry");
+    }
+
+    #[test]
+    fn snippet_finds_case_insensitive_matches_with_context() {
+        let text = "We talked for a while and then agreed the Launch moves to October because of the review.";
+        let snip = super::snippet_around(text, "launch").expect("match");
+        assert!(snip.contains("Launch moves to October"));
+        assert!(super::snippet_around(text, "missingword").is_none());
     }
 
     #[test]

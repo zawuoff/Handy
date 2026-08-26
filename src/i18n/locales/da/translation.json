@@ -788,5 +788,16 @@
     "eventAdded": "Føjet til kalenderen: {{title}}",
     "eventFallback": "Ingen dato forstået — gemt som opgave: {{title}}",
     "failed": "Kunne ikke udføre stemmekommandoen"
+  },
+  "ask": {
+    "placeholder": "Spørg om hvad som helst i dine noter…",
+    "answer": "Svar",
+    "thinking": "Læser dine noter…",
+    "failed": "Kunne ikke skrive et svar. Prøv igen, eller skift model.",
+    "noMatches": "Intet i dine noter matcher dette endnu.",
+    "sources": "Fra dine møder",
+    "regenerate": "Spørg igen",
+    "providerHint": "Model til svar",
+    "recent": "Søgninger"
   }
 }

@@ -969,6 +969,46 @@ async getGeneratingNoteIds() : Promise<Result<number[], string>> {
     else return { status: "error", error: e  as any };
 }
 },
+async searchNotes(query: string, limit: number | null) : Promise<Result<SearchHit[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("search_notes", { query, limit }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async createAskSession(query: string) : Promise<Result<AskSession, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("create_ask_session", { query }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async listAskSessions() : Promise<Result<AskSession[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("list_ask_sessions") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async deleteAskSession(id: number) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("delete_ask_session", { id }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async answerAskSession(id: number, providerId: string | null) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("answer_ask_session", { id, providerId }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async toggleHistoryEntrySaved(id: number) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("toggle_history_entry_saved", { id }) };
@@ -1125,6 +1165,8 @@ export type Todo = { id: number; title: string; created_at: number; done: boolea
  * Meeting this todo was extracted from (None for manually added ones).
  */
 source_entry_id: number | null }
+export type AskSession = { id: number; query: string; answer: string | null; created_at: number; provider_id: string | null }
+export type SearchHit = { entry_id: number; title: string; timestamp: number; snippet: string }
 export type GpuDeviceOption = { id: string; name: string; total_vram_mb: number }
 export type HistoryEntry = { id: number; file_name: string; timestamp: number; saved: boolean; title: string; transcription_text: string; post_processed_text: string | null; post_process_prompt: string | null; post_process_requested: boolean; source: string; 
 /**

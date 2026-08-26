@@ -788,5 +788,16 @@
     "eventAdded": "Adicionado ao calendário: {{title}}",
     "eventFallback": "Data não entendida — salvo como tarefa: {{title}}",
     "failed": "Não foi possível executar o comando de voz"
+  },
+  "ask": {
+    "placeholder": "Pergunte qualquer coisa às suas notas…",
+    "answer": "Resposta",
+    "thinking": "Lendo suas notas…",
+    "failed": "Não foi possível escrever a resposta. Tente de novo ou troque o modelo.",
+    "noMatches": "Nada nas suas notas corresponde a isso ainda.",
+    "sources": "Das suas reuniões",
+    "regenerate": "Perguntar de novo",
+    "providerHint": "Modelo para as respostas",
+    "recent": "Pesquisas"
   }
 }

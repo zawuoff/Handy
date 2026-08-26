@@ -788,5 +788,16 @@
     "eventAdded": "Toegevoegd aan agenda: {{title}}",
     "eventFallback": "Datum niet begrepen — opgeslagen als taak: {{title}}",
     "failed": "Spraakopdracht kon niet worden uitgevoerd"
+  },
+  "ask": {
+    "placeholder": "Vraag je notities wat je maar wilt…",
+    "answer": "Antwoord",
+    "thinking": "Je notities lezen…",
+    "failed": "Kon geen antwoord schrijven. Probeer opnieuw of wissel van model.",
+    "noMatches": "Niets in je notities komt hier nog mee overeen.",
+    "sources": "Uit je vergaderingen",
+    "regenerate": "Opnieuw vragen",
+    "providerHint": "Model voor antwoorden",
+    "recent": "Zoekopdrachten"
   }
 }

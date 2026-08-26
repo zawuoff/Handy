@@ -788,5 +788,16 @@
     "eventAdded": "Přidáno do kalendáře: {{title}}",
     "eventFallback": "Datum nerozpoznáno — uloženo jako úkol: {{title}}",
     "failed": "Hlasový příkaz se nepodařilo provést"
+  },
+  "ask": {
+    "placeholder": "Zeptejte se na cokoli ze svých poznámek…",
+    "answer": "Odpověď",
+    "thinking": "Čtu vaše poznámky…",
+    "failed": "Odpověď se nepodařilo napsat. Zkuste to znovu nebo změňte model.",
+    "noMatches": "Nic v poznámkách tomu zatím neodpovídá.",
+    "sources": "Z vašich schůzek",
+    "regenerate": "Zeptat se znovu",
+    "providerHint": "Model pro odpovědi",
+    "recent": "Hledání"
   }
 }

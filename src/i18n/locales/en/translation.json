@@ -788,5 +788,16 @@
     "eventAdded": "Added to calendar: {{title}}",
     "eventFallback": "No date understood — saved as a todo: {{title}}",
     "failed": "Couldn't run that voice command"
+  },
+  "ask": {
+    "placeholder": "Ask anything across your notes…",
+    "answer": "Answer",
+    "thinking": "Reading your notes…",
+    "failed": "Couldn't write an answer. Try again, or switch the model.",
+    "noMatches": "Nothing in your notes matches this yet.",
+    "sources": "From your meetings",
+    "regenerate": "Ask again",
+    "providerHint": "Model used for answers",
+    "recent": "Searches"
   }
 }

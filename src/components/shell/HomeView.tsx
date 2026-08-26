@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Calendar, FileText, Square } from "lucide-react";
+import { Calendar, FileText, Search, Square } from "lucide-react";
 import { commands, events, type HistoryEntry } from "@/bindings";
 import type { MeetingUiState } from "./useMeetingState";
 
@@ -28,9 +28,11 @@ const dayLabel = (
 export const HomeView: React.FC<{
   meeting: MeetingUiState;
   onOpenNote: (id: number) => void;
-}> = ({ meeting, onOpenNote }) => {
+  onAsk: (query: string) => void;
+}> = ({ meeting, onOpenNote, onAsk }) => {
   const { t, i18n } = useTranslation();
   const [entries, setEntries] = useState<HistoryEntry[]>([]);
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     commands.getMeetingEntries(null, 20).then((result) => {
@@ -75,7 +77,7 @@ export const HomeView: React.FC<{
   let lastGroup = "";
 
   return (
-    <div className="max-w-3xl w-full mx-auto flex flex-col gap-7 pt-6">
+    <div className="max-w-3xl w-full mx-auto flex flex-col gap-7 pt-6 min-h-[calc(100vh-6rem)]">
       <div className="flex items-end justify-between gap-4">
         <div className="flex flex-col gap-1.5">
           <span className="text-xs font-medium tracking-[0.04em] uppercase text-muted">
@@ -171,6 +173,24 @@ export const HomeView: React.FC<{
             })}
           </div>
         )}
+      </div>
+
+      <div className="sticky bottom-4 mt-auto flex items-center gap-3 rounded-[14px] border border-border-strong bg-card px-3 py-2.5 shadow-2xl">
+        <span className="w-9 h-9 shrink-0 rounded-[11px] bg-text text-background flex items-center justify-center">
+          <Search size={15} />
+        </span>
+        <input
+          className="flex-1 bg-transparent outline-none text-[13.5px] text-text placeholder:text-muted min-w-0"
+          value={query}
+          placeholder={t("ask.placeholder")}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && query.trim()) {
+              onAsk(query.trim());
+              setQuery("");
+            }
+          }}
+        />
       </div>
     </div>
   );

@@ -788,5 +788,16 @@
     "eventAdded": "Takvime eklendi: {{title}}",
     "eventFallback": "Tarih anlaşılamadı — görev olarak kaydedildi: {{title}}",
     "failed": "Sesli komut çalıştırılamadı"
+  },
+  "ask": {
+    "placeholder": "Notlarınıza her şeyi sorun…",
+    "answer": "Yanıt",
+    "thinking": "Notlarınız okunuyor…",
+    "failed": "Yanıt yazılamadı. Tekrar deneyin veya modeli değiştirin.",
+    "noMatches": "Notlarınızda bununla eşleşen bir şey yok.",
+    "sources": "Toplantılarınızdan",
+    "regenerate": "Tekrar sor",
+    "providerHint": "Yanıtlar için model",
+    "recent": "Aramalar"
   }
 }

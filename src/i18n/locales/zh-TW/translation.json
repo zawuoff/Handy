@@ -788,5 +788,16 @@
     "eventAdded": "已加入日曆:{{title}}",
     "eventFallback": "未識別日期——已儲存為待辦:{{title}}",
     "failed": "無法執行語音命令"
+  },
+  "ask": {
+    "placeholder": "問你的筆記任何問題…",
+    "answer": "回答",
+    "thinking": "正在閱讀你的筆記…",
+    "failed": "無法產生回答。請重試或更換模型。",
+    "noMatches": "筆記中暫時沒有相符的內容。",
+    "sources": "來自你的會議",
+    "regenerate": "再問一次",
+    "providerHint": "用於回答的模型",
+    "recent": "搜尋"
   }
 }

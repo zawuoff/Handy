@@ -788,5 +788,16 @@
     "eventAdded": "Dodano do kalendarza: {{title}}",
     "eventFallback": "Nie rozpoznano daty — zapisano jako zadanie: {{title}}",
     "failed": "Nie udało się wykonać polecenia głosowego"
+  },
+  "ask": {
+    "placeholder": "Zapytaj o cokolwiek ze swoich notatek…",
+    "answer": "Odpowiedź",
+    "thinking": "Czytam twoje notatki…",
+    "failed": "Nie udało się napisać odpowiedzi. Spróbuj ponownie lub zmień model.",
+    "noMatches": "Nic w notatkach jeszcze do tego nie pasuje.",
+    "sources": "Z twoich spotkań",
+    "regenerate": "Zapytaj ponownie",
+    "providerHint": "Model do odpowiedzi",
+    "recent": "Wyszukiwania"
   }
 }

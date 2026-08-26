@@ -788,5 +788,16 @@
     "eventAdded": "Zum Kalender hinzugefügt: {{title}}",
     "eventFallback": "Kein Datum erkannt — als Aufgabe gespeichert: {{title}}",
     "failed": "Sprachbefehl konnte nicht ausgeführt werden"
+  },
+  "ask": {
+    "placeholder": "Frag deine Notizen alles…",
+    "answer": "Antwort",
+    "thinking": "Liest deine Notizen…",
+    "failed": "Antwort konnte nicht geschrieben werden. Erneut versuchen oder Modell wechseln.",
+    "noMatches": "Nichts in deinen Notizen passt bisher dazu.",
+    "sources": "Aus deinen Meetings",
+    "regenerate": "Erneut fragen",
+    "providerHint": "Modell für Antworten",
+    "recent": "Suchen"
   }
 }

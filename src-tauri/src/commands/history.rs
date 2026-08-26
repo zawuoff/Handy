@@ -1,6 +1,6 @@
 use crate::actions::process_transcription_output;
 use crate::managers::{
-    history::{HistoryManager, PaginatedHistory, Todo},
+    history::{AskSession, HistoryManager, PaginatedHistory, SearchHit, Todo},
     transcription::TranscriptionManager,
 };
 use std::sync::Arc;
@@ -69,6 +69,54 @@ pub async fn set_history_entry_user_notes(
 pub async fn generate_meeting_notes(app: AppHandle, id: i64) -> Result<(), String> {
     crate::notes::spawn_generation(&app, id);
     Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn search_notes(
+    _app: AppHandle,
+    history_manager: State<'_, Arc<HistoryManager>>,
+    query: String,
+    limit: Option<u32>,
+) -> Result<Vec<SearchHit>, String> {
+    history_manager
+        .search_meeting_notes(&query, limit.unwrap_or(20) as usize)
+        .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn create_ask_session(
+    _app: AppHandle,
+    history_manager: State<'_, Arc<HistoryManager>>,
+    query: String,
+) -> Result<AskSession, String> {
+    history_manager
+        .create_ask_session(&query)
+        .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn list_ask_sessions(
+    _app: AppHandle,
+    history_manager: State<'_, Arc<HistoryManager>>,
+) -> Result<Vec<AskSession>, String> {
+    history_manager
+        .list_ask_sessions(20)
+        .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn delete_ask_session(
+    _app: AppHandle,
+    history_manager: State<'_, Arc<HistoryManager>>,
+    id: i64,
+) -> Result<(), String> {
+    history_manager
+        .delete_ask_session(id)
+        .map_err(|e| e.to_string())
 }
 
 #[tauri::command]

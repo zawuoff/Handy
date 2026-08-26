@@ -788,5 +788,16 @@
     "eventAdded": "Ajouté au calendrier : {{title}}",
     "eventFallback": "Date non comprise — enregistré comme tâche : {{title}}",
     "failed": "Impossible d'exécuter la commande vocale"
+  },
+  "ask": {
+    "placeholder": "Demandez n'importe quoi à vos notes…",
+    "answer": "Réponse",
+    "thinking": "Lecture de vos notes…",
+    "failed": "Impossible d'écrire une réponse. Réessayez ou changez de modèle.",
+    "noMatches": "Rien dans vos notes ne correspond pour l'instant.",
+    "sources": "De vos réunions",
+    "regenerate": "Redemander",
+    "providerHint": "Modèle utilisé pour les réponses",
+    "recent": "Recherches"
   }
 }

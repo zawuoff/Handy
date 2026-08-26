@@ -788,5 +788,16 @@
     "eventAdded": "已添加到日历：{{title}}",
     "eventFallback": "未识别日期——已保存为待办：{{title}}",
     "failed": "无法执行语音命令"
+  },
+  "ask": {
+    "placeholder": "问你的笔记任何问题…",
+    "answer": "回答",
+    "thinking": "正在阅读你的笔记…",
+    "failed": "无法生成回答。请重试或更换模型。",
+    "noMatches": "笔记中暂时没有匹配的内容。",
+    "sources": "来自你的会议",
+    "regenerate": "再问一次",
+    "providerHint": "用于回答的模型",
+    "recent": "搜索"
   }
 }

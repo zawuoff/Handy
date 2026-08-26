@@ -788,5 +788,16 @@
     "eventAdded": "Đã thêm vào lịch: {{title}}",
     "eventFallback": "Không hiểu ngày — lưu thành việc cần làm: {{title}}",
     "failed": "Không thể chạy lệnh thoại"
+  },
+  "ask": {
+    "placeholder": "Hỏi bất cứ điều gì trong ghi chú của bạn…",
+    "answer": "Trả lời",
+    "thinking": "Đang đọc ghi chú của bạn…",
+    "failed": "Không thể viết câu trả lời. Thử lại hoặc đổi mô hình.",
+    "noMatches": "Chưa có gì trong ghi chú khớp với điều này.",
+    "sources": "Từ các cuộc họp của bạn",
+    "regenerate": "Hỏi lại",
+    "providerHint": "Mô hình dùng để trả lời",
+    "recent": "Tìm kiếm"
   }
 }

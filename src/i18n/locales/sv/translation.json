@@ -788,5 +788,16 @@
     "eventAdded": "Tillagd i kalendern: {{title}}",
     "eventFallback": "Inget datum förstods — sparat som uppgift: {{title}}",
     "failed": "Kunde inte köra röstkommandot"
+  },
+  "ask": {
+    "placeholder": "Fråga vad som helst i dina anteckningar…",
+    "answer": "Svar",
+    "thinking": "Läser dina anteckningar…",
+    "failed": "Kunde inte skriva ett svar. Försök igen eller byt modell.",
+    "noMatches": "Inget i dina anteckningar matchar ännu.",
+    "sources": "Från dina möten",
+    "regenerate": "Fråga igen",
+    "providerHint": "Modell för svar",
+    "recent": "Sökningar"
   }
 }

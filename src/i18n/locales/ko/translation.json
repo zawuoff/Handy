@@ -788,5 +788,16 @@
     "eventAdded": "캘린더에 추가됨: {{title}}",
     "eventFallback": "날짜를 이해하지 못해 할 일로 저장: {{title}}",
     "failed": "음성 명령을 실행하지 못했습니다"
+  },
+  "ask": {
+    "placeholder": "노트에 무엇이든 물어보세요…",
+    "answer": "답변",
+    "thinking": "노트를 읽는 중…",
+    "failed": "답변을 작성하지 못했습니다. 다시 시도하거나 모델을 바꿔보세요.",
+    "noMatches": "노트에서 일치하는 내용이 아직 없습니다.",
+    "sources": "회의에서",
+    "regenerate": "다시 묻기",
+    "providerHint": "답변에 사용할 모델",
+    "recent": "검색"
   }
 }
