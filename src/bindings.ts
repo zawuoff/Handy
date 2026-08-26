@@ -961,6 +961,14 @@ async todoToEvent(id: number, when: string, durationMin: number | null) : Promis
     else return { status: "error", error: e  as any };
 }
 },
+async getGeneratingNoteIds() : Promise<Result<number[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("get_generating_note_ids") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async toggleHistoryEntrySaved(id: number) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("toggle_history_entry_saved", { id }) };

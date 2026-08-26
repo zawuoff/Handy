@@ -34,13 +34,6 @@ static MIGRATIONS: &[M] = &[
     M::up("ALTER TABLE transcription_history ADD COLUMN source TEXT NOT NULL DEFAULT 'dictation';"),
     M::up("ALTER TABLE transcription_history ADD COLUMN ai_notes TEXT;"),
     M::up("ALTER TABLE transcription_history ADD COLUMN user_notes TEXT;"),
-    // Backfill marks every pre-existing meeting as organized: their action
-    // items were either extracted under the old build or predate the feature,
-    // and re-generating notes must never re-create the same events/todos.
-    M::up(
-        "ALTER TABLE transcription_history ADD COLUMN action_items_organized BOOLEAN NOT NULL DEFAULT 0;
-         UPDATE transcription_history SET action_items_organized = 1 WHERE source = 'meeting';",
-    ),
     M::up(
         "CREATE TABLE IF NOT EXISTS todos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -49,6 +42,14 @@ static MIGRATIONS: &[M] = &[
             done BOOLEAN NOT NULL DEFAULT 0,
             source_entry_id INTEGER
         );",
+    ),
+    // Appended AFTER the todos migration (already applied on user DBs —
+    // list order is the migration identity). Backfill marks every pre-existing meeting as organized: their action
+    // items were either extracted under the old build or predate the feature,
+    // and re-generating notes must never re-create the same events/todos.
+    M::up(
+        "ALTER TABLE transcription_history ADD COLUMN action_items_organized BOOLEAN NOT NULL DEFAULT 0;
+         UPDATE transcription_history SET action_items_organized = 1 WHERE source = 'meeting';",
     ),
 ];
 
@@ -549,25 +550,19 @@ impl HistoryManager {
         Ok(())
     }
 
-    /// Whether calendar events/todos were already extracted for this entry.
-    /// Kept internal (not on `HistoryEntry`): it only guards re-generation
-    /// from creating the same events twice.
-    pub fn action_items_organized(&self, id: i64) -> Result<bool> {
+    /// Atomically claim the one-time action-item extraction for an entry.
+    /// Returns true exactly once per entry — a concurrent second generation
+    /// (or a later regenerate) gets false and must skip organizing, so the
+    /// same events and todos can never be created twice. Kept internal (not
+    /// on `HistoryEntry`).
+    pub fn try_claim_action_items(&self, id: i64) -> Result<bool> {
         let conn = self.get_connection()?;
-        Ok(conn.query_row(
-            "SELECT action_items_organized FROM transcription_history WHERE id = ?1",
-            params![id],
-            |row| row.get(0),
-        )?)
-    }
-
-    pub fn mark_action_items_organized(&self, id: i64) -> Result<()> {
-        let conn = self.get_connection()?;
-        conn.execute(
-            "UPDATE transcription_history SET action_items_organized = 1 WHERE id = ?1",
+        let updated = conn.execute(
+            "UPDATE transcription_history SET action_items_organized = 1
+             WHERE id = ?1 AND action_items_organized = 0",
             params![id],
         )?;
-        Ok(())
+        Ok(updated == 1)
     }
 
     pub fn cleanup_old_entries(&self) -> Result<()> {

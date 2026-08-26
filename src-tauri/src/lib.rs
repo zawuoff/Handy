@@ -753,6 +753,7 @@ pub fn run(cli_args: CliArgs) {
             commands::history::set_history_entry_title,
             commands::history::set_history_entry_user_notes,
             commands::history::generate_meeting_notes,
+            notes::get_generating_note_ids,
             shortcut::change_meeting_notes_prompt_setting,
             commands::history::get_todos,
             commands::history::add_todo,

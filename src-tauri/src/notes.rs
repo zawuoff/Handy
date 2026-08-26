@@ -12,8 +12,22 @@ use crate::actions::{strip_invisible_chars, strip_think_block};
 use crate::managers::history::HistoryManager;
 use crate::settings::{get_settings, APPLE_INTELLIGENCE_PROVIDER_ID};
 use log::{debug, error, info};
-use std::sync::Arc;
+use once_cell::sync::Lazy;
+use std::collections::HashSet;
+use std::sync::{Arc, Mutex};
 use tauri::{AppHandle, Emitter, Manager};
+
+/// Entries whose note generation is currently running. Guards against a
+/// second concurrent generation for the same entry (e.g. the user pressing
+/// "enhance" while the automatic pass is still waiting on a cold model) and
+/// lets the UI recover the "writing" state after (re)mounting.
+static IN_FLIGHT: Lazy<Mutex<HashSet<i64>>> = Lazy::new(|| Mutex::new(HashSet::new()));
+
+#[tauri::command]
+#[specta::specta]
+pub fn get_generating_note_ids() -> Result<Vec<i64>, String> {
+    Ok(IN_FLIGHT.lock().unwrap().iter().copied().collect())
+}
 
 #[derive(Clone, serde::Serialize)]
 struct NotesStatusEvent {
@@ -28,9 +42,15 @@ fn emit_status(app: &AppHandle, id: i64, status: &'static str) {
 /// Fire-and-forget note generation for a history entry. Errors are logged
 /// and surfaced to the UI as a `failed` status; they never block the caller.
 pub fn spawn_generation(app: &AppHandle, entry_id: i64) {
+    if !IN_FLIGHT.lock().unwrap().insert(entry_id) {
+        debug!("Note generation for entry {entry_id} is already running; not starting another");
+        return;
+    }
     let app = app.clone();
     tauri::async_runtime::spawn(async move {
-        if let Err(err) = generate_and_store(&app, entry_id).await {
+        let result = generate_and_store(&app, entry_id).await;
+        IN_FLIGHT.lock().unwrap().remove(&entry_id);
+        if let Err(err) = result {
             error!("Meeting note generation failed for entry {entry_id}: {err}");
             emit_status(&app, entry_id, "failed");
         }
@@ -206,11 +226,14 @@ fn normalized_title(title: &str) -> String {
 }
 
 async fn organize_action_items(app: &AppHandle, entry_id: i64, notes: &str) -> Result<(), String> {
-    // Regenerating notes must not re-create the same events and todos: each
-    // meeting is organized exactly once.
+    // Atomic one-time claim: regenerations and concurrent generations must
+    // never re-create the same events and todos.
     {
         let hm = Arc::clone(&app.state::<Arc<HistoryManager>>());
-        if hm.action_items_organized(entry_id).unwrap_or(false) {
+        if !hm
+            .try_claim_action_items(entry_id)
+            .map_err(|e| e.to_string())?
+        {
             return Err("already organized".to_string());
         }
     }
@@ -315,9 +338,6 @@ async fn organize_action_items(app: &AppHandle, entry_id: i64, notes: &str) -> R
         }
     }
 
-    if let Err(err) = hm.mark_action_items_organized(entry_id) {
-        debug!("Could not mark entry {entry_id} as organized: {err}");
-    }
     if events > 0 || todos > 0 {
         let _ = app.emit("auto-organized", AutoOrganizedEvent { events, todos });
         info!("Meeting {entry_id}: auto-created {events} events and {todos} todos");

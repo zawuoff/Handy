@@ -356,6 +356,20 @@ export const NotesSettings: React.FC<{
     };
   }, []);
 
+  // Notes may already be generating when this view mounts (a cold local
+  // model can take a minute) — seed the status so the user sees "Writing
+  // notes…" instead of an empty state that tempts a duplicate enhance.
+  useEffect(() => {
+    commands.getGeneratingNoteIds().then((result) => {
+      if (result.status !== "ok") return;
+      setStatusById((prev) => {
+        const next = { ...prev };
+        for (const id of result.data) next[id] = "generating";
+        return next;
+      });
+    });
+  }, []);
+
   useEffect(() => {
     const unlisten = listen<NotesStatusPayload>("notes-status", (event) => {
       setStatusById((prev) => ({
