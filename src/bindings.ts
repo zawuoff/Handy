@@ -1036,6 +1036,48 @@ async changeMeetingRadarEnabledSetting(enabled: boolean) : Promise<Result<null, 
     else return { status: "error", error: e  as any };
 }
 },
+async changeDiarizationEnabledSetting(enabled: boolean) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_diarization_enabled_setting", { enabled }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Name a diarized speaker for the running meeting.
+ */
+async setMeetingSpeakerName(speaker: number, name: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("set_meeting_speaker_name", { speaker, name }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Whether the speaker-separation model is on disk and ready to use.
+ */
+async isDiarizerReady() : Promise<Result<boolean, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("is_diarizer_ready") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Download the speaker-separation model (~139 MB). Progress is emitted as
+ * "diarizer-download" events; safe to call when already downloaded.
+ */
+async downloadDiarizerModel() : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("download_diarizer_model") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async toggleHistoryEntrySaved(id: number) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("toggle_history_entry_saved", { id }) };
@@ -1151,7 +1193,7 @@ selected_channel?: number | null; clamshell_microphone?: string | null; selected
 /**
  * System prompt used to turn a meeting transcript into notes.
  */
-meeting_notes_prompt?: string; meeting_radar_enabled?: boolean; app_language?: string; theme?: Theme; experimental_enabled?: boolean; lazy_stream_close?: boolean; keyboard_implementation?: KeyboardImplementation; show_tray_icon?: boolean; paste_delay_ms?: number; paste_delay_after_ms?: number; 
+meeting_notes_prompt?: string; meeting_radar_enabled?: boolean; diarization_enabled?: boolean; app_language?: string; theme?: Theme; experimental_enabled?: boolean; lazy_stream_close?: boolean; keyboard_implementation?: KeyboardImplementation; show_tray_icon?: boolean; paste_delay_ms?: number; paste_delay_after_ms?: number; 
 /**
  * Debug-gated ("beta") receipt-sequenced paste: restore the clipboard only
  * after the target app actually reads the transcript, instead of after a
@@ -1329,7 +1371,13 @@ kind?: StreamWorkKind | null }
  * `committed` is the append-only, flicker-free prefix; `tentative` is the
  * volatile suffix the model may still rewrite.
  */
-export type StreamTextEvent = { committed: string; tentative: string }
+export type StreamTextEvent = { committed: string; tentative: string; 
+/**
+ * Speaker-attributed turns (empty unless speaker separation is running).
+ * The last turn is the in-progress one and may still change speaker.
+ */
+turns: SpeakerTurn[] }
+export type SpeakerTurn = { speaker: number; text: string; t_ms: number }
 /**
  * Semantic kind of "working" phase, used to localize the spinner label.
  */

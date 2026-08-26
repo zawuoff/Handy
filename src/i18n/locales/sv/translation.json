@@ -633,6 +633,12 @@
     "meetingRadar": {
       "title": "Mötesradar",
       "description": "När en annan app använder din mikrofon under uppspelning (ett samtal) erbjuder Noted via en avisering att spela in det som ett möte."
+    },
+    "speakerSeparation": {
+      "title": "Talaruppdelning",
+      "description": "Skiljer talare åt i mötestranskriptioner (Talare 1, Talare 2, …). Laddar ner en liten lokal modell (~140 MB) första gången.",
+      "downloading": "Laddar ner talarmodell… {{percent}}%",
+      "downloadFailed": "Nedladdningen av talarmodellen misslyckades — kontrollera anslutningen och aktivera igen."
     }
   },
   "footer": {
@@ -783,7 +789,12 @@
     "privacy": "Transkriberat på den här enheten. Inget lämnar din dator.",
     "notesTitle": "Mötesanteckningar",
     "notesHint": "Anteckna vad som helst — dina anteckningar förbättras med transkriptionen när mötet är slut.",
-    "notesPlaceholder": "Skriv en anteckning…"
+    "notesPlaceholder": "Skriv en anteckning…",
+    "speakerN": "Talare {{n}}",
+    "speakerUnknown": "Talare",
+    "speakersButton": "Namnge talare ({{count}})",
+    "speakersHint": "Skriv riktiga namn — de ersätter etiketterna överallt, även i tidigare rader.",
+    "saveNames": "Spara namn"
   },
   "todos": {
     "title": "Uppgifter",

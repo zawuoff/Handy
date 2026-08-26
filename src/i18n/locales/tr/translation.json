@@ -633,6 +633,12 @@
     "meetingRadar": {
       "title": "Toplantı radarı",
       "description": "Başka bir uygulama oynatma sırasında mikrofonunuzu kullanırken (bir görüşme), Noted bildirim ile bunu toplantı olarak kaydetmeyi önerir."
+    },
+    "speakerSeparation": {
+      "title": "Konuşmacı ayrımı",
+      "description": "Toplantı transkriptlerinde konuşmacıları ayırt eder (Konuşmacı 1, Konuşmacı 2, …). İlk açılışta küçük bir yerel model (~140 MB) indirir.",
+      "downloading": "Konuşmacı modeli indiriliyor… {{percent}}%",
+      "downloadFailed": "Model indirilemedi — bağlantınızı kontrol edip yeniden açın."
     }
   },
   "footer": {
@@ -783,7 +789,12 @@
     "privacy": "Bu cihazda yazıya döküldü. Hiçbir şey bilgisayarınızdan çıkmaz.",
     "notesTitle": "Toplantı notları",
     "notesHint": "Aklınıza geleni yazın — toplantı bitince notlarınız transkriptle zenginleştirilir.",
-    "notesPlaceholder": "Bir not yazın…"
+    "notesPlaceholder": "Bir not yazın…",
+    "speakerN": "Konuşmacı {{n}}",
+    "speakerUnknown": "Konuşmacı",
+    "speakersButton": "Konuşmacıları adlandır ({{count}})",
+    "speakersHint": "Gerçek adları yazın — önceki satırlar dahil her yerde etiketlerin yerini alırlar.",
+    "saveNames": "Adları kaydet"
   },
   "todos": {
     "title": "Yapılacaklar",

@@ -633,6 +633,12 @@
     "meetingRadar": {
       "title": "会議レーダー",
       "description": "再生中に他のアプリがマイクを使用している場合（通話中）、Notedが通知でミーティングとして録音するか提案します。"
+    },
+    "speakerSeparation": {
+      "title": "話者分離",
+      "description": "会議の文字起こしで話者を区別します（話者1、話者2、…）。初回に小さなローカルモデル（約140MB）をダウンロードします。",
+      "downloading": "話者モデルをダウンロード中… {{percent}}%",
+      "downloadFailed": "話者モデルのダウンロードに失敗しました。接続を確認して再度オンにしてください。"
     }
   },
   "footer": {
@@ -783,7 +789,12 @@
     "privacy": "この端末で文字起こし。何も外部に送信されません。",
     "notesTitle": "会議メモ",
     "notesHint": "自由にメモしてください。会議終了後、メモは文字起こしをもとに仕上げられます。",
-    "notesPlaceholder": "メモを入力…"
+    "notesPlaceholder": "メモを入力…",
+    "speakerN": "話者{{n}}",
+    "speakerUnknown": "話者",
+    "speakersButton": "話者に名前を付ける（{{count}}）",
+    "speakersHint": "実際の名前を入力すると、以前の行も含めてすべてのラベルが置き換わります。",
+    "saveNames": "名前を保存"
   },
   "todos": {
     "title": "タスク",

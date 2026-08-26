@@ -159,6 +159,8 @@ const settingUpdaters: {
     commands.changeMeetingNotesPromptSetting(value as string),
   meeting_radar_enabled: (value) =>
     commands.changeMeetingRadarEnabledSetting(value as boolean),
+  diarization_enabled: (value) =>
+    commands.changeDiarizationEnabledSetting(value as boolean),
   log_level: (value) => commands.setLogLevel(value as any),
   app_language: (value) => commands.changeAppLanguageSetting(value as string),
   theme: (value) => commands.changeThemeSetting(value as string),

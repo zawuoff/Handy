@@ -633,6 +633,12 @@
     "meetingRadar": {
       "title": "Radar de réunions",
       "description": "Quand une autre app utilise votre micro pendant la lecture (un appel), Noted propose de l'enregistrer comme réunion via une notification."
+    },
+    "speakerSeparation": {
+      "title": "Séparation des intervenants",
+      "description": "Distingue les intervenants dans les transcriptions de réunion (Intervenant 1, Intervenant 2, …). Télécharge un petit modèle local (~140 Mo) la première fois.",
+      "downloading": "Téléchargement du modèle… {{percent}}%",
+      "downloadFailed": "Échec du téléchargement du modèle — vérifiez votre connexion et réactivez."
     }
   },
   "footer": {
@@ -783,7 +789,12 @@
     "privacy": "Transcrit sur cet appareil. Rien ne quitte votre ordinateur.",
     "notesTitle": "Notes de réunion",
     "notesHint": "Notez ce que vous voulez — vos notes sont enrichies avec la transcription à la fin de la réunion.",
-    "notesPlaceholder": "Saisissez une note…"
+    "notesPlaceholder": "Saisissez une note…",
+    "speakerN": "Intervenant {{n}}",
+    "speakerUnknown": "Intervenant",
+    "speakersButton": "Nommer les intervenants ({{count}})",
+    "speakersHint": "Saisissez les vrais noms — ils remplacent les étiquettes partout, y compris les lignes précédentes.",
+    "saveNames": "Enregistrer les noms"
   },
   "todos": {
     "title": "Tâches",

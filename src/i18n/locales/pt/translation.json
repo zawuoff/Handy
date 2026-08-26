@@ -633,6 +633,12 @@
     "meetingRadar": {
       "title": "Radar de reuniões",
       "description": "Quando outro app usa seu microfone durante a reprodução (uma chamada), o Noted oferece gravá-la como reunião via notificação."
+    },
+    "speakerSeparation": {
+      "title": "Separação de falantes",
+      "description": "Distingue os falantes nas transcrições de reuniões (Falante 1, Falante 2, …). Baixa um pequeno modelo local (~140 MB) na primeira vez.",
+      "downloading": "Baixando modelo de falantes… {{percent}}%",
+      "downloadFailed": "Falha ao baixar o modelo — verifique a conexão e ative novamente."
     }
   },
   "footer": {
@@ -783,7 +789,12 @@
     "privacy": "Transcrito neste dispositivo. Nada sai do seu computador.",
     "notesTitle": "Notas da reunião",
     "notesHint": "Anote o que quiser — suas notas são aprimoradas com a transcrição quando a reunião termina.",
-    "notesPlaceholder": "Digite uma nota…"
+    "notesPlaceholder": "Digite uma nota…",
+    "speakerN": "Falante {{n}}",
+    "speakerUnknown": "Falante",
+    "speakersButton": "Nomear falantes ({{count}})",
+    "speakersHint": "Digite os nomes reais — eles substituem os rótulos em todo lugar, inclusive nas linhas anteriores.",
+    "saveNames": "Salvar nomes"
   },
   "todos": {
     "title": "Tarefas",

@@ -633,6 +633,12 @@
     "meetingRadar": {
       "title": "Meeting-Radar",
       "description": "Wenn eine andere App dein Mikrofon während der Wiedergabe nutzt (ein Anruf), bietet Noted per Benachrichtigung an, es als Meeting aufzunehmen."
+    },
+    "speakerSeparation": {
+      "title": "Sprechertrennung",
+      "description": "Unterscheidet Sprecher in Meeting-Transkripten (Sprecher 1, Sprecher 2, …). Lädt beim ersten Aktivieren ein kleines lokales Modell (~140 MB).",
+      "downloading": "Sprechermodell wird heruntergeladen… {{percent}}%",
+      "downloadFailed": "Download des Sprechermodells fehlgeschlagen — Verbindung prüfen und erneut aktivieren."
     }
   },
   "footer": {
@@ -783,7 +789,12 @@
     "privacy": "Auf diesem Gerät transkribiert. Nichts verlässt deinen Computer.",
     "notesTitle": "Meeting-Notizen",
     "notesHint": "Notieren Sie alles — Ihre Notizen werden nach dem Meeting mit dem Transkript verfeinert.",
-    "notesPlaceholder": "Notiz eingeben…"
+    "notesPlaceholder": "Notiz eingeben…",
+    "speakerN": "Sprecher {{n}}",
+    "speakerUnknown": "Sprecher",
+    "speakersButton": "Sprecher benennen ({{count}})",
+    "speakersHint": "Echte Namen eingeben — sie ersetzen die Bezeichnungen überall, auch in früheren Zeilen.",
+    "saveNames": "Namen speichern"
   },
   "todos": {
     "title": "Aufgaben",

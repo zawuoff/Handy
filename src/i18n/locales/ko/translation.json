@@ -633,6 +633,12 @@
     "meetingRadar": {
       "title": "회의 레이더",
       "description": "재생 중 다른 앱이 마이크를 사용하면(통화) Noted가 알림으로 회의 녹음을 제안합니다."
+    },
+    "speakerSeparation": {
+      "title": "화자 분리",
+      "description": "회의 전사에서 화자를 구분합니다(화자 1, 화자 2, …). 처음 켤 때 작은 로컬 모델(~140MB)을 다운로드합니다.",
+      "downloading": "화자 모델 다운로드 중… {{percent}}%",
+      "downloadFailed": "화자 모델 다운로드 실패 — 연결을 확인하고 다시 켜 주세요."
     }
   },
   "footer": {
@@ -783,7 +789,12 @@
     "privacy": "이 기기에서 전사됨. 아무것도 컴퓨터를 떠나지 않습니다.",
     "notesTitle": "회의 메모",
     "notesHint": "무엇이든 적어 보세요. 회의가 끝나면 메모가 전사 내용과 함께 다듬어집니다.",
-    "notesPlaceholder": "메모 입력…"
+    "notesPlaceholder": "메모 입력…",
+    "speakerN": "화자 {{n}}",
+    "speakerUnknown": "화자",
+    "speakersButton": "화자 이름 지정 ({{count}})",
+    "speakersHint": "실제 이름을 입력하면 이전 줄을 포함해 모든 라벨이 대체됩니다.",
+    "saveNames": "이름 저장"
   },
   "todos": {
     "title": "할 일",

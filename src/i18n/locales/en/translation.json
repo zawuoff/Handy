@@ -633,6 +633,12 @@
     "meetingRadar": {
       "title": "Meeting radar",
       "description": "When another app is using your microphone during playback (a call), Noted offers to record it as a meeting via a desktop notification."
+    },
+    "speakerSeparation": {
+      "title": "Speaker separation",
+      "description": "Tell speakers apart in meeting transcripts (Speaker 1, Speaker 2, …). Downloads a small on-device model (~140 MB) the first time.",
+      "downloading": "Downloading speaker model… {{percent}}%",
+      "downloadFailed": "Speaker model download failed — check your connection and toggle again."
     }
   },
   "footer": {
@@ -783,7 +789,12 @@
     "privacy": "Transcribed on this device. Nothing leaves your computer.",
     "notesTitle": "Meeting notes",
     "notesHint": "Jot anything — your notes get enhanced with the transcript when the meeting ends.",
-    "notesPlaceholder": "Type a note…"
+    "notesPlaceholder": "Type a note…",
+    "speakerN": "Speaker {{n}}",
+    "speakerUnknown": "Speaker",
+    "speakersButton": "Name speakers ({{count}})",
+    "speakersHint": "Type real names — they replace the labels everywhere, including earlier lines.",
+    "saveNames": "Save names"
   },
   "todos": {
     "title": "Todos",

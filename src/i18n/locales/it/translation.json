@@ -633,6 +633,12 @@
     "meetingRadar": {
       "title": "Radar riunioni",
       "description": "Quando un'altra app usa il microfono durante la riproduzione (una chiamata), Noted propone di registrarla come riunione con una notifica."
+    },
+    "speakerSeparation": {
+      "title": "Separazione degli interlocutori",
+      "description": "Distingue gli interlocutori nelle trascrizioni delle riunioni (Interlocutore 1, 2, …). Scarica un piccolo modello locale (~140 MB) la prima volta.",
+      "downloading": "Download del modello… {{percent}}%",
+      "downloadFailed": "Download del modello non riuscito — controlla la connessione e riattiva."
     }
   },
   "footer": {
@@ -783,7 +789,12 @@
     "privacy": "Trascritto su questo dispositivo. Nulla lascia il tuo computer.",
     "notesTitle": "Note della riunione",
     "notesHint": "Annota qualsiasi cosa: le tue note vengono arricchite con la trascrizione al termine della riunione.",
-    "notesPlaceholder": "Scrivi una nota…"
+    "notesPlaceholder": "Scrivi una nota…",
+    "speakerN": "Interlocutore {{n}}",
+    "speakerUnknown": "Interlocutore",
+    "speakersButton": "Assegna nomi ({{count}})",
+    "speakersHint": "Scrivi i nomi reali: sostituiranno le etichette ovunque, anche nelle righe precedenti.",
+    "saveNames": "Salva nomi"
   },
   "todos": {
     "title": "Attività",

@@ -633,6 +633,12 @@
     "meetingRadar": {
       "title": "Vergaderradar",
       "description": "Wanneer een andere app je microfoon gebruikt tijdens afspelen (een gesprek), biedt Noted via een melding aan het als vergadering op te nemen."
+    },
+    "speakerSeparation": {
+      "title": "Sprekerscheiding",
+      "description": "Onderscheidt sprekers in vergadertranscripties (Spreker 1, Spreker 2, …). Downloadt de eerste keer een klein lokaal model (~140 MB).",
+      "downloading": "Sprekermodel downloaden… {{percent}}%",
+      "downloadFailed": "Downloaden van het sprekermodel mislukt — controleer je verbinding en schakel opnieuw in."
     }
   },
   "footer": {
@@ -783,7 +789,12 @@
     "privacy": "Getranscribeerd op dit apparaat. Niets verlaat je computer.",
     "notesTitle": "Vergadernotities",
     "notesHint": "Noteer wat je wilt — je notities worden na de vergadering verrijkt met het transcript.",
-    "notesPlaceholder": "Typ een notitie…"
+    "notesPlaceholder": "Typ een notitie…",
+    "speakerN": "Spreker {{n}}",
+    "speakerUnknown": "Spreker",
+    "speakersButton": "Sprekers benoemen ({{count}})",
+    "speakersHint": "Typ echte namen — ze vervangen de labels overal, ook in eerdere regels.",
+    "saveNames": "Namen opslaan"
   },
   "todos": {
     "title": "Taken",

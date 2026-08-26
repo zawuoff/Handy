@@ -33,6 +33,8 @@ struct ActiveMeeting {
     copied_flash_until: Option<Instant>,
     /// Notes the user types in the live meeting view.
     live_notes: String,
+    /// User-assigned names for diarized speakers (1-based arrival order).
+    speaker_names: std::collections::HashMap<i32, String>,
 }
 
 /// Live notes of the most recently ended session, held briefly between
@@ -44,6 +46,16 @@ static PENDING_LIVE_NOTES: once_cell::sync::Lazy<Mutex<Option<String>>> =
 /// Take the jottings of the just-ended meeting (once).
 pub fn take_pending_live_notes() -> Option<String> {
     PENDING_LIVE_NOTES.lock().unwrap().take()
+}
+
+/// Speaker names of the most recently ended session, held like the live
+/// notes between session end and the save pipeline.
+static PENDING_SPEAKER_NAMES: once_cell::sync::Lazy<Mutex<std::collections::HashMap<i32, String>>> =
+    once_cell::sync::Lazy::new(|| Mutex::new(std::collections::HashMap::new()));
+
+/// Take the speaker names of the just-ended meeting (once).
+pub fn take_pending_speaker_names() -> std::collections::HashMap<i32, String> {
+    std::mem::take(&mut *PENDING_SPEAKER_NAMES.lock().unwrap())
 }
 
 /// Everything the tray needs to render the live meeting readout.
@@ -85,8 +97,21 @@ impl MeetingSession {
             captions_visible,
             copied_flash_until: None,
             live_notes: String::new(),
+            speaker_names: std::collections::HashMap::new(),
         });
         generation
+    }
+
+    /// Name a diarized speaker ("Speaker 2" -> "Nikki"). Empty clears it.
+    pub fn set_speaker_name(&self, speaker: i32, name: &str) {
+        if let Some(active) = self.inner.lock().unwrap().as_mut() {
+            let name = name.trim();
+            if name.is_empty() {
+                active.speaker_names.remove(&speaker);
+            } else {
+                active.speaker_names.insert(speaker, name.to_string());
+            }
+        }
     }
 
     /// Replace the user's live jottings (typed in the meeting view).
@@ -99,12 +124,14 @@ impl MeetingSession {
 
     /// Ends the session. Returns (captions visible, live notes),
     /// or `None` if no session was active.
-    fn take_end(&self) -> Option<(bool, String)> {
-        self.inner
-            .lock()
-            .unwrap()
-            .take()
-            .map(|active| (active.captions_visible, active.live_notes))
+    fn take_end(&self) -> Option<(bool, String, std::collections::HashMap<i32, String>)> {
+        self.inner.lock().unwrap().take().map(|active| {
+            (
+                active.captions_visible,
+                active.live_notes,
+                active.speaker_names,
+            )
+        })
     }
 
     pub fn is_active(&self) -> bool {
@@ -281,13 +308,14 @@ pub fn end_session(app: &AppHandle) {
     let Some(session) = app.try_state::<MeetingSession>() else {
         return;
     };
-    if let Some((captions_were_visible, live_notes)) = session.take_end() {
+    if let Some((captions_were_visible, live_notes, speaker_names)) = session.take_end() {
         debug!("Meeting session ended (captions visible: {captions_were_visible})");
         *PENDING_LIVE_NOTES.lock().unwrap() = if live_notes.trim().is_empty() {
             None
         } else {
             Some(live_notes)
         };
+        *PENDING_SPEAKER_NAMES.lock().unwrap() = speaker_names;
         if captions_were_visible {
             restore_overlay_enabled_cache(app);
         }
@@ -391,6 +419,16 @@ pub fn get_meeting_state(app: AppHandle) -> Result<MeetingState, String> {
 #[specta::specta]
 pub fn toggle_meeting_session(app: AppHandle) -> Result<(), String> {
     crate::signal_handle::send_transcription_input(&app, "meeting", "UI");
+    Ok(())
+}
+
+/// Name a diarized speaker for the running meeting.
+#[tauri::command]
+#[specta::specta]
+pub fn set_meeting_speaker_name(app: AppHandle, speaker: i32, name: String) -> Result<(), String> {
+    if let Some(session) = app.try_state::<MeetingSession>() {
+        session.set_speaker_name(speaker, &name);
+    }
     Ok(())
 }
 
@@ -511,7 +549,7 @@ mod tests {
         assert!(readout.lines.is_some());
 
         assert_eq!(
-            session.take_end().map(|(captions, _)| captions),
+            session.take_end().map(|(captions, _, _)| captions),
             Some(false)
         );
         assert!(session.readout().is_none());

@@ -633,6 +633,12 @@
     "meetingRadar": {
       "title": "Radar cuộc họp",
       "description": "Khi ứng dụng khác dùng micro trong lúc phát âm thanh (cuộc gọi), Noted đề nghị ghi âm thành cuộc họp qua thông báo."
+    },
+    "speakerSeparation": {
+      "title": "Tách người nói",
+      "description": "Phân biệt người nói trong bản ghi cuộc họp (Người nói 1, Người nói 2, …). Lần đầu bật sẽ tải một mô hình cục bộ nhỏ (~140 MB).",
+      "downloading": "Đang tải mô hình người nói… {{percent}}%",
+      "downloadFailed": "Tải mô hình thất bại — kiểm tra kết nối và bật lại."
     }
   },
   "footer": {
@@ -783,7 +789,12 @@
     "privacy": "Được chép lời trên thiết bị này. Không gì rời khỏi máy tính của bạn.",
     "notesTitle": "Ghi chú cuộc họp",
     "notesHint": "Ghi bất cứ điều gì — ghi chú của bạn sẽ được hoàn thiện cùng bản ghi khi cuộc họp kết thúc.",
-    "notesPlaceholder": "Nhập ghi chú…"
+    "notesPlaceholder": "Nhập ghi chú…",
+    "speakerN": "Người nói {{n}}",
+    "speakerUnknown": "Người nói",
+    "speakersButton": "Đặt tên người nói ({{count}})",
+    "speakersHint": "Nhập tên thật — chúng sẽ thay thế nhãn ở mọi nơi, kể cả các dòng trước đó.",
+    "saveNames": "Lưu tên"
   },
   "todos": {
     "title": "Việc cần làm",

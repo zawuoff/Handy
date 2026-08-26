@@ -633,6 +633,12 @@
     "meetingRadar": {
       "title": "Radar schůzek",
       "description": "Když jiná aplikace používá mikrofon během přehrávání (hovor), Noted nabídne nahrát to jako schůzku přes upozornění."
+    },
+    "speakerSeparation": {
+      "title": "Rozlišení mluvčích",
+      "description": "Rozliší mluvčí v přepisech schůzek (Mluvčí 1, Mluvčí 2, …). Při prvním zapnutí se stáhne malý lokální model (~140 MB).",
+      "downloading": "Stahování modelu mluvčích… {{percent}}%",
+      "downloadFailed": "Stažení modelu selhalo — zkontrolujte připojení a zapněte znovu."
     }
   },
   "footer": {
@@ -783,7 +789,12 @@
     "privacy": "Přepsáno na tomto zařízení. Nic neopouští váš počítač.",
     "notesTitle": "Poznámky ze schůzky",
     "notesHint": "Zapisujte cokoli — po skončení schůzky se vaše poznámky vylepší pomocí přepisu.",
-    "notesPlaceholder": "Napište poznámku…"
+    "notesPlaceholder": "Napište poznámku…",
+    "speakerN": "Mluvčí {{n}}",
+    "speakerUnknown": "Mluvčí",
+    "speakersButton": "Pojmenovat mluvčí ({{count}})",
+    "speakersHint": "Zadejte skutečná jména — nahradí štítky všude, včetně dřívějších řádků.",
+    "saveNames": "Uložit jména"
   },
   "todos": {
     "title": "Úkoly",

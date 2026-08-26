@@ -30,6 +30,7 @@ const RecordingOverlay: React.FC = () => {
   const [streamText, setStreamText] = useState<StreamTextEvent>({
     committed: "",
     tentative: "",
+    turns: [],
   });
   const [phase, setPhase] = useState<StreamPhase>("listening");
   const [workKind, setWorkKind] = useState<StreamWorkKind>("transcribing");
@@ -63,7 +64,7 @@ const RecordingOverlay: React.FC = () => {
           setCaptureReady(false);
           smoothedLevelsRef.current = Array(16).fill(0);
           setLevels(Array(WAVE_BARS).fill(0));
-          setStreamText({ committed: "", tentative: "" });
+          setStreamText({ committed: "", tentative: "", turns: [] });
         }
 
         await syncLanguageFromSettings();

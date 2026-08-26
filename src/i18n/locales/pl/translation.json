@@ -633,6 +633,12 @@
     "meetingRadar": {
       "title": "Radar spotkań",
       "description": "Gdy inna aplikacja używa mikrofonu podczas odtwarzania (rozmowa), Noted proponuje przez powiadomienie nagranie jej jako spotkania."
+    },
+    "speakerSeparation": {
+      "title": "Rozdzielanie mówców",
+      "description": "Rozróżnia mówców w transkrypcjach spotkań (Mówca 1, Mówca 2, …). Przy pierwszym włączeniu pobiera mały lokalny model (~140 MB).",
+      "downloading": "Pobieranie modelu mówców… {{percent}}%",
+      "downloadFailed": "Pobieranie modelu nie powiodło się — sprawdź połączenie i włącz ponownie."
     }
   },
   "footer": {
@@ -783,7 +789,12 @@
     "privacy": "Transkrybowano na tym urządzeniu. Nic nie opuszcza twojego komputera.",
     "notesTitle": "Notatki ze spotkania",
     "notesHint": "Notuj cokolwiek — po zakończeniu spotkania Twoje notatki zostaną wzbogacone o transkrypcję.",
-    "notesPlaceholder": "Wpisz notatkę…"
+    "notesPlaceholder": "Wpisz notatkę…",
+    "speakerN": "Mówca {{n}}",
+    "speakerUnknown": "Mówca",
+    "speakersButton": "Nazwij mówców ({{count}})",
+    "speakersHint": "Wpisz prawdziwe imiona — zastąpią etykiety wszędzie, także we wcześniejszych wierszach.",
+    "saveNames": "Zapisz imiona"
   },
   "todos": {
     "title": "Zadania",

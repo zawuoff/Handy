@@ -64,6 +64,91 @@ pub struct ModelStateEvent {
 pub struct StreamTextEvent {
     pub committed: String,
     pub tentative: String,
+    /// Speaker-attributed turns (empty unless speaker separation is running).
+    /// The last turn is the in-progress one and may still change speaker.
+    pub turns: Vec<SpeakerTurn>,
+}
+
+/// One diarized speaker turn of the live transcript. `speaker` is 1-based
+/// arrival order (0 = unattributed); `t_ms` is audio time at the turn start.
+#[derive(Clone, Debug, Serialize, Deserialize, Type)]
+pub struct SpeakerTurn {
+    pub speaker: i32,
+    pub text: String,
+    pub t_ms: i32,
+}
+
+/// Append `text` to `turns`, merging into the last turn when the speaker is
+/// unchanged so the transcript reads as turns, not fragments.
+fn push_turn(turns: &mut Vec<SpeakerTurn>, speaker: i32, text: &str, t_ms: i32) {
+    let text = text.trim();
+    if text.is_empty() {
+        return;
+    }
+    if let Some(last) = turns.last_mut() {
+        if last.speaker == speaker {
+            last.text.push(' ');
+            last.text.push_str(text);
+            return;
+        }
+    }
+    turns.push(SpeakerTurn {
+        speaker,
+        text: text.to_string(),
+        t_ms,
+    });
+}
+
+/// Attribute the finished ASR segment snapshot to speakers and append the
+/// result to `turns`. `offset_ms` maps the snapshot's segment-local times onto
+/// the diarizer's meeting-global clock; `end_ms` is the global time now.
+fn append_attributed_turns(
+    turns: &mut Vec<SpeakerTurn>,
+    snap: &transcribe_cpp::Transcript,
+    diar_segments: &[transcribe_cpp::SpeakerSegment],
+    offset_ms: i64,
+    end_ms: i64,
+    live_speaker: &mut i32,
+) {
+    let fallback = crate::diarization::dominant_speaker(diar_segments, offset_ms, end_ms)
+        .unwrap_or(*live_speaker);
+    if snap.segments.is_empty() {
+        push_turn(turns, fallback, &snap.text, offset_ms as i32);
+    } else {
+        for seg in &snap.segments {
+            // Untimed rows can't be aligned individually; give them the
+            // span-dominant speaker instead of dropping them.
+            let speaker = if seg.t1_ms > seg.t0_ms {
+                crate::diarization::dominant_speaker(
+                    diar_segments,
+                    seg.t0_ms + offset_ms,
+                    seg.t1_ms + offset_ms,
+                )
+                .unwrap_or(fallback)
+            } else {
+                fallback
+            };
+            push_turn(turns, speaker, &seg.text, (seg.t0_ms + offset_ms) as i32);
+        }
+    }
+    if let Some(last) = turns.last() {
+        *live_speaker = last.speaker;
+    }
+}
+
+/// Render speaker turns as the stored transcript ("Speaker 2: ..." lines).
+fn format_turns(turns: &[SpeakerTurn]) -> String {
+    turns
+        .iter()
+        .map(|turn| {
+            if turn.speaker > 0 {
+                format!("Speaker {}: {}", turn.speaker, turn.text)
+            } else {
+                turn.text.clone()
+            }
+        })
+        .collect::<Vec<_>>()
+        .join("\n\n")
 }
 
 /// Phase of the streaming overlay card, emitted to drive its UI state.
@@ -297,6 +382,9 @@ pub struct TranscriptionManager {
     /// `is_model_loaded()` consults this so the model still reports "loaded"
     /// while the worker holds it.
     active_engine_lease: Arc<AtomicU64>,
+    /// Whether the next stream worker should run speaker separation (set per
+    /// stream by `start_stream`; meetings only).
+    stream_diarize: Arc<AtomicBool>,
 }
 
 impl TranscriptionManager {
@@ -317,6 +405,7 @@ impl TranscriptionManager {
             next_stream_worker_id: Arc::new(AtomicU64::new(1)),
             active_stream_worker: Arc::new(AtomicU64::new(0)),
             active_engine_lease: Arc::new(AtomicU64::new(0)),
+            stream_diarize: Arc::new(AtomicBool::new(false)),
         };
 
         // Start the idle watcher
@@ -821,7 +910,8 @@ impl TranscriptionManager {
     /// model can't stream, the worker idles until finalize/cancel and reports
     /// `None` so the caller falls back to batch transcription. Frames sent
     /// before the stream begins queue on the channel and are not lost.
-    pub fn start_stream(&self) {
+    pub fn start_stream(&self, diarize: bool) {
+        self.stream_diarize.store(diarize, Ordering::Release);
         if self.router.is_open() || self.active_stream_worker.load(Ordering::Acquire) != 0 {
             warn!("start_stream called while a stream worker is already active");
             return;
@@ -988,6 +1078,31 @@ impl TranscriptionManager {
             let mut carried = String::new();
             let mut silent_secs: f32 = 0.0;
             let mut first_segment = true;
+            // Speaker separation: a Sortformer diarizer session runs beside
+            // the ASR for the whole meeting. Unlike the ASR stream it never
+            // restarts, so its arrival-order speaker ids stay stable across
+            // pause resets.
+            let mut diar_session = if self.stream_diarize.load(Ordering::Acquire) {
+                crate::diarization::load_diarizer_session(&self.app_handle)
+            } else {
+                None
+            };
+            let (diar_run_opts, diar_stream_opts) = crate::diarization::diarizer_options();
+            let mut diar_stream = diar_session.as_mut().and_then(|diar| {
+                match diar.stream(&diar_run_opts, &diar_stream_opts) {
+                    Ok(stream) => Some(stream),
+                    Err(e) => {
+                        warn!("Failed to begin diarizer stream: {e}");
+                        None
+                    }
+                }
+            });
+            // Finished speaker turns, the meeting-global audio clock, where
+            // the current ASR segment started on it, and the current speaker.
+            let mut turns: Vec<SpeakerTurn> = Vec::new();
+            let mut total_fed_ms: i64 = 0;
+            let mut segment_offset_ms: i64 = 0;
+            let mut live_speaker: i32 = 0;
             // Each iteration runs one stream segment. A long trailing silence
             // finalizes the segment and starts a fresh one so the decoder's
             // language bias resets (mixed Hindi/English/Arabic sessions were
@@ -1028,6 +1143,7 @@ impl TranscriptionManager {
                         StreamCmd::Feed(pcm) => {
                             self.touch_activity();
                             perf.record_feed(pcm.len());
+                            total_fed_ms += (pcm.len() / 16) as i64;
                             // Cheap trailing-silence tracking for the pause reset.
                             let rms = (pcm.iter().map(|s| s * s).sum::<f32>()
                                 / pcm.len().max(1) as f32)
@@ -1036,6 +1152,11 @@ impl TranscriptionManager {
                                 silent_secs += pcm.len() as f32 / 16_000.0;
                             } else {
                                 silent_secs = 0.0;
+                            }
+                            if let Some(diar) = diar_stream.as_mut() {
+                                if let Err(e) = diar.feed(&pcm) {
+                                    warn!("diarizer feed failed: {e}");
+                                }
                             }
                             let feed_start = Instant::now();
                             match stream.feed(&pcm) {
@@ -1050,9 +1171,32 @@ impl TranscriptionManager {
                                     if update.committed_changed || update.tentative_changed {
                                         let text = stream.text();
                                         perf.record_emit();
+                                        // The in-progress segment is shown under
+                                        // the latest active speaker; the precise
+                                        // per-segment attribution happens when
+                                        // the segment finishes (pause/finalize).
+                                        if update.committed_changed {
+                                            if let Some(diar) = diar_stream.as_ref() {
+                                                live_speaker = crate::diarization::latest_speaker(
+                                                    &diar.snapshot().speaker_segments,
+                                                    total_fed_ms,
+                                                )
+                                                .unwrap_or(live_speaker);
+                                            }
+                                        }
+                                        let mut live_turns = turns.clone();
+                                        if diar_stream.is_some() {
+                                            push_turn(
+                                                &mut live_turns,
+                                                live_speaker,
+                                                &text.committed,
+                                                segment_offset_ms as i32,
+                                            );
+                                        }
                                         self.emit_stream_text(
                                             &join_stream_text(&carried, &text.committed),
                                             &text.tentative,
+                                            live_turns,
                                         );
                                     }
                                     perf.maybe_log();
@@ -1068,12 +1212,23 @@ impl TranscriptionManager {
                                 silent_secs = 0.0;
                                 match stream.finalize() {
                                     Ok(_) => {
+                                        if let Some(diar) = diar_stream.as_ref() {
+                                            append_attributed_turns(
+                                                &mut turns,
+                                                &stream.snapshot(),
+                                                &diar.snapshot().speaker_segments,
+                                                segment_offset_ms,
+                                                total_fed_ms,
+                                                &mut live_speaker,
+                                            );
+                                        }
                                         carried = join_stream_text(&carried, &stream.text().full);
+                                        segment_offset_ms = total_fed_ms;
                                         info!(
                                             "Stream pause reset ({} chars carried)",
                                             carried.len()
                                         );
-                                        self.emit_stream_text(&carried, "");
+                                        self.emit_stream_text(&carried, "", turns.clone());
                                         continue 'segments;
                                     }
                                     Err(e) => {
@@ -1107,8 +1262,21 @@ impl TranscriptionManager {
                                         }
                                         resolved => resolved.clone(),
                                     };
+                                    let text = if let Some(diar) = diar_stream.as_ref() {
+                                        append_attributed_turns(
+                                            &mut turns,
+                                            &stream.snapshot(),
+                                            &diar.snapshot().speaker_segments,
+                                            segment_offset_ms,
+                                            total_fed_ms,
+                                            &mut live_speaker,
+                                        );
+                                        format_turns(&turns)
+                                    } else {
+                                        join_stream_text(&carried, &stream.text().full)
+                                    };
                                     Some(FinalizedStreamText {
-                                        text: join_stream_text(&carried, &stream.text().full),
+                                        text,
                                         output_language,
                                         supported_languages: languages.clone(),
                                     })
@@ -1238,7 +1406,7 @@ impl TranscriptionManager {
         .emit(&self.app_handle);
     }
 
-    fn emit_stream_text(&self, committed: &str, tentative: &str) {
+    fn emit_stream_text(&self, committed: &str, tentative: &str, turns: Vec<SpeakerTurn>) {
         // Mirror the live text into the meeting session (no-op outside a
         // meeting) so the tray's readout and copy-so-far can use it.
         if let Some(session) = self
@@ -1250,6 +1418,7 @@ impl TranscriptionManager {
         let _ = StreamTextEvent {
             committed: committed.to_string(),
             tentative: tentative.to_string(),
+            turns,
         }
         .emit(&self.app_handle);
     }

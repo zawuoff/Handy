@@ -633,6 +633,12 @@
     "meetingRadar": {
       "title": "会议雷达",
       "description": "当其他应用在播放音频时使用麦克风（通话中），Noted 会通过桌面通知提议将其录制为会议。"
+    },
+    "speakerSeparation": {
+      "title": "说话人分离",
+      "description": "在会议转写中区分说话人（说话人1、说话人2……）。首次开启会下载一个小型本地模型（约140MB）。",
+      "downloading": "正在下载说话人模型… {{percent}}%",
+      "downloadFailed": "说话人模型下载失败——请检查网络后重新开启。"
     }
   },
   "footer": {
@@ -783,7 +789,12 @@
     "privacy": "在本设备上转录。任何内容都不会离开您的电脑。",
     "notesTitle": "会议笔记",
     "notesHint": "随手记下任何内容——会议结束后，你的笔记会结合转写内容进行完善。",
-    "notesPlaceholder": "输入笔记…"
+    "notesPlaceholder": "输入笔记…",
+    "speakerN": "说话人{{n}}",
+    "speakerUnknown": "说话人",
+    "speakersButton": "为说话人命名（{{count}}）",
+    "speakersHint": "输入真实姓名——所有标签都会被替换，包括之前的内容。",
+    "saveNames": "保存姓名"
   },
   "todos": {
     "title": "待办",

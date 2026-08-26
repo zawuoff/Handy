@@ -633,6 +633,12 @@
     "meetingRadar": {
       "title": "會議雷達",
       "description": "當其他應用在播放音訊時使用麥克風(通話中),Noted 會透過桌面通知建議將其錄製為會議。"
+    },
+    "speakerSeparation": {
+      "title": "說話者分離",
+      "description": "在會議逐字稿中區分說話者（說話者1、說話者2……）。首次開啟會下載一個小型本機模型（約140MB）。",
+      "downloading": "正在下載說話者模型… {{percent}}%",
+      "downloadFailed": "說話者模型下載失敗——請檢查網路後重新開啟。"
     }
   },
   "footer": {
@@ -783,7 +789,12 @@
     "privacy": "在本裝置上轉錄。任何內容都不會離開您的電腦。",
     "notesTitle": "會議筆記",
     "notesHint": "隨手記下任何內容——會議結束後，你的筆記會結合逐字稿加以完善。",
-    "notesPlaceholder": "輸入筆記…"
+    "notesPlaceholder": "輸入筆記…",
+    "speakerN": "說話者{{n}}",
+    "speakerUnknown": "說話者",
+    "speakersButton": "為說話者命名（{{count}}）",
+    "speakersHint": "輸入真實姓名——所有標籤都會被取代，包括先前的內容。",
+    "saveNames": "儲存姓名"
   },
   "todos": {
     "title": "待辦",

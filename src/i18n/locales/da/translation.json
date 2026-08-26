@@ -633,6 +633,12 @@
     "meetingRadar": {
       "title": "Møderadar",
       "description": "Når en anden app bruger din mikrofon under afspilning (et opkald), tilbyder Noted at optage det som et møde via en notifikation."
+    },
+    "speakerSeparation": {
+      "title": "Taleradskillelse",
+      "description": "Skeln mellem talere i mødetransskriptioner (Taler 1, Taler 2, …). Henter en lille lokal model (~140 MB) første gang.",
+      "downloading": "Henter talermodel… {{percent}}%",
+      "downloadFailed": "Hentning af talermodellen mislykkedes — tjek forbindelsen og slå til igen."
     }
   },
   "footer": {
@@ -783,7 +789,12 @@
     "privacy": "Transskriberet på denne enhed. Intet forlader din computer.",
     "notesTitle": "Mødenoter",
     "notesHint": "Notér hvad som helst — dine noter forbedres med transskriptionen, når mødet slutter.",
-    "notesPlaceholder": "Skriv en note…"
+    "notesPlaceholder": "Skriv en note…",
+    "speakerN": "Taler {{n}}",
+    "speakerUnknown": "Taler",
+    "speakersButton": "Navngiv talere ({{count}})",
+    "speakersHint": "Skriv rigtige navne — de erstatter etiketterne overalt, også i tidligere linjer.",
+    "saveNames": "Gem navne"
   },
   "todos": {
     "title": "Opgaver",

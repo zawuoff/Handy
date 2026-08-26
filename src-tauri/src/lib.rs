@@ -10,6 +10,7 @@ mod catalog;
 pub mod cli;
 mod clipboard;
 mod commands;
+mod diarization;
 mod helpers;
 mod input;
 mod llm_client;
@@ -765,6 +766,7 @@ pub fn run(cli_args: CliArgs) {
             notes::get_generating_note_ids,
             shortcut::change_meeting_notes_prompt_setting,
             shortcut::change_meeting_radar_enabled_setting,
+            shortcut::change_diarization_enabled_setting,
             calendar::get_upcoming_events,
             commands::history::search_notes,
             commands::history::create_ask_session,
@@ -780,6 +782,9 @@ pub fn run(cli_args: CliArgs) {
             meeting::toggle_meeting_session,
             meeting::toggle_meeting_captions,
             meeting::set_live_meeting_notes,
+            meeting::set_meeting_speaker_name,
+            diarization::is_diarizer_ready,
+            diarization::download_diarizer_model,
             commands::history::toggle_history_entry_saved,
             commands::history::get_audio_file_path,
             commands::history::delete_history_entry,

@@ -535,7 +535,14 @@ impl ShortcutAction for TranscribeAction {
             VadPolicy::Offline
         };
         if model_supports_streaming {
-            tm.start_stream();
+            // Speaker separation runs only for meetings, and only when
+            // enabled and the diarizer model is on disk.
+            let diarize = self.is_meeting()
+                && settings.diarization_enabled
+                && crate::diarization::diarizer_model_path(app)
+                    .map(|p| p.exists())
+                    .unwrap_or(false);
+            tm.start_stream(diarize);
         }
         let plan_elapsed = plan_started.elapsed();
 
@@ -842,9 +849,17 @@ impl ShortcutAction for TranscribeAction {
                                     // Chinese variant conversion), not the raw ASR
                                     // output that dictation archives alongside its
                                     // pasted result.
+                                    // Speaker labels get the names the user
+                                    // assigned during the meeting, across the
+                                    // whole transcript — including turns from
+                                    // before the names were typed.
+                                    let transcript = crate::diarization::apply_speaker_names(
+                                        &processed.final_text,
+                                        &crate::meeting::take_pending_speaker_names(),
+                                    );
                                     hm.save_meeting_entry(
                                         file_name,
-                                        processed.final_text.clone(),
+                                        transcript,
                                         crate::meeting::take_pending_live_notes(),
                                     )
                                 } else {
