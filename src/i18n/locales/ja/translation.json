@@ -768,5 +768,19 @@
     "listening": "聞き取り中…",
     "noStreamingModel": "録音中。ライブ表示にはストリーミングモデルが必要です。停止すると文字起こしが完成します。",
     "privacy": "この端末で文字起こし。何も外部に送信されません。"
+  },
+  "todos": {
+    "title": "タスク",
+    "placeholder": "タスクを追加…",
+    "add": "追加",
+    "empty": "まだタスクはありません",
+    "emptyHint": "会議のタスクは自動でここに届きます。日付があるものはカレンダーの予定になります。",
+    "fromMeeting": "会議",
+    "makeEvent": "カレンダーに追加",
+    "whenPlaceholder": "いつ？例: tomorrow 15:00",
+    "schedule": "登録",
+    "eventCreated": "カレンダーに追加しました: {{title}}",
+    "eventFailed": "予定を作成できませんでした",
+    "autoOrganized": "会議から: 予定 {{events}} 件、タスク {{todos}} 件"
   }
 }

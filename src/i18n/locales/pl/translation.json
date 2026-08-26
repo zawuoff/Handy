@@ -768,5 +768,19 @@
     "listening": "Słucham…",
     "noStreamingModel": "Nagrywanie. Tekst na żywo wymaga modelu strumieniowego — transkrypcja będzie gotowa po zatrzymaniu.",
     "privacy": "Transkrybowano na tym urządzeniu. Nic nie opuszcza twojego komputera."
+  },
+  "todos": {
+    "title": "Zadania",
+    "placeholder": "Dodaj zadanie…",
+    "add": "Dodaj",
+    "empty": "Brak zadań",
+    "emptyHint": "Zadania ze spotkań trafiają tu automatycznie — wszystko z datą staje się wydarzeniem w kalendarzu.",
+    "fromMeeting": "Spotkanie",
+    "makeEvent": "Dodaj do kalendarza",
+    "whenPlaceholder": "Kiedy? np. tomorrow 15:00",
+    "schedule": "Zaplanuj",
+    "eventCreated": "Dodano do kalendarza: {{title}}",
+    "eventFailed": "Nie udało się utworzyć wydarzenia",
+    "autoOrganized": "Ze spotkania: {{events}} wydarzeń, {{todos}} zadań"
   }
 }

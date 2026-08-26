@@ -768,5 +768,19 @@
     "listening": "Đang nghe…",
     "noStreamingModel": "Đang ghi âm. Văn bản trực tiếp cần mô hình streaming — bản chép lời sẽ sẵn sàng khi bạn dừng.",
     "privacy": "Được chép lời trên thiết bị này. Không gì rời khỏi máy tính của bạn."
+  },
+  "todos": {
+    "title": "Việc cần làm",
+    "placeholder": "Thêm việc…",
+    "add": "Thêm",
+    "empty": "Chưa có việc nào",
+    "emptyHint": "Việc từ các cuộc họp tự động xuất hiện ở đây — việc có ngày sẽ thành sự kiện lịch.",
+    "fromMeeting": "Cuộc họp",
+    "makeEvent": "Thêm vào lịch",
+    "whenPlaceholder": "Khi nào? vd. tomorrow 15:00",
+    "schedule": "Lên lịch",
+    "eventCreated": "Đã thêm vào lịch: {{title}}",
+    "eventFailed": "Không thể tạo sự kiện",
+    "autoOrganized": "Từ cuộc họp: {{events}} sự kiện, {{todos}} việc"
   }
 }

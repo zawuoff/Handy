@@ -17,6 +17,7 @@ import { HomeView } from "./components/shell/HomeView";
 import { LiveMeetingView } from "./components/shell/LiveMeetingView";
 import { SettingsModal } from "./components/shell/SettingsModal";
 import { ShellSidebar, type ShellView } from "./components/shell/ShellSidebar";
+import { TodosView } from "./components/shell/TodosView";
 import { useMeetingState } from "./components/shell/useMeetingState";
 import { HistorySettings, NotesSettings } from "./components/settings";
 import { WhatsNewGate } from "./components/whats-new";
@@ -163,6 +164,25 @@ function App() {
         } else if (event.payload.status === "failed") {
           toast.error(t("notes.failedToast"));
         }
+      },
+    );
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, [t]);
+
+  // After notes are written, dated action items become calendar events and
+  // undated ones become todos — announce what was auto-created.
+  useEffect(() => {
+    const unlisten = listen<{ events: number; todos: number }>(
+      "auto-organized",
+      (event) => {
+        toast.success(
+          t("todos.autoOrganized", {
+            events: event.payload.events,
+            todos: event.payload.todos,
+          }),
+        );
       },
     );
     return () => {
@@ -368,6 +388,7 @@ function App() {
                     <HomeView meeting={meeting} onOpenNote={openNoteById} />
                   )}
                   {view === "notes" && <NotesSettings openNote={openNote} />}
+                  {view === "todos" && <TodosView />}
                   {view === "history" && <HistorySettings />}
                 </div>
               </div>

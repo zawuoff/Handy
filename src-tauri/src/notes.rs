@@ -134,5 +134,154 @@ async fn generate_and_store(app: &AppHandle, entry_id: i64) -> Result<(), String
         entry_id,
         notes.len()
     );
+
+    // Second pass: turn the action items into calendar events and todos.
+    // Best-effort — a failure here never invalidates the stored notes.
+    if let Err(err) = organize_action_items(app, entry_id, notes).await {
+        debug!("Action-item extraction skipped for entry {entry_id}: {err}");
+    }
+    Ok(())
+}
+
+/// Create a calendar event through the user's `cal-add` script (GNOME
+/// calendar via Evolution Data Server). `when` is natural language — the
+/// script hands it to GNU date.
+pub(crate) fn create_calendar_event(
+    title: &str,
+    when: &str,
+    duration_min: u32,
+) -> Result<(), String> {
+    let mut candidates: Vec<std::path::PathBuf> = Vec::new();
+    if let Some(home) = dirs::home_dir() {
+        candidates.push(home.join(".local/bin/cal-add"));
+    }
+    candidates.push(std::path::PathBuf::from("cal-add"));
+
+    for cmd in candidates {
+        match std::process::Command::new(&cmd)
+            .arg(title)
+            .arg(when)
+            .arg(duration_min.to_string())
+            .stdout(std::process::Stdio::null())
+            .stderr(std::process::Stdio::null())
+            .status()
+        {
+            Ok(status) if status.success() => {
+                info!("Calendar event created: '{title}' at '{when}' ({duration_min} min)");
+                return Ok(());
+            }
+            Ok(status) => return Err(format!("cal-add failed for '{when}': {status}")),
+            Err(_) => continue, // not at this path — try the next candidate
+        }
+    }
+    Err("cal-add command not found (expected at ~/.local/bin/cal-add)".to_string())
+}
+
+#[derive(serde::Deserialize)]
+struct ActionItem {
+    title: String,
+    #[serde(default)]
+    when: Option<String>,
+    #[serde(default)]
+    duration_min: Option<u32>,
+}
+
+#[derive(Clone, serde::Serialize)]
+struct AutoOrganizedEvent {
+    events: u32,
+    todos: u32,
+}
+
+/// Extract action items from freshly generated notes with a second model
+/// call; dated ones become calendar events, undated ones become todos.
+async fn organize_action_items(app: &AppHandle, entry_id: i64, notes: &str) -> Result<(), String> {
+    let settings = get_settings(app);
+    let provider = settings
+        .active_post_process_provider()
+        .cloned()
+        .ok_or("no provider configured")?;
+    let model = settings
+        .post_process_models
+        .get(&provider.id)
+        .cloned()
+        .unwrap_or_default();
+    if model.trim().is_empty() {
+        return Err("no model configured".to_string());
+    }
+    if provider.id == APPLE_INTELLIGENCE_PROVIDER_ID {
+        return Err("action-item extraction is not wired to Apple Intelligence yet".to_string());
+    }
+    let api_key = settings
+        .post_process_api_keys
+        .get(&provider.id)
+        .cloned()
+        .unwrap_or_default();
+    let disable_reasoning = matches!(provider.id.as_str(), "custom" | "openrouter");
+
+    let today = chrono::Local::now()
+        .format("%A, %Y-%m-%d %H:%M")
+        .to_string();
+    let shape = r#"[{"title": "short task description", "when": "YYYY-MM-DD HH:MM" or null, "duration_min": number or null}]"#;
+    let prompt = format!(
+        "Extract the action items (tasks, commitments, follow-ups) from the meeting notes. \
+         Today is {today}.\n\
+         Respond with ONLY a JSON array, no prose and no markdown fence, shaped exactly like:\n\
+         {shape}\n\
+         Rules: resolve relative dates (tomorrow, Friday, next week) against today's date; \
+         if only a day is known use 09:00 as the time; use null for \"when\" if the item has \
+         no clear date or deadline; keep titles under 10 words; return [] if there are none."
+    );
+
+    let raw = crate::llm_client::send_chat_completion_with_schema(
+        &provider,
+        api_key,
+        &model,
+        notes.to_string(),
+        Some(prompt),
+        None,
+        disable_reasoning,
+    )
+    .await?
+    .ok_or("empty extraction response")?;
+
+    // Tolerant parse: take the outermost JSON array in the response.
+    let raw = strip_think_block(&raw);
+    let start = raw.find('[').ok_or("no JSON array in response")?;
+    let end = raw.rfind(']').ok_or("no JSON array in response")?;
+    let items: Vec<ActionItem> =
+        serde_json::from_str(&raw[start..=end]).map_err(|e| format!("bad JSON: {e}"))?;
+
+    let hm = Arc::clone(&app.state::<Arc<HistoryManager>>());
+    let mut events = 0u32;
+    let mut todos = 0u32;
+    for item in items.into_iter().take(10) {
+        let title = item.title.trim().to_string();
+        if title.is_empty() {
+            continue;
+        }
+        let scheduled = match item.when.as_deref().map(str::trim) {
+            Some(when) if !when.is_empty() => {
+                match create_calendar_event(&title, when, item.duration_min.unwrap_or(60)) {
+                    Ok(()) => {
+                        events += 1;
+                        true
+                    }
+                    Err(err) => {
+                        debug!("Falling back to todo for '{title}': {err}");
+                        false
+                    }
+                }
+            }
+            _ => false,
+        };
+        if !scheduled && hm.add_todo(&title, Some(entry_id)).is_ok() {
+            todos += 1;
+        }
+    }
+
+    if events > 0 || todos > 0 {
+        let _ = app.emit("auto-organized", AutoOrganizedEvent { events, todos });
+        info!("Meeting {entry_id}: auto-created {events} events and {todos} todos");
+    }
     Ok(())
 }

@@ -768,5 +768,19 @@
     "listening": "듣는 중…",
     "noStreamingModel": "녹음 중. 실시간 텍스트는 스트리밍 모델이 필요합니다. 중지하면 전사본이 준비됩니다.",
     "privacy": "이 기기에서 전사됨. 아무것도 컴퓨터를 떠나지 않습니다."
+  },
+  "todos": {
+    "title": "할 일",
+    "placeholder": "할 일 추가…",
+    "add": "추가",
+    "empty": "아직 할 일이 없습니다",
+    "emptyHint": "회의의 할 일이 자동으로 여기에 쌓입니다. 날짜가 있는 항목은 캘린더 일정이 됩니다.",
+    "fromMeeting": "회의",
+    "makeEvent": "캘린더에 추가",
+    "whenPlaceholder": "언제? 예: tomorrow 15:00",
+    "schedule": "예약",
+    "eventCreated": "캘린더에 추가됨: {{title}}",
+    "eventFailed": "일정을 만들지 못했습니다",
+    "autoOrganized": "회의에서: 일정 {{events}}개, 할 일 {{todos}}개"
   }
 }

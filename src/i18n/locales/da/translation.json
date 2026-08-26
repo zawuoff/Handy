@@ -768,5 +768,19 @@
     "listening": "Lytter…",
     "noStreamingModel": "Optager. Live-tekst kræver en streamingmodel — udskriften er klar, når du stopper.",
     "privacy": "Transskriberet på denne enhed. Intet forlader din computer."
+  },
+  "todos": {
+    "title": "Opgaver",
+    "placeholder": "Tilføj en opgave…",
+    "add": "Tilføj",
+    "empty": "Ingen opgaver endnu",
+    "emptyHint": "Opgaver fra dine møder lander her automatisk — alt med en dato bliver en kalenderbegivenhed.",
+    "fromMeeting": "Møde",
+    "makeEvent": "Føj til kalender",
+    "whenPlaceholder": "Hvornår? f.eks. tomorrow 15:00",
+    "schedule": "Planlæg",
+    "eventCreated": "Føjet til kalenderen: {{title}}",
+    "eventFailed": "Kunne ikke oprette begivenheden",
+    "autoOrganized": "Fra dit møde: {{events}} begivenheder, {{todos}} opgaver"
   }
 }

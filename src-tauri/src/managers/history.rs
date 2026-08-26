@@ -34,6 +34,15 @@ static MIGRATIONS: &[M] = &[
     M::up("ALTER TABLE transcription_history ADD COLUMN source TEXT NOT NULL DEFAULT 'dictation';"),
     M::up("ALTER TABLE transcription_history ADD COLUMN ai_notes TEXT;"),
     M::up("ALTER TABLE transcription_history ADD COLUMN user_notes TEXT;"),
+    M::up(
+        "CREATE TABLE IF NOT EXISTS todos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            created_at INTEGER NOT NULL,
+            done BOOLEAN NOT NULL DEFAULT 0,
+            source_entry_id INTEGER
+        );",
+    ),
 ];
 
 /// Where a history entry came from. Stored as TEXT so future sources
@@ -76,6 +85,16 @@ pub struct HistoryEntry {
     pub ai_notes: Option<String>,
     /// The user's own notes for this entry.
     pub user_notes: Option<String>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, Type)]
+pub struct Todo {
+    pub id: i64,
+    pub title: String,
+    pub created_at: i64,
+    pub done: bool,
+    /// Meeting this todo was extracted from (None for manually added ones).
+    pub source_entry_id: Option<i64>,
 }
 
 pub struct HistoryManager {
@@ -443,6 +462,84 @@ impl HistoryManager {
             error!("Failed to emit history-updated event: {}", e);
         }
         Ok(entry)
+    }
+
+    fn map_todo(row: &rusqlite::Row<'_>) -> rusqlite::Result<Todo> {
+        Ok(Todo {
+            id: row.get("id")?,
+            title: row.get("title")?,
+            created_at: row.get("created_at")?,
+            done: row.get("done")?,
+            source_entry_id: row.get("source_entry_id")?,
+        })
+    }
+
+    fn emit_todos_updated(&self) {
+        use tauri::Emitter;
+        let _ = self.app_handle.emit("todos-updated", ());
+    }
+
+    pub fn add_todo(&self, title: &str, source_entry_id: Option<i64>) -> Result<Todo> {
+        let title = title.trim();
+        if title.is_empty() {
+            return Err(anyhow!("todo title is empty"));
+        }
+        let created_at = Utc::now().timestamp();
+        let conn = self.get_connection()?;
+        conn.execute(
+            "INSERT INTO todos (title, created_at, done, source_entry_id) VALUES (?1, ?2, 0, ?3)",
+            params![title, created_at, source_entry_id],
+        )?;
+        let todo = Todo {
+            id: conn.last_insert_rowid(),
+            title: title.to_string(),
+            created_at,
+            done: false,
+            source_entry_id,
+        };
+        self.emit_todos_updated();
+        Ok(todo)
+    }
+
+    /// All todos, open ones first, newest first within each group.
+    pub fn get_todos(&self) -> Result<Vec<Todo>> {
+        let conn = self.get_connection()?;
+        let mut stmt = conn.prepare(
+            "SELECT id, title, created_at, done, source_entry_id FROM todos
+             ORDER BY done ASC, id DESC",
+        )?;
+        let todos = stmt
+            .query_map([], Self::map_todo)?
+            .collect::<std::result::Result<Vec<_>, _>>()?;
+        Ok(todos)
+    }
+
+    pub fn get_todo_by_id(&self, id: i64) -> Result<Option<Todo>> {
+        let conn = self.get_connection()?;
+        let mut stmt = conn.prepare(
+            "SELECT id, title, created_at, done, source_entry_id FROM todos WHERE id = ?1",
+        )?;
+        Ok(stmt.query_row([id], Self::map_todo).optional()?)
+    }
+
+    pub fn set_todo_done(&self, id: i64, done: bool) -> Result<()> {
+        let conn = self.get_connection()?;
+        let updated = conn.execute(
+            "UPDATE todos SET done = ?1 WHERE id = ?2",
+            params![done, id],
+        )?;
+        if updated == 0 {
+            return Err(anyhow!("todo {} not found", id));
+        }
+        self.emit_todos_updated();
+        Ok(())
+    }
+
+    pub fn delete_todo(&self, id: i64) -> Result<()> {
+        let conn = self.get_connection()?;
+        conn.execute("DELETE FROM todos WHERE id = ?1", params![id])?;
+        self.emit_todos_updated();
+        Ok(())
     }
 
     pub fn cleanup_old_entries(&self) -> Result<()> {

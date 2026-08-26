@@ -768,5 +768,19 @@
     "listening": "Écoute…",
     "noStreamingModel": "Enregistrement en cours. Le texte en direct nécessite un modèle streaming — la transcription sera prête à l'arrêt.",
     "privacy": "Transcrit sur cet appareil. Rien ne quitte votre ordinateur."
+  },
+  "todos": {
+    "title": "Tâches",
+    "placeholder": "Ajouter une tâche…",
+    "add": "Ajouter",
+    "empty": "Pas encore de tâches",
+    "emptyHint": "Les tâches de vos réunions arrivent ici automatiquement — tout ce qui a une date devient un événement du calendrier.",
+    "fromMeeting": "Réunion",
+    "makeEvent": "Ajouter au calendrier",
+    "whenPlaceholder": "Quand ? ex. tomorrow 15:00",
+    "schedule": "Planifier",
+    "eventCreated": "Ajouté au calendrier : {{title}}",
+    "eventFailed": "Impossible de créer l'événement",
+    "autoOrganized": "De votre réunion : {{events}} événements, {{todos}} tâches"
   }
 }

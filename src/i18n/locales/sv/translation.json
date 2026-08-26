@@ -768,5 +768,19 @@
     "listening": "Lyssnar…",
     "noStreamingModel": "Spelar in. Livetext kräver en streamingmodell — transkriptet är klart när du stoppar.",
     "privacy": "Transkriberat på den här enheten. Inget lämnar din dator."
+  },
+  "todos": {
+    "title": "Uppgifter",
+    "placeholder": "Lägg till uppgift…",
+    "add": "Lägg till",
+    "empty": "Inga uppgifter ännu",
+    "emptyHint": "Uppgifter från dina möten hamnar här automatiskt — allt med datum blir en kalenderhändelse.",
+    "fromMeeting": "Möte",
+    "makeEvent": "Lägg till i kalendern",
+    "whenPlaceholder": "När? t.ex. tomorrow 15:00",
+    "schedule": "Schemalägg",
+    "eventCreated": "Tillagd i kalendern: {{title}}",
+    "eventFailed": "Kunde inte skapa händelsen",
+    "autoOrganized": "Från ditt möte: {{events}} händelser, {{todos}} uppgifter"
   }
 }

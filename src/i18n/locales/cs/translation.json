@@ -768,5 +768,19 @@
     "listening": "Poslouchám…",
     "noStreamingModel": "Nahrává se. Živý text vyžaduje streamovací model — přepis bude hotov po zastavení.",
     "privacy": "Přepsáno na tomto zařízení. Nic neopouští váš počítač."
+  },
+  "todos": {
+    "title": "Úkoly",
+    "placeholder": "Přidat úkol…",
+    "add": "Přidat",
+    "empty": "Zatím žádné úkoly",
+    "emptyHint": "Úkoly ze schůzek sem přistanou automaticky — cokoli s datem se stane událostí v kalendáři.",
+    "fromMeeting": "Schůzka",
+    "makeEvent": "Přidat do kalendáře",
+    "whenPlaceholder": "Kdy? např. tomorrow 15:00",
+    "schedule": "Naplánovat",
+    "eventCreated": "Přidáno do kalendáře: {{title}}",
+    "eventFailed": "Událost se nepodařilo vytvořit",
+    "autoOrganized": "Ze schůzky: {{events}} událostí, {{todos}} úkolů"
   }
 }

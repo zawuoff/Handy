@@ -768,5 +768,19 @@
     "listening": "正在聆听…",
     "noStreamingModel": "录音中。实时文字需要流式模型——停止后转录即完成。",
     "privacy": "在本设备上转录。任何内容都不会离开您的电脑。"
+  },
+  "todos": {
+    "title": "待办",
+    "placeholder": "添加待办…",
+    "add": "添加",
+    "empty": "还没有待办",
+    "emptyHint": "会议中的待办会自动出现在这里——有日期的会直接变成日历日程。",
+    "fromMeeting": "会议",
+    "makeEvent": "添加到日历",
+    "whenPlaceholder": "什么时候？如 tomorrow 15:00",
+    "schedule": "安排",
+    "eventCreated": "已添加到日历：{{title}}",
+    "eventFailed": "无法创建日程",
+    "autoOrganized": "来自会议：{{events}} 个日程、{{todos}} 个待办"
   }
 }

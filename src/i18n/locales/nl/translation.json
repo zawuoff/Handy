@@ -768,5 +768,19 @@
     "listening": "Luistert…",
     "noStreamingModel": "Opname loopt. Live tekst vereist een streamingmodel — het transcript is klaar wanneer je stopt.",
     "privacy": "Getranscribeerd op dit apparaat. Niets verlaat je computer."
+  },
+  "todos": {
+    "title": "Taken",
+    "placeholder": "Taak toevoegen…",
+    "add": "Toevoegen",
+    "empty": "Nog geen taken",
+    "emptyHint": "Taken uit je vergaderingen komen hier automatisch terecht — alles met een datum wordt een agenda-afspraak.",
+    "fromMeeting": "Vergadering",
+    "makeEvent": "Aan agenda toevoegen",
+    "whenPlaceholder": "Wanneer? bijv. tomorrow 15:00",
+    "schedule": "Inplannen",
+    "eventCreated": "Toegevoegd aan agenda: {{title}}",
+    "eventFailed": "Kon de afspraak niet maken",
+    "autoOrganized": "Uit je vergadering: {{events}} afspraken, {{todos}} taken"
   }
 }

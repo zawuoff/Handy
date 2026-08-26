@@ -768,5 +768,19 @@
     "listening": "Ouvindo…",
     "noStreamingModel": "Gravando. O texto ao vivo requer um modelo de streaming — a transcrição estará pronta ao parar.",
     "privacy": "Transcrito neste dispositivo. Nada sai do seu computador."
+  },
+  "todos": {
+    "title": "Tarefas",
+    "placeholder": "Adicionar tarefa…",
+    "add": "Adicionar",
+    "empty": "Ainda sem tarefas",
+    "emptyHint": "As tarefas das reuniões chegam aqui automaticamente — o que tiver data vira evento no calendário.",
+    "fromMeeting": "Reunião",
+    "makeEvent": "Adicionar ao calendário",
+    "whenPlaceholder": "Quando? ex. tomorrow 15:00",
+    "schedule": "Agendar",
+    "eventCreated": "Adicionado ao calendário: {{title}}",
+    "eventFailed": "Não foi possível criar o evento",
+    "autoOrganized": "Da sua reunião: {{events}} eventos, {{todos}} tarefas"
   }
 }

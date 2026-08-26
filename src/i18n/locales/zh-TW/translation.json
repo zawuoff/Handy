@@ -768,5 +768,19 @@
     "listening": "正在聆聽…",
     "noStreamingModel": "錄音中。即時文字需要串流模型——停止後轉錄即完成。",
     "privacy": "在本裝置上轉錄。任何內容都不會離開您的電腦。"
+  },
+  "todos": {
+    "title": "待辦",
+    "placeholder": "新增待辦…",
+    "add": "新增",
+    "empty": "還沒有待辦",
+    "emptyHint": "會議中的待辦會自動出現在這裡——有日期的會直接變成日曆行程。",
+    "fromMeeting": "會議",
+    "makeEvent": "加入日曆",
+    "whenPlaceholder": "什麼時候？如 tomorrow 15:00",
+    "schedule": "安排",
+    "eventCreated": "已加入日曆：{{title}}",
+    "eventFailed": "無法建立行程",
+    "autoOrganized": "來自會議:{{events}} 個行程、{{todos}} 個待辦"
   }
 }

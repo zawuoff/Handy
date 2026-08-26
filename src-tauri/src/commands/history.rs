@@ -1,6 +1,6 @@
 use crate::actions::process_transcription_output;
 use crate::managers::{
-    history::{HistoryManager, PaginatedHistory},
+    history::{HistoryManager, PaginatedHistory, Todo},
     transcription::TranscriptionManager,
 };
 use std::sync::Arc;
@@ -69,6 +69,71 @@ pub async fn set_history_entry_user_notes(
 pub async fn generate_meeting_notes(app: AppHandle, id: i64) -> Result<(), String> {
     crate::notes::spawn_generation(&app, id);
     Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn get_todos(
+    _app: AppHandle,
+    history_manager: State<'_, Arc<HistoryManager>>,
+) -> Result<Vec<Todo>, String> {
+    history_manager.get_todos().map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn add_todo(
+    _app: AppHandle,
+    history_manager: State<'_, Arc<HistoryManager>>,
+    title: String,
+) -> Result<Todo, String> {
+    history_manager
+        .add_todo(&title, None)
+        .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn set_todo_done(
+    _app: AppHandle,
+    history_manager: State<'_, Arc<HistoryManager>>,
+    id: i64,
+    done: bool,
+) -> Result<(), String> {
+    history_manager
+        .set_todo_done(id, done)
+        .map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+#[specta::specta]
+pub async fn delete_todo(
+    _app: AppHandle,
+    history_manager: State<'_, Arc<HistoryManager>>,
+    id: i64,
+) -> Result<(), String> {
+    history_manager.delete_todo(id).map_err(|e| e.to_string())
+}
+
+/// Schedule a todo as a calendar event ("when" is natural language, handed to
+/// GNU date via cal-add) and mark it done on success.
+#[tauri::command]
+#[specta::specta]
+pub async fn todo_to_event(
+    _app: AppHandle,
+    history_manager: State<'_, Arc<HistoryManager>>,
+    id: i64,
+    when: String,
+    duration_min: Option<u32>,
+) -> Result<(), String> {
+    let todo = history_manager
+        .get_todo_by_id(id)
+        .map_err(|e| e.to_string())?
+        .ok_or_else(|| format!("todo {id} not found"))?;
+    crate::notes::create_calendar_event(&todo.title, &when, duration_min.unwrap_or(60))?;
+    history_manager
+        .set_todo_done(id, true)
+        .map_err(|e| e.to_string())
 }
 
 #[tauri::command]

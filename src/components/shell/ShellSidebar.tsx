@@ -1,12 +1,19 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { History, Home, Mic, NotebookPen, Settings } from "lucide-react";
+import {
+  History,
+  Home,
+  ListTodo,
+  Mic,
+  NotebookPen,
+  Settings,
+} from "lucide-react";
 import ModelSelector from "../model-selector";
 import { useOsType } from "@/hooks/useOsType";
 import { useSettings } from "@/hooks/useSettings";
 import { formatKeyCombination } from "@/lib/utils/keyboard";
 
-export type ShellView = "home" | "notes" | "history";
+export type ShellView = "home" | "notes" | "todos" | "history";
 
 const NavItem: React.FC<{
   icon: React.ReactNode;
@@ -61,6 +68,12 @@ export const ShellSidebar: React.FC<{
         label={t("sidebar.notes")}
         active={view === "notes"}
         onClick={() => onViewChange("notes")}
+      />
+      <NavItem
+        icon={<ListTodo size={15} />}
+        label={t("todos.title")}
+        active={view === "todos"}
+        onClick={() => onViewChange("todos")}
       />
       <NavItem
         icon={<History size={15} />}

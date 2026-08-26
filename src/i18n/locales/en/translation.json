@@ -768,5 +768,19 @@
     "listening": "Listening…",
     "noStreamingModel": "Recording. Live text needs a streaming model — the transcript will be ready when you stop.",
     "privacy": "Transcribed on this device. Nothing leaves your computer."
+  },
+  "todos": {
+    "title": "Todos",
+    "placeholder": "Add a todo…",
+    "add": "Add",
+    "empty": "No todos yet",
+    "emptyHint": "Todos from your meetings land here automatically — anything with a date becomes a calendar event instead.",
+    "fromMeeting": "Meeting",
+    "makeEvent": "Add to calendar",
+    "whenPlaceholder": "When? e.g. tomorrow 15:00 or friday 09:00",
+    "schedule": "Schedule",
+    "eventCreated": "Added to calendar: {{title}}",
+    "eventFailed": "Couldn't create the calendar event",
+    "autoOrganized": "From your meeting: {{events}} calendar event(s), {{todos}} todo(s)"
   }
 }

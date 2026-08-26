@@ -768,5 +768,19 @@
     "listening": "Dinleniyor…",
     "noStreamingModel": "Kayıt sürüyor. Canlı metin bir akış modeli gerektirir — transkript durdurduğunuzda hazır olur.",
     "privacy": "Bu cihazda yazıya döküldü. Hiçbir şey bilgisayarınızdan çıkmaz."
+  },
+  "todos": {
+    "title": "Yapılacaklar",
+    "placeholder": "Görev ekle…",
+    "add": "Ekle",
+    "empty": "Henüz görev yok",
+    "emptyHint": "Toplantılardaki görevler otomatik olarak buraya gelir — tarihi olanlar takvim etkinliğine dönüşür.",
+    "fromMeeting": "Toplantı",
+    "makeEvent": "Takvime ekle",
+    "whenPlaceholder": "Ne zaman? örn. tomorrow 15:00",
+    "schedule": "Planla",
+    "eventCreated": "Takvime eklendi: {{title}}",
+    "eventFailed": "Etkinlik oluşturulamadı",
+    "autoOrganized": "Toplantınızdan: {{events}} etkinlik, {{todos}} görev"
   }
 }

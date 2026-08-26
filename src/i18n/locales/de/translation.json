@@ -768,5 +768,19 @@
     "listening": "Höre zu…",
     "noStreamingModel": "Aufnahme läuft. Live-Text braucht ein Streaming-Modell — das Transkript ist nach dem Stopp fertig.",
     "privacy": "Auf diesem Gerät transkribiert. Nichts verlässt deinen Computer."
+  },
+  "todos": {
+    "title": "Aufgaben",
+    "placeholder": "Aufgabe hinzufügen…",
+    "add": "Hinzufügen",
+    "empty": "Noch keine Aufgaben",
+    "emptyHint": "Aufgaben aus deinen Meetings landen automatisch hier — alles mit Datum wird stattdessen ein Kalendereintrag.",
+    "fromMeeting": "Meeting",
+    "makeEvent": "Zum Kalender hinzufügen",
+    "whenPlaceholder": "Wann? z.B. tomorrow 15:00",
+    "schedule": "Planen",
+    "eventCreated": "Zum Kalender hinzugefügt: {{title}}",
+    "eventFailed": "Kalendereintrag konnte nicht erstellt werden",
+    "autoOrganized": "Aus deinem Meeting: {{events}} Termine, {{todos}} Aufgaben"
   }
 }

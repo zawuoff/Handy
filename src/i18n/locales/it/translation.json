@@ -768,5 +768,19 @@
     "listening": "In ascolto…",
     "noStreamingModel": "Registrazione in corso. Il testo dal vivo richiede un modello streaming — la trascrizione sarà pronta allo stop.",
     "privacy": "Trascritto su questo dispositivo. Nulla lascia il tuo computer."
+  },
+  "todos": {
+    "title": "Attività",
+    "placeholder": "Aggiungi un'attività…",
+    "add": "Aggiungi",
+    "empty": "Ancora nessuna attività",
+    "emptyHint": "Le attività delle riunioni arrivano qui automaticamente — ciò che ha una data diventa un evento del calendario.",
+    "fromMeeting": "Riunione",
+    "makeEvent": "Aggiungi al calendario",
+    "whenPlaceholder": "Quando? es. tomorrow 15:00",
+    "schedule": "Pianifica",
+    "eventCreated": "Aggiunto al calendario: {{title}}",
+    "eventFailed": "Impossibile creare l'evento",
+    "autoOrganized": "Dalla riunione: {{events}} eventi, {{todos}} attività"
   }
 }
