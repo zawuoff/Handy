@@ -5,6 +5,7 @@ mod ask;
 mod audio_feedback;
 pub mod audio_toolkit;
 mod autostart;
+mod calendar;
 mod catalog;
 pub mod cli;
 mod clipboard;
@@ -20,6 +21,8 @@ mod notes;
 mod overlay;
 mod paste_tx;
 pub mod portable;
+#[cfg(target_os = "linux")]
+mod radar;
 mod secure_input;
 mod settings;
 mod shortcut;
@@ -190,6 +193,10 @@ fn initialize_core_logic(app_handle: &AppHandle) {
     // A crash mid-meeting must not leave a phantom live-meeting snapshot for
     // the MCP server to report.
     meeting::clear_live_snapshot(app_handle);
+
+    // Meeting radar (opt-in): watches for an active call and offers to record.
+    #[cfg(target_os = "linux")]
+    radar::start(app_handle);
 
     // Note: Shortcuts are NOT initialized here.
     // The frontend is responsible for calling the `initialize_shortcuts` command
@@ -757,6 +764,8 @@ pub fn run(cli_args: CliArgs) {
             commands::history::generate_meeting_notes,
             notes::get_generating_note_ids,
             shortcut::change_meeting_notes_prompt_setting,
+            shortcut::change_meeting_radar_enabled_setting,
+            calendar::get_upcoming_events,
             commands::history::search_notes,
             commands::history::create_ask_session,
             commands::history::list_ask_sessions,

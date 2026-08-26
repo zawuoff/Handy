@@ -442,6 +442,9 @@ pub struct AppSettings {
     /// System prompt used to turn a meeting transcript into notes.
     #[serde(default = "default_meeting_notes_prompt")]
     pub meeting_notes_prompt: String,
+    /// Offer to record when another app is using the mic during playback.
+    #[serde(default)]
+    pub meeting_radar_enabled: bool,
     #[serde(default = "default_app_language")]
     pub app_language: String,
     #[serde(default = "default_theme")]
@@ -964,6 +967,7 @@ pub fn get_default_settings() -> AppSettings {
         mute_while_recording: false,
         append_trailing_space: false,
         meeting_notes_prompt: default_meeting_notes_prompt(),
+        meeting_radar_enabled: false,
         app_language: default_app_language(),
         theme: default_theme(),
         experimental_enabled: false,

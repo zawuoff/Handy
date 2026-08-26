@@ -15,7 +15,9 @@
     "meetingCaptionsShow": "הצגת כתוביות חיות",
     "meetingCaptionsHide": "הסתרת כתוביות חיות",
     "meetingDiscard": "מחיקת ההקלטה",
-    "meetingListening": "מאזין…"
+    "meetingListening": "מאזין…",
+    "radarPrompt": "נראה שמתקיימת שיחה — להקליט אותה כפגישה?",
+    "radarRecord": "הקלט"
   },
   "sidebar": {
     "general": "כללי",
@@ -627,6 +629,10 @@
         "label": "הצג מה חדש",
         "description": "הצג הערות גרסה לאחר עדכוני Noted"
       }
+    },
+    "meetingRadar": {
+      "title": "רדאר פגישות",
+      "description": "כשאפליקציה אחרת משתמשת במיקרופון בזמן השמעה (שיחה), Noted מציע להקליט אותה כפגישה דרך התראה."
     }
   },
   "footer": {
@@ -799,5 +805,10 @@
     "regenerate": "שאל שוב",
     "providerHint": "המודל לתשובות",
     "recent": "חיפושים"
+  },
+  "home": {
+    "comingUp": "בקרוב",
+    "record": "הקלט",
+    "allDay": "כל היום"
   }
 }

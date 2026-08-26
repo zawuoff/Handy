@@ -15,7 +15,9 @@
     "meetingCaptionsShow": "Hiện phụ đề trực tiếp",
     "meetingCaptionsHide": "Ẩn phụ đề trực tiếp",
     "meetingDiscard": "Hủy bản ghi âm",
-    "meetingListening": "Đang nghe…"
+    "meetingListening": "Đang nghe…",
+    "radarPrompt": "Có vẻ đang có cuộc gọi — ghi âm thành cuộc họp?",
+    "radarRecord": "Ghi âm"
   },
   "sidebar": {
     "general": "Chung",
@@ -627,6 +629,10 @@
         "label": "Hiển thị điểm mới",
         "description": "Hiển thị ghi chú phát hành sau khi Noted cập nhật"
       }
+    },
+    "meetingRadar": {
+      "title": "Radar cuộc họp",
+      "description": "Khi ứng dụng khác dùng micro trong lúc phát âm thanh (cuộc gọi), Noted đề nghị ghi âm thành cuộc họp qua thông báo."
     }
   },
   "footer": {
@@ -799,5 +805,10 @@
     "regenerate": "Hỏi lại",
     "providerHint": "Mô hình dùng để trả lời",
     "recent": "Tìm kiếm"
+  },
+  "home": {
+    "comingUp": "Sắp tới",
+    "record": "Ghi âm",
+    "allDay": "Cả ngày"
   }
 }

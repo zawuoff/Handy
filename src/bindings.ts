@@ -1009,6 +1009,22 @@ async answerAskSession(id: number, providerId: string | null) : Promise<Result<n
     else return { status: "error", error: e  as any };
 }
 },
+async getUpcomingEvents(hours: number | null) : Promise<Result<CalendarEvent[], string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("get_upcoming_events", { hours }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async changeMeetingRadarEnabledSetting(enabled: boolean) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_meeting_radar_enabled_setting", { enabled }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async toggleHistoryEntrySaved(id: number) : Promise<Result<null, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("toggle_history_entry_saved", { id }) };
@@ -1124,7 +1140,7 @@ selected_channel?: number | null; clamshell_microphone?: string | null; selected
 /**
  * System prompt used to turn a meeting transcript into notes.
  */
-meeting_notes_prompt?: string; app_language?: string; theme?: Theme; experimental_enabled?: boolean; lazy_stream_close?: boolean; keyboard_implementation?: KeyboardImplementation; show_tray_icon?: boolean; paste_delay_ms?: number; paste_delay_after_ms?: number; 
+meeting_notes_prompt?: string; meeting_radar_enabled?: boolean; app_language?: string; theme?: Theme; experimental_enabled?: boolean; lazy_stream_close?: boolean; keyboard_implementation?: KeyboardImplementation; show_tray_icon?: boolean; paste_delay_ms?: number; paste_delay_after_ms?: number; 
 /**
  * Debug-gated ("beta") receipt-sequenced paste: restore the clipboard only
  * after the target app actually reads the transcript, instead of after a
@@ -1165,6 +1181,7 @@ export type Todo = { id: number; title: string; created_at: number; done: boolea
  * Meeting this todo was extracted from (None for manually added ones).
  */
 source_entry_id: number | null }
+export type CalendarEvent = { summary: string; start_unix: number; end_unix: number; all_day: boolean }
 export type AskSession = { id: number; query: string; answer: string | null; created_at: number; provider_id: string | null }
 export type SearchHit = { entry_id: number; title: string; timestamp: number; snippet: string }
 export type GpuDeviceOption = { id: string; name: string; total_vram_mb: number }

@@ -15,7 +15,9 @@
     "meetingCaptionsShow": "Canlı altyazıları göster",
     "meetingCaptionsHide": "Canlı altyazıları gizle",
     "meetingDiscard": "Kaydı sil",
-    "meetingListening": "Dinleniyor…"
+    "meetingListening": "Dinleniyor…",
+    "radarPrompt": "Bir görüşme sürüyor gibi görünüyor — toplantı olarak kaydedilsin mi?",
+    "radarRecord": "Kaydet"
   },
   "sidebar": {
     "general": "Genel",
@@ -627,6 +629,10 @@
         "label": "Yenilikleri Göster",
         "description": "Noted güncellemelerinden sonra sürüm notlarını göster"
       }
+    },
+    "meetingRadar": {
+      "title": "Toplantı radarı",
+      "description": "Başka bir uygulama oynatma sırasında mikrofonunuzu kullanırken (bir görüşme), Noted bildirim ile bunu toplantı olarak kaydetmeyi önerir."
     }
   },
   "footer": {
@@ -799,5 +805,10 @@
     "regenerate": "Tekrar sor",
     "providerHint": "Yanıtlar için model",
     "recent": "Aramalar"
+  },
+  "home": {
+    "comingUp": "Yaklaşan",
+    "record": "Kaydet",
+    "allDay": "Tüm gün"
   }
 }

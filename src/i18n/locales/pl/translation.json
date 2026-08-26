@@ -15,7 +15,9 @@
     "meetingCaptionsShow": "Pokaż napisy na żywo",
     "meetingCaptionsHide": "Ukryj napisy na żywo",
     "meetingDiscard": "Odrzuć nagranie",
-    "meetingListening": "Słucham…"
+    "meetingListening": "Słucham…",
+    "radarPrompt": "Wygląda na to, że trwa rozmowa — nagrać ją jako spotkanie?",
+    "radarRecord": "Nagraj"
   },
   "sidebar": {
     "general": "Ogólne",
@@ -627,6 +629,10 @@
         "label": "Pokaż nowości",
         "description": "Pokazuj informacje o wydaniu po aktualizacjach Noted"
       }
+    },
+    "meetingRadar": {
+      "title": "Radar spotkań",
+      "description": "Gdy inna aplikacja używa mikrofonu podczas odtwarzania (rozmowa), Noted proponuje przez powiadomienie nagranie jej jako spotkania."
     }
   },
   "footer": {
@@ -799,5 +805,10 @@
     "regenerate": "Zapytaj ponownie",
     "providerHint": "Model do odpowiedzi",
     "recent": "Wyszukiwania"
+  },
+  "home": {
+    "comingUp": "Nadchodzące",
+    "record": "Nagraj",
+    "allDay": "Cały dzień"
   }
 }

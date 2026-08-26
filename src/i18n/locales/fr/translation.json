@@ -15,7 +15,9 @@
     "meetingCaptionsShow": "Afficher les sous-titres en direct",
     "meetingCaptionsHide": "Masquer les sous-titres en direct",
     "meetingDiscard": "Abandonner l'enregistrement",
-    "meetingListening": "Écoute en cours…"
+    "meetingListening": "Écoute en cours…",
+    "radarPrompt": "Un appel semble en cours — l'enregistrer comme réunion ?",
+    "radarRecord": "Enregistrer"
   },
   "sidebar": {
     "general": "Général",
@@ -627,6 +629,10 @@
         "label": "Afficher les nouveautés",
         "description": "Afficher les notes de version après les mises à jour de Noted"
       }
+    },
+    "meetingRadar": {
+      "title": "Radar de réunions",
+      "description": "Quand une autre app utilise votre micro pendant la lecture (un appel), Noted propose de l'enregistrer comme réunion via une notification."
     }
   },
   "footer": {
@@ -799,5 +805,10 @@
     "regenerate": "Redemander",
     "providerHint": "Modèle utilisé pour les réponses",
     "recent": "Recherches"
+  },
+  "home": {
+    "comingUp": "À venir",
+    "record": "Enregistrer",
+    "allDay": "Toute la journée"
   }
 }

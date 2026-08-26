@@ -15,7 +15,9 @@
     "meetingCaptionsShow": "Zobrazit živé titulky",
     "meetingCaptionsHide": "Skrýt živé titulky",
     "meetingDiscard": "Zahodit nahrávku",
-    "meetingListening": "Poslouchám…"
+    "meetingListening": "Poslouchám…",
+    "radarPrompt": "Zdá se, že probíhá hovor — nahrát ho jako schůzku?",
+    "radarRecord": "Nahrát"
   },
   "sidebar": {
     "general": "Obecné",
@@ -627,6 +629,10 @@
         "label": "Zobrazovat novinky",
         "description": "Zobrazovat poznámky k vydání po aktualizacích Noted"
       }
+    },
+    "meetingRadar": {
+      "title": "Radar schůzek",
+      "description": "Když jiná aplikace používá mikrofon během přehrávání (hovor), Noted nabídne nahrát to jako schůzku přes upozornění."
     }
   },
   "footer": {
@@ -799,5 +805,10 @@
     "regenerate": "Zeptat se znovu",
     "providerHint": "Model pro odpovědi",
     "recent": "Hledání"
+  },
+  "home": {
+    "comingUp": "Nadcházející",
+    "record": "Nahrát",
+    "allDay": "Celý den"
   }
 }

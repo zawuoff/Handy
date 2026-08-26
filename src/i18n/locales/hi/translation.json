@@ -15,7 +15,9 @@
     "meetingCaptionsShow": "लाइव कैप्शन दिखाएँ",
     "meetingCaptionsHide": "लाइव कैप्शन छिपाएँ",
     "meetingDiscard": "रिकॉर्डिंग हटाएँ",
-    "meetingListening": "सुन रहा है…"
+    "meetingListening": "सुन रहा है…",
+    "radarPrompt": "लगता है कोई कॉल चल रही है — इसे मीटिंग के रूप में रिकॉर्ड करें?",
+    "radarRecord": "रिकॉर्ड करें"
   },
   "sidebar": {
     "general": "सामान्य",
@@ -627,6 +629,10 @@
           "details": "Noted का लोकल स्पीच-टू-टेक्स्ट transcribe.cpp और ggml पर आधारित है. Georgi Gerganov और योगदान देने वालों के शानदार काम के लिए धन्यवाद."
         }
       }
+    },
+    "meetingRadar": {
+      "title": "मीटिंग रडार",
+      "description": "जब कोई दूसरा ऐप प्लेबैक के दौरान माइक्रोफ़ोन उपयोग करता है (कॉल), Noted नोटिफ़िकेशन से उसे मीटिंग के रूप में रिकॉर्ड करने की पेशकश करता है।"
     }
   },
   "footer": {
@@ -799,5 +805,10 @@
     "regenerate": "फिर पूछें",
     "providerHint": "उत्तरों के लिए मॉडल",
     "recent": "खोजें"
+  },
+  "home": {
+    "comingUp": "आगामी",
+    "record": "रिकॉर्ड",
+    "allDay": "पूरे दिन"
   }
 }

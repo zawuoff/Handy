@@ -15,7 +15,9 @@
     "meetingCaptionsShow": "ライブ字幕を表示",
     "meetingCaptionsHide": "ライブ字幕を非表示",
     "meetingDiscard": "録音を破棄",
-    "meetingListening": "聞き取り中…"
+    "meetingListening": "聞き取り中…",
+    "radarPrompt": "通話中のようです。ミーティングとして録音しますか？",
+    "radarRecord": "録音"
   },
   "sidebar": {
     "general": "一般",
@@ -627,6 +629,10 @@
         "label": "新機能を表示",
         "description": "Noted のアップデート後にリリースノートを表示"
       }
+    },
+    "meetingRadar": {
+      "title": "会議レーダー",
+      "description": "再生中に他のアプリがマイクを使用している場合（通話中）、Notedが通知でミーティングとして録音するか提案します。"
     }
   },
   "footer": {
@@ -799,5 +805,10 @@
     "regenerate": "もう一度聞く",
     "providerHint": "回答に使うモデル",
     "recent": "検索"
+  },
+  "home": {
+    "comingUp": "予定",
+    "record": "録音",
+    "allDay": "終日"
   }
 }

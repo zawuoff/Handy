@@ -15,7 +15,9 @@
     "meetingCaptionsShow": "Show Live Captions",
     "meetingCaptionsHide": "Hide Live Captions",
     "meetingDiscard": "Discard Recording",
-    "meetingListening": "Listening…"
+    "meetingListening": "Listening…",
+    "radarPrompt": "A call seems to be happening — record it as a meeting?",
+    "radarRecord": "Record"
   },
   "sidebar": {
     "general": "General",
@@ -627,6 +629,10 @@
           "details": "Noted's local speech-to-text is built on transcribe.cpp and ggml. Thanks to the amazing work by Georgi Gerganov and contributors."
         }
       }
+    },
+    "meetingRadar": {
+      "title": "Meeting radar",
+      "description": "When another app is using your microphone during playback (a call), Noted offers to record it as a meeting via a desktop notification."
     }
   },
   "footer": {
@@ -799,5 +805,10 @@
     "regenerate": "Ask again",
     "providerHint": "Model used for answers",
     "recent": "Searches"
+  },
+  "home": {
+    "comingUp": "Coming up",
+    "record": "Record",
+    "allDay": "All day"
   }
 }

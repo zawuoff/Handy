@@ -15,7 +15,9 @@
     "meetingCaptionsShow": "顯示即時字幕",
     "meetingCaptionsHide": "隱藏即時字幕",
     "meetingDiscard": "放棄錄音",
-    "meetingListening": "正在聆聽…"
+    "meetingListening": "正在聆聽…",
+    "radarPrompt": "似乎正在通話——要錄製為會議嗎?",
+    "radarRecord": "錄製"
   },
   "sidebar": {
     "general": "一般",
@@ -627,6 +629,10 @@
         "label": "顯示新功能",
         "description": "Noted 更新後顯示版本資訊"
       }
+    },
+    "meetingRadar": {
+      "title": "會議雷達",
+      "description": "當其他應用在播放音訊時使用麥克風(通話中),Noted 會透過桌面通知建議將其錄製為會議。"
     }
   },
   "footer": {
@@ -799,5 +805,10 @@
     "regenerate": "再問一次",
     "providerHint": "用於回答的模型",
     "recent": "搜尋"
+  },
+  "home": {
+    "comingUp": "即將到來",
+    "record": "錄製",
+    "allDay": "全天"
   }
 }

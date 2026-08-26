@@ -15,7 +15,9 @@
     "meetingCaptionsShow": "Live ondertitels tonen",
     "meetingCaptionsHide": "Live ondertitels verbergen",
     "meetingDiscard": "Opname verwijderen",
-    "meetingListening": "Luistert…"
+    "meetingListening": "Luistert…",
+    "radarPrompt": "Er lijkt een gesprek bezig — opnemen als vergadering?",
+    "radarRecord": "Opnemen"
   },
   "sidebar": {
     "general": "Algemeen",
@@ -627,6 +629,10 @@
           "details": "Noted's lokale spraak-naar-tekst is gebouwd op transcribe.cpp en ggml. Met dank aan het geweldige werk van Georgi Gerganov en alle bijdragers."
         }
       }
+    },
+    "meetingRadar": {
+      "title": "Vergaderradar",
+      "description": "Wanneer een andere app je microfoon gebruikt tijdens afspelen (een gesprek), biedt Noted via een melding aan het als vergadering op te nemen."
     }
   },
   "footer": {
@@ -799,5 +805,10 @@
     "regenerate": "Opnieuw vragen",
     "providerHint": "Model voor antwoorden",
     "recent": "Zoekopdrachten"
+  },
+  "home": {
+    "comingUp": "Binnenkort",
+    "record": "Opnemen",
+    "allDay": "Hele dag"
   }
 }

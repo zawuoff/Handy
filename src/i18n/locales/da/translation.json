@@ -15,7 +15,9 @@
     "meetingCaptionsShow": "Vis live-undertekster",
     "meetingCaptionsHide": "Skjul live-undertekster",
     "meetingDiscard": "Kassér optagelse",
-    "meetingListening": "Lytter…"
+    "meetingListening": "Lytter…",
+    "radarPrompt": "Der ser ud til at være et opkald i gang — optag det som møde?",
+    "radarRecord": "Optag"
   },
   "sidebar": {
     "general": "Generelt",
@@ -627,6 +629,10 @@
           "details": "Handys lokale tale-til-tekst funktionalitet er bygget på transcribe.cpp og ggml. Tak for det fantastiske arbejde af Georgi Gerganov og bidragyderne."
         }
       }
+    },
+    "meetingRadar": {
+      "title": "Møderadar",
+      "description": "Når en anden app bruger din mikrofon under afspilning (et opkald), tilbyder Noted at optage det som et møde via en notifikation."
     }
   },
   "footer": {
@@ -799,5 +805,10 @@
     "regenerate": "Spørg igen",
     "providerHint": "Model til svar",
     "recent": "Søgninger"
+  },
+  "home": {
+    "comingUp": "Kommende",
+    "record": "Optag",
+    "allDay": "Hele dagen"
   }
 }

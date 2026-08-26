@@ -1242,6 +1242,15 @@ pub fn change_mute_while_recording_setting(app: AppHandle, enabled: bool) -> Res
 
 #[tauri::command]
 #[specta::specta]
+pub fn change_meeting_radar_enabled_setting(app: AppHandle, enabled: bool) -> Result<(), String> {
+    let mut settings = settings::get_settings(&app);
+    settings.meeting_radar_enabled = enabled;
+    settings::write_settings(&app, settings);
+    Ok(())
+}
+
+#[tauri::command]
+#[specta::specta]
 pub fn change_meeting_notes_prompt_setting(app: AppHandle, prompt: String) -> Result<(), String> {
     let mut settings = settings::get_settings(&app);
     // An emptied prompt falls back to the built-in default so note generation

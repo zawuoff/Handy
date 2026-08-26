@@ -15,7 +15,9 @@
     "meetingCaptionsShow": "Mostra sottotitoli in diretta",
     "meetingCaptionsHide": "Nascondi sottotitoli in diretta",
     "meetingDiscard": "Scarta registrazione",
-    "meetingListening": "In ascolto…"
+    "meetingListening": "In ascolto…",
+    "radarPrompt": "Sembra in corso una chiamata: registrarla come riunione?",
+    "radarRecord": "Registra"
   },
   "sidebar": {
     "general": "Generale",
@@ -627,6 +629,10 @@
         "label": "Mostra novità",
         "description": "Mostra le note di rilascio dopo gli aggiornamenti di Noted"
       }
+    },
+    "meetingRadar": {
+      "title": "Radar riunioni",
+      "description": "Quando un'altra app usa il microfono durante la riproduzione (una chiamata), Noted propone di registrarla come riunione con una notifica."
     }
   },
   "footer": {
@@ -799,5 +805,10 @@
     "regenerate": "Chiedi di nuovo",
     "providerHint": "Modello per le risposte",
     "recent": "Ricerche"
+  },
+  "home": {
+    "comingUp": "In arrivo",
+    "record": "Registra",
+    "allDay": "Tutto il giorno"
   }
 }

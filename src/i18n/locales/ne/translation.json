@@ -15,7 +15,9 @@
     "meetingCaptionsShow": "प्रत्यक्ष क्याप्सन देखाउनुहोस्",
     "meetingCaptionsHide": "प्रत्यक्ष क्याप्सन लुकाउनुहोस्",
     "meetingDiscard": "रेकर्डिङ हटाउनुहोस्",
-    "meetingListening": "सुन्दै…"
+    "meetingListening": "सुन्दै…",
+    "radarPrompt": "कल चलिरहेको जस्तो छ — बैठकका रूपमा रेकर्ड गर्ने?",
+    "radarRecord": "रेकर्ड"
   },
   "sidebar": {
     "general": "सामान्य",
@@ -627,6 +629,10 @@
           "details": "Noted को स्थानीय स्पिच-टु-टेक्स्ट transcribe.cpp र ggml मा आधारित छ। Georgi Gerganov र योगदानकर्ताहरूको उत्कृष्ट कामका लागि धन्यवाद।"
         }
       }
+    },
+    "meetingRadar": {
+      "title": "बैठक रडार",
+      "description": "प्लेब्याकका बेला अर्को एपले माइक्रोफोन प्रयोग गर्दा (कल), Noted ले सूचनामार्फत बैठकका रूपमा रेकर्ड गर्न प्रस्ताव गर्छ।"
     }
   },
   "footer": {
@@ -799,5 +805,10 @@
     "regenerate": "फेरि सोध्नुहोस्",
     "providerHint": "उत्तरका लागि मोडेल",
     "recent": "खोजहरू"
+  },
+  "home": {
+    "comingUp": "आगामी",
+    "record": "रेकर्ड",
+    "allDay": "दिनभरि"
   }
 }

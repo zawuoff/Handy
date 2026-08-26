@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Calendar, FileText, Search, Square } from "lucide-react";
-import { commands, events, type HistoryEntry } from "@/bindings";
+import {
+  commands,
+  events,
+  type CalendarEvent,
+  type HistoryEntry,
+} from "@/bindings";
 import type { MeetingUiState } from "./useMeetingState";
 
 const dayLabel = (
@@ -29,10 +34,23 @@ export const HomeView: React.FC<{
   meeting: MeetingUiState;
   onOpenNote: (id: number) => void;
   onAsk: (query: string) => void;
-}> = ({ meeting, onOpenNote, onAsk }) => {
+  onRecordEvent: (title: string) => void;
+}> = ({ meeting, onOpenNote, onAsk, onRecordEvent }) => {
   const { t, i18n } = useTranslation();
   const [entries, setEntries] = useState<HistoryEntry[]>([]);
   const [query, setQuery] = useState("");
+  const [upcoming, setUpcoming] = useState<CalendarEvent[]>([]);
+
+  // Calendar peek: only while Home is mounted, refreshed every 5 minutes.
+  useEffect(() => {
+    const refresh = () =>
+      commands.getUpcomingEvents(48).then((result) => {
+        if (result.status === "ok") setUpcoming(result.data);
+      });
+    refresh();
+    const timer = setInterval(refresh, 5 * 60 * 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     commands.getMeetingEntries(null, 20).then((result) => {
@@ -108,6 +126,53 @@ export const HomeView: React.FC<{
           )}
         </button>
       </div>
+
+      {upcoming.length > 0 && (
+        <div className="flex flex-col gap-2.5">
+          <span className="text-xs font-semibold tracking-[0.05em] uppercase text-faint">
+            {t("home.comingUp")}
+          </span>
+          {upcoming.slice(0, 3).map((event) => {
+            const start = new Date(event.start_unix * 1000);
+            const timeRange = event.all_day
+              ? t("home.allDay")
+              : `${new Intl.DateTimeFormat(i18n.language, { timeStyle: "short" }).format(start)} – ${new Intl.DateTimeFormat(i18n.language, { timeStyle: "short" }).format(new Date(event.end_unix * 1000))}`;
+            return (
+              <div
+                key={`${event.summary}-${event.start_unix}`}
+                className="flex items-center gap-3.5 rounded-xl border border-border bg-card px-4 py-3.5"
+              >
+                <div className="flex flex-col items-center w-11 shrink-0">
+                  <span className="text-[10px] font-semibold tracking-[0.06em] uppercase text-accent">
+                    {new Intl.DateTimeFormat(i18n.language, {
+                      weekday: "short",
+                    }).format(start)}
+                  </span>
+                  <span className="font-serif text-xl font-semibold leading-6">
+                    {start.getDate()}
+                  </span>
+                </div>
+                <span className="w-0.5 h-9 rounded-sm bg-accent shrink-0" />
+                <div className="flex flex-col flex-1 min-w-0 gap-0.5">
+                  <span className="text-[13.5px] font-medium text-text truncate">
+                    {event.summary || t("shell.meetingMeta")}
+                  </span>
+                  <span className="text-xs text-muted">{timeRange}</span>
+                </div>
+                {!meeting.active && (
+                  <button
+                    className="flex items-center gap-1.5 rounded-lg border border-border-strong px-3 py-1.5 text-xs font-medium text-text cursor-pointer hover:bg-card2 shrink-0"
+                    onClick={() => onRecordEvent(event.summary)}
+                  >
+                    <span className="w-[7px] h-[7px] rounded-full bg-record shrink-0" />
+                    {t("home.record")}
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       <div className="flex flex-col">
         <span className="text-xs font-semibold tracking-[0.05em] uppercase text-faint pb-2">

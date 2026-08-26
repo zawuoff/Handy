@@ -15,7 +15,9 @@
     "meetingCaptionsShow": "Visa livetextning",
     "meetingCaptionsHide": "Dölj livetextning",
     "meetingDiscard": "Släng inspelning",
-    "meetingListening": "Lyssnar…"
+    "meetingListening": "Lyssnar…",
+    "radarPrompt": "Ett samtal verkar pågå — spela in det som möte?",
+    "radarRecord": "Spela in"
   },
   "sidebar": {
     "general": "Allmänt",
@@ -627,6 +629,10 @@
         "label": "Visa nyheter",
         "description": "Visa versionsinformation efter Noted-uppdateringar"
       }
+    },
+    "meetingRadar": {
+      "title": "Mötesradar",
+      "description": "När en annan app använder din mikrofon under uppspelning (ett samtal) erbjuder Noted via en avisering att spela in det som ett möte."
     }
   },
   "footer": {
@@ -799,5 +805,10 @@
     "regenerate": "Fråga igen",
     "providerHint": "Modell för svar",
     "recent": "Sökningar"
+  },
+  "home": {
+    "comingUp": "Kommande",
+    "record": "Spela in",
+    "allDay": "Hela dagen"
   }
 }

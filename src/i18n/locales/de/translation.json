@@ -15,7 +15,9 @@
     "meetingCaptionsShow": "Live-Untertitel anzeigen",
     "meetingCaptionsHide": "Live-Untertitel ausblenden",
     "meetingDiscard": "Aufnahme verwerfen",
-    "meetingListening": "Höre zu…"
+    "meetingListening": "Höre zu…",
+    "radarPrompt": "Ein Anruf scheint zu laufen — als Meeting aufnehmen?",
+    "radarRecord": "Aufnehmen"
   },
   "sidebar": {
     "general": "Allgemein",
@@ -627,6 +629,10 @@
         "label": "Neuerungen anzeigen",
         "description": "Versionshinweise nach Noted-Updates anzeigen"
       }
+    },
+    "meetingRadar": {
+      "title": "Meeting-Radar",
+      "description": "Wenn eine andere App dein Mikrofon während der Wiedergabe nutzt (ein Anruf), bietet Noted per Benachrichtigung an, es als Meeting aufzunehmen."
     }
   },
   "footer": {
@@ -799,5 +805,10 @@
     "regenerate": "Erneut fragen",
     "providerHint": "Modell für Antworten",
     "recent": "Suchen"
+  },
+  "home": {
+    "comingUp": "Demnächst",
+    "record": "Aufnehmen",
+    "allDay": "Ganztägig"
   }
 }

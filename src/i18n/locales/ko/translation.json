@@ -15,7 +15,9 @@
     "meetingCaptionsShow": "실시간 자막 표시",
     "meetingCaptionsHide": "실시간 자막 숨기기",
     "meetingDiscard": "녹음 취소",
-    "meetingListening": "듣는 중…"
+    "meetingListening": "듣는 중…",
+    "radarPrompt": "통화가 진행 중인 것 같습니다. 회의로 녹음할까요?",
+    "radarRecord": "녹음"
   },
   "sidebar": {
     "general": "일반",
@@ -627,6 +629,10 @@
         "label": "새 소식 표시",
         "description": "Noted 업데이트 후 릴리스 노트를 표시합니다"
       }
+    },
+    "meetingRadar": {
+      "title": "회의 레이더",
+      "description": "재생 중 다른 앱이 마이크를 사용하면(통화) Noted가 알림으로 회의 녹음을 제안합니다."
     }
   },
   "footer": {
@@ -799,5 +805,10 @@
     "regenerate": "다시 묻기",
     "providerHint": "답변에 사용할 모델",
     "recent": "검색"
+  },
+  "home": {
+    "comingUp": "예정",
+    "record": "녹음",
+    "allDay": "종일"
   }
 }

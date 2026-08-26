@@ -24,7 +24,7 @@ import { HistorySettings, NotesSettings } from "./components/settings";
 import { WhatsNewGate } from "./components/whats-new";
 import { useSettings } from "./hooks/useSettings";
 import { useSettingsStore } from "./stores/settingsStore";
-import { commands, type AskSession } from "@/bindings";
+import { commands, events, type AskSession } from "@/bindings";
 import { getLanguageDirection, initializeRTL } from "@/lib/utils/rtl";
 
 type OnboardingStep = "accessibility" | "model" | "done";
@@ -41,6 +41,7 @@ function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [openNote, setOpenNote] = useState<{ id: number } | null>(null);
   const [askSessionId, setAskSessionId] = useState<number | null>(null);
+  const pendingMeetingTitle = useRef<string | null>(null);
   const [askSessions, setAskSessions] = useState<AskSession[]>([]);
   const meeting = useMeetingState();
   const { settings, updateSetting } = useSettings();
@@ -173,6 +174,27 @@ function App() {
       unlisten.then((fn) => fn());
     };
   }, [t]);
+
+  // A meeting started from a calendar card names its note after the event.
+  useEffect(() => {
+    const unlisten = events.historyUpdatePayload.listen((event) => {
+      const payload = event.payload;
+      if (
+        payload.action === "added" &&
+        payload.entry.source === "meeting" &&
+        pendingMeetingTitle.current
+      ) {
+        commands.setHistoryEntryTitle(
+          payload.entry.id,
+          pendingMeetingTitle.current,
+        );
+        pendingMeetingTitle.current = null;
+      }
+    });
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, []);
 
   // Recent ask sessions for the sidebar; kept fresh via backend events.
   useEffect(() => {
@@ -399,6 +421,11 @@ function App() {
       setView("notes");
     };
 
+    const recordEvent = (title: string) => {
+      pendingMeetingTitle.current = title.trim() || null;
+      commands.toggleMeetingSession();
+    };
+
     const ask = async (query: string) => {
       const result = await commands.createAskSession(query);
       if (result.status === "ok") setAskSessionId(result.data.id);
@@ -446,6 +473,7 @@ function App() {
                           meeting={meeting}
                           onOpenNote={openNoteById}
                           onAsk={ask}
+                          onRecordEvent={recordEvent}
                         />
                       )}
                       {view === "notes" && (

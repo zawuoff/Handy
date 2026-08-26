@@ -15,7 +15,9 @@
     "meetingCaptionsShow": "Mostrar legendas ao vivo",
     "meetingCaptionsHide": "Ocultar legendas ao vivo",
     "meetingDiscard": "Descartar gravação",
-    "meetingListening": "Ouvindo…"
+    "meetingListening": "Ouvindo…",
+    "radarPrompt": "Parece haver uma chamada em andamento — gravar como reunião?",
+    "radarRecord": "Gravar"
   },
   "sidebar": {
     "general": "Geral",
@@ -627,6 +629,10 @@
         "label": "Mostrar novidades",
         "description": "Mostrar notas de versão após atualizações do Noted"
       }
+    },
+    "meetingRadar": {
+      "title": "Radar de reuniões",
+      "description": "Quando outro app usa seu microfone durante a reprodução (uma chamada), o Noted oferece gravá-la como reunião via notificação."
     }
   },
   "footer": {
@@ -799,5 +805,10 @@
     "regenerate": "Perguntar de novo",
     "providerHint": "Modelo para as respostas",
     "recent": "Pesquisas"
+  },
+  "home": {
+    "comingUp": "Em breve",
+    "record": "Gravar",
+    "allDay": "Dia inteiro"
   }
 }
