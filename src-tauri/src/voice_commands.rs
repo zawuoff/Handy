@@ -24,6 +24,15 @@ const TODO_TRIGGERS: &[&str] = &[
     "new to-do",
     "create a todo",
     "create todo",
+    "add a task",
+    "add task",
+    "create a task",
+    "create task",
+    "new task",
+    "remind me to",
+    "add a reminder",
+    "add reminder",
+    "set a reminder",
 ];
 
 const EVENT_TRIGGERS: &[&str] = &[
@@ -32,9 +41,28 @@ const EVENT_TRIGGERS: &[&str] = &[
     "new event",
     "create an event",
     "create event",
+    "set an event",
+    "set event",
+    "set up an event",
+    "schedule an event",
+    "schedule event",
     "add to my calendar",
     "add to calendar",
     "add to the calendar",
+    "put on my calendar",
+    "put it on my calendar",
+];
+
+/// Polite filler people naturally say before a command ("can you add an
+/// event…"). Stripped repeatedly before trigger matching.
+const LEAD_INS: &[&str] = &[
+    "can you",
+    "could you",
+    "would you",
+    "please",
+    "okay",
+    "hey",
+    "ok",
 ];
 
 #[derive(Debug, PartialEq, Eq)]
@@ -43,12 +71,42 @@ pub enum VoiceCommand {
     Event { text: String },
 }
 
+/// True when `text` starts with `prefix` (case-insensitive) at a word
+/// boundary — "add todo:" matches, "add todos" does not.
+fn starts_with_word(text: &str, prefix: &str) -> bool {
+    let lower = text.to_lowercase();
+    lower.starts_with(prefix)
+        && !lower[prefix.len()..]
+            .chars()
+            .next()
+            .is_some_and(|c| c.is_alphanumeric())
+}
+
+/// Peel any number of polite lead-ins off the front: "okay, can you please
+/// add an event…" → "add an event…". Lead-ins are ASCII, so byte offsets
+/// line up with the original text.
+fn strip_lead_ins(text: &str) -> &str {
+    let mut rest = text.trim();
+    loop {
+        let before = rest;
+        for lead in LEAD_INS {
+            if starts_with_word(rest, lead) {
+                rest = rest[lead.len()..]
+                    .trim_start_matches([':', ',', '-', '—', ' ', '.'])
+                    .trim();
+            }
+        }
+        if rest == before {
+            return rest;
+        }
+    }
+}
+
 /// Strip the leading trigger phrase (case-insensitive) and tidy the rest.
 /// Returns None when the remainder is empty — "add todo" alone is not a task.
 fn strip_trigger<'a>(text: &'a str, triggers: &[&str]) -> Option<&'a str> {
-    let lower = text.to_lowercase();
     for trigger in triggers {
-        if lower.starts_with(trigger) {
+        if starts_with_word(text, trigger) {
             // Triggers are ASCII, so byte offsets line up with the original.
             let rest = text[trigger.len()..]
                 .trim_start_matches([':', ',', '-', '—', ' ', '.'])
@@ -71,7 +129,7 @@ fn tidy(text: &str) -> String {
 /// Detect a voice command in a finished dictation. Event triggers are
 /// checked first so "add to calendar" never collides with "add to do".
 pub fn parse(text: &str) -> Option<VoiceCommand> {
-    let text = text.trim();
+    let text = strip_lead_ins(text.trim());
     if let Some(rest) = strip_trigger(text, EVENT_TRIGGERS) {
         return Some(VoiceCommand::Event { text: tidy(rest) });
     }
@@ -87,6 +145,27 @@ pub fn parse(text: &str) -> Option<VoiceCommand> {
 fn event_split_candidates(text: &str) -> Vec<(String, String)> {
     let mut candidates = Vec::new();
     let lower = text.to_lowercase();
+    // Date-first phrasing: "on Sunday, update the website" — everything up
+    // to the first comma is the date, the rest is the task.
+    if let Some(comma) = text.find(',') {
+        let head = tidy(&text[..comma]);
+        let tail = tidy(&text[comma + 1..]);
+        let when = ["on ", "at ", "for "]
+            .iter()
+            .find(|prep| starts_with_word(&head, prep.trim_end()))
+            .map(|prep| tidy(&head[prep.len()..]))
+            .or_else(|| {
+                ["tomorrow", "today", "tonight", "next", "this"]
+                    .iter()
+                    .any(|word| starts_with_word(&head, word))
+                    .then(|| head.clone())
+            });
+        if let Some(when) = when {
+            if !when.is_empty() && !tail.is_empty() {
+                candidates.push((tail, when));
+            }
+        }
+    }
     for sep in [" on ", " at ", " for "] {
         if let Some(pos) = lower.rfind(sep) {
             let title = tidy(&text[..pos]);
@@ -198,6 +277,48 @@ mod tests {
         // A bare trigger with no content is not a command either.
         assert_eq!(parse("add todo"), None);
         assert_eq!(parse("Add event."), None);
+    }
+
+    #[test]
+    fn polite_lead_ins_are_stripped() {
+        for text in [
+            "Can you add an event, on Sunday, update Nikki's website",
+            "Okay, please set an event on Sunday, update Nikki's website",
+            "Hey, could you create an event: on Sunday, update Nikki's website",
+        ] {
+            assert!(
+                matches!(parse(text), Some(VoiceCommand::Event { .. })),
+                "expected event for '{text}'"
+            );
+        }
+        assert!(matches!(
+            parse("Please remind me to buy milk"),
+            Some(VoiceCommand::Todo { .. })
+        ));
+    }
+
+    #[test]
+    fn trigger_needs_word_boundary() {
+        // "add todos" must not match the "add todo" trigger.
+        assert_eq!(parse("add todos to my day, lots of them"), None);
+    }
+
+    #[test]
+    fn event_split_handles_date_first_phrasing() {
+        let candidates =
+            event_split_candidates("on Sunday, update Nikki's website, the copy of the website");
+        assert_eq!(
+            candidates[0],
+            (
+                "update Nikki's website, the copy of the website".to_string(),
+                "Sunday".to_string()
+            )
+        );
+        let candidates = event_split_candidates("tomorrow, call the dentist");
+        assert_eq!(
+            candidates[0],
+            ("call the dentist".to_string(), "tomorrow".to_string())
+        );
     }
 
     #[test]
