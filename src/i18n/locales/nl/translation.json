@@ -782,5 +782,11 @@
     "eventCreated": "Toegevoegd aan agenda: {{title}}",
     "eventFailed": "Kon de afspraak niet maken",
     "autoOrganized": "Uit je vergadering: {{events}} afspraken, {{todos}} taken"
+  },
+  "voice": {
+    "todoAdded": "Taak toegevoegd: {{title}}",
+    "eventAdded": "Toegevoegd aan agenda: {{title}}",
+    "eventFallback": "Datum niet begrepen — opgeslagen als taak: {{title}}",
+    "failed": "Spraakopdracht kon niet worden uitgevoerd"
   }
 }

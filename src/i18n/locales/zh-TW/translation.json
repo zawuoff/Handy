@@ -782,5 +782,11 @@
     "eventCreated": "已加入日曆：{{title}}",
     "eventFailed": "無法建立行程",
     "autoOrganized": "來自會議:{{events}} 個行程、{{todos}} 個待辦"
+  },
+  "voice": {
+    "todoAdded": "已新增待辦:{{title}}",
+    "eventAdded": "已加入日曆:{{title}}",
+    "eventFallback": "未識別日期——已儲存為待辦:{{title}}",
+    "failed": "無法執行語音命令"
   }
 }

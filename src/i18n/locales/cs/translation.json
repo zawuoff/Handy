@@ -782,5 +782,11 @@
     "eventCreated": "Přidáno do kalendáře: {{title}}",
     "eventFailed": "Událost se nepodařilo vytvořit",
     "autoOrganized": "Ze schůzky: {{events}} událostí, {{todos}} úkolů"
+  },
+  "voice": {
+    "todoAdded": "Úkol přidán: {{title}}",
+    "eventAdded": "Přidáno do kalendáře: {{title}}",
+    "eventFallback": "Datum nerozpoznáno — uloženo jako úkol: {{title}}",
+    "failed": "Hlasový příkaz se nepodařilo provést"
   }
 }

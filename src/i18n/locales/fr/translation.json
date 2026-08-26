@@ -782,5 +782,11 @@
     "eventCreated": "Ajouté au calendrier : {{title}}",
     "eventFailed": "Impossible de créer l'événement",
     "autoOrganized": "De votre réunion : {{events}} événements, {{todos}} tâches"
+  },
+  "voice": {
+    "todoAdded": "Tâche ajoutée : {{title}}",
+    "eventAdded": "Ajouté au calendrier : {{title}}",
+    "eventFallback": "Date non comprise — enregistré comme tâche : {{title}}",
+    "failed": "Impossible d'exécuter la commande vocale"
   }
 }

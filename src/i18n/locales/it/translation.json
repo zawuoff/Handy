@@ -782,5 +782,11 @@
     "eventCreated": "Aggiunto al calendario: {{title}}",
     "eventFailed": "Impossibile creare l'evento",
     "autoOrganized": "Dalla riunione: {{events}} eventi, {{todos}} attività"
+  },
+  "voice": {
+    "todoAdded": "Attività aggiunta: {{title}}",
+    "eventAdded": "Aggiunto al calendario: {{title}}",
+    "eventFallback": "Data non riconosciuta — salvato come attività: {{title}}",
+    "failed": "Impossibile eseguire il comando vocale"
   }
 }

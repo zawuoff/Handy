@@ -782,5 +782,11 @@
     "eventCreated": "Adicionado ao calendário: {{title}}",
     "eventFailed": "Não foi possível criar o evento",
     "autoOrganized": "Da sua reunião: {{events}} eventos, {{todos}} tarefas"
+  },
+  "voice": {
+    "todoAdded": "Tarefa adicionada: {{title}}",
+    "eventAdded": "Adicionado ao calendário: {{title}}",
+    "eventFallback": "Data não entendida — salvo como tarefa: {{title}}",
+    "failed": "Não foi possível executar o comando de voz"
   }
 }

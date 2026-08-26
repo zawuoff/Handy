@@ -782,5 +782,11 @@
     "eventCreated": "Đã thêm vào lịch: {{title}}",
     "eventFailed": "Không thể tạo sự kiện",
     "autoOrganized": "Từ cuộc họp: {{events}} sự kiện, {{todos}} việc"
+  },
+  "voice": {
+    "todoAdded": "Đã thêm việc: {{title}}",
+    "eventAdded": "Đã thêm vào lịch: {{title}}",
+    "eventFallback": "Không hiểu ngày — lưu thành việc cần làm: {{title}}",
+    "failed": "Không thể chạy lệnh thoại"
   }
 }

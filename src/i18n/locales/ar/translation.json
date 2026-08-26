@@ -782,5 +782,11 @@
     "eventCreated": "أُضيف إلى التقويم: {{title}}",
     "eventFailed": "تعذّر إنشاء حدث التقويم",
     "autoOrganized": "من اجتماعك: {{events}} حدث تقويم، {{todos}} مهمة"
+  },
+  "voice": {
+    "todoAdded": "أُضيفت مهمة: {{title}}",
+    "eventAdded": "أُضيف إلى التقويم: {{title}}",
+    "eventFallback": "لم يُفهم التاريخ — حُفظ كمهمة: {{title}}",
+    "failed": "تعذّر تنفيذ الأمر الصوتي"
   }
 }

@@ -782,5 +782,11 @@
     "eventCreated": "נוסף ליומן: {{title}}",
     "eventFailed": "לא ניתן היה ליצור את האירוע",
     "autoOrganized": "מהפגישה: {{events}} אירועים, {{todos}} משימות"
+  },
+  "voice": {
+    "todoAdded": "משימה נוספה: {{title}}",
+    "eventAdded": "נוסף ליומן: {{title}}",
+    "eventFallback": "התאריך לא הובן — נשמר כמשימה: {{title}}",
+    "failed": "לא ניתן היה לבצע את הפקודה הקולית"
   }
 }

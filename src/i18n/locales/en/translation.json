@@ -782,5 +782,11 @@
     "eventCreated": "Added to calendar: {{title}}",
     "eventFailed": "Couldn't create the calendar event",
     "autoOrganized": "From your meeting: {{events}} calendar event(s), {{todos}} todo(s)"
+  },
+  "voice": {
+    "todoAdded": "Todo added: {{title}}",
+    "eventAdded": "Added to calendar: {{title}}",
+    "eventFallback": "No date understood — saved as a todo: {{title}}",
+    "failed": "Couldn't run that voice command"
   }
 }

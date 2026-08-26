@@ -782,5 +782,11 @@
     "eventCreated": "캘린더에 추가됨: {{title}}",
     "eventFailed": "일정을 만들지 못했습니다",
     "autoOrganized": "회의에서: 일정 {{events}}개, 할 일 {{todos}}개"
+  },
+  "voice": {
+    "todoAdded": "할 일 추가됨: {{title}}",
+    "eventAdded": "캘린더에 추가됨: {{title}}",
+    "eventFallback": "날짜를 이해하지 못해 할 일로 저장: {{title}}",
+    "failed": "음성 명령을 실행하지 못했습니다"
   }
 }

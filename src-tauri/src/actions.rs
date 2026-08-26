@@ -894,6 +894,14 @@ impl ShortcutAction for TranscribeAction {
                             } else if processed.final_text.is_empty() {
                                 utils::hide_recording_overlay(&ah);
                                 set_tray_state(&ah, TrayIconState::Idle);
+                            } else if let Some(command) =
+                                crate::voice_commands::parse(&processed.final_text)
+                            {
+                                // Spoken command ("add todo: ...", "add event:
+                                // ...") — execute it instead of pasting.
+                                crate::voice_commands::execute(&ah, command);
+                                utils::hide_recording_overlay(&ah);
+                                set_tray_state(&ah, TrayIconState::Idle);
                             } else {
                                 let ah_clone = ah.clone();
                                 let paste_time = Instant::now();

@@ -782,5 +782,11 @@
     "eventCreated": "Dodano do kalendarza: {{title}}",
     "eventFailed": "Nie udało się utworzyć wydarzenia",
     "autoOrganized": "Ze spotkania: {{events}} wydarzeń, {{todos}} zadań"
+  },
+  "voice": {
+    "todoAdded": "Dodano zadanie: {{title}}",
+    "eventAdded": "Dodano do kalendarza: {{title}}",
+    "eventFallback": "Nie rozpoznano daty — zapisano jako zadanie: {{title}}",
+    "failed": "Nie udało się wykonać polecenia głosowego"
   }
 }

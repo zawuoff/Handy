@@ -782,5 +782,11 @@
     "eventCreated": "カレンダーに追加しました: {{title}}",
     "eventFailed": "予定を作成できませんでした",
     "autoOrganized": "会議から: 予定 {{events}} 件、タスク {{todos}} 件"
+  },
+  "voice": {
+    "todoAdded": "タスクを追加: {{title}}",
+    "eventAdded": "カレンダーに追加: {{title}}",
+    "eventFallback": "日付を認識できず、タスクとして保存: {{title}}",
+    "failed": "音声コマンドを実行できませんでした"
   }
 }

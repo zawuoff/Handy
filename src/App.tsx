@@ -171,6 +171,29 @@ function App() {
     };
   }, [t]);
 
+  // Spoken commands ("add todo: ...", "add event: ...") execute instead of
+  // pasting — confirm what happened.
+  useEffect(() => {
+    const unlisten = listen<{ kind: string; title: string; ok: boolean }>(
+      "voice-command",
+      (event) => {
+        const { kind, title, ok } = event.payload;
+        if (!ok) {
+          toast.error(t("voice.failed"));
+        } else if (kind === "todo") {
+          toast.success(t("voice.todoAdded", { title }));
+        } else if (kind === "event") {
+          toast.success(t("voice.eventAdded", { title }));
+        } else {
+          toast.success(t("voice.eventFallback", { title }));
+        }
+      },
+    );
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, [t]);
+
   // After notes are written, dated action items become calendar events and
   // undated ones become todos — announce what was auto-created.
   useEffect(() => {

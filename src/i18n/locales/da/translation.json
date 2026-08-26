@@ -782,5 +782,11 @@
     "eventCreated": "Føjet til kalenderen: {{title}}",
     "eventFailed": "Kunne ikke oprette begivenheden",
     "autoOrganized": "Fra dit møde: {{events}} begivenheder, {{todos}} opgaver"
+  },
+  "voice": {
+    "todoAdded": "Opgave tilføjet: {{title}}",
+    "eventAdded": "Føjet til kalenderen: {{title}}",
+    "eventFallback": "Ingen dato forstået — gemt som opgave: {{title}}",
+    "failed": "Kunne ikke udføre stemmekommandoen"
   }
 }

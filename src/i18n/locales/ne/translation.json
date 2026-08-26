@@ -782,5 +782,11 @@
     "eventCreated": "क्यालेन्डरमा थपियो: {{title}}",
     "eventFailed": "कार्यक्रम बनाउन सकिएन",
     "autoOrganized": "बैठकबाट: {{events}} कार्यक्रम, {{todos}} कार्य"
+  },
+  "voice": {
+    "todoAdded": "कार्य थपियो: {{title}}",
+    "eventAdded": "क्यालेन्डरमा थपियो: {{title}}",
+    "eventFallback": "मिति बुझिएन — कार्यका रूपमा सुरक्षित: {{title}}",
+    "failed": "भ्वाइस आदेश चलाउन सकिएन"
   }
 }

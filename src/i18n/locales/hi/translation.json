@@ -782,5 +782,11 @@
     "eventCreated": "कैलेंडर में जोड़ा गया: {{title}}",
     "eventFailed": "इवेंट नहीं बन सका",
     "autoOrganized": "आपकी मीटिंग से: {{events}} इवेंट, {{todos}} कार्य"
+  },
+  "voice": {
+    "todoAdded": "कार्य जोड़ा गया: {{title}}",
+    "eventAdded": "कैलेंडर में जोड़ा गया: {{title}}",
+    "eventFallback": "तारीख समझ नहीं आई — कार्य के रूप में सहेजा: {{title}}",
+    "failed": "वॉइस कमांड नहीं चल सका"
   }
 }

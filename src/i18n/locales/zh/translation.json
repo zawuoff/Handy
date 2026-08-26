@@ -782,5 +782,11 @@
     "eventCreated": "已添加到日历：{{title}}",
     "eventFailed": "无法创建日程",
     "autoOrganized": "来自会议：{{events}} 个日程、{{todos}} 个待办"
+  },
+  "voice": {
+    "todoAdded": "已添加待办：{{title}}",
+    "eventAdded": "已添加到日历：{{title}}",
+    "eventFallback": "未识别日期——已保存为待办：{{title}}",
+    "failed": "无法执行语音命令"
   }
 }

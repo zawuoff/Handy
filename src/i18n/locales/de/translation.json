@@ -782,5 +782,11 @@
     "eventCreated": "Zum Kalender hinzugefügt: {{title}}",
     "eventFailed": "Kalendereintrag konnte nicht erstellt werden",
     "autoOrganized": "Aus deinem Meeting: {{events}} Termine, {{todos}} Aufgaben"
+  },
+  "voice": {
+    "todoAdded": "Aufgabe hinzugefügt: {{title}}",
+    "eventAdded": "Zum Kalender hinzugefügt: {{title}}",
+    "eventFallback": "Kein Datum erkannt — als Aufgabe gespeichert: {{title}}",
+    "failed": "Sprachbefehl konnte nicht ausgeführt werden"
   }
 }

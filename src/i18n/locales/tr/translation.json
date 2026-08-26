@@ -782,5 +782,11 @@
     "eventCreated": "Takvime eklendi: {{title}}",
     "eventFailed": "Etkinlik oluşturulamadı",
     "autoOrganized": "Toplantınızdan: {{events}} etkinlik, {{todos}} görev"
+  },
+  "voice": {
+    "todoAdded": "Görev eklendi: {{title}}",
+    "eventAdded": "Takvime eklendi: {{title}}",
+    "eventFallback": "Tarih anlaşılamadı — görev olarak kaydedildi: {{title}}",
+    "failed": "Sesli komut çalıştırılamadı"
   }
 }

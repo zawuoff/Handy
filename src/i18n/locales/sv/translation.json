@@ -782,5 +782,11 @@
     "eventCreated": "Tillagd i kalendern: {{title}}",
     "eventFailed": "Kunde inte skapa händelsen",
     "autoOrganized": "Från ditt möte: {{events}} händelser, {{todos}} uppgifter"
+  },
+  "voice": {
+    "todoAdded": "Uppgift tillagd: {{title}}",
+    "eventAdded": "Tillagd i kalendern: {{title}}",
+    "eventFallback": "Inget datum förstods — sparat som uppgift: {{title}}",
+    "failed": "Kunde inte köra röstkommandot"
   }
 }
