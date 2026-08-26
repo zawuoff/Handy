@@ -1,11 +1,10 @@
 //! Speaker separation for meeting sessions.
 //!
-//! A streaming Sortformer diarizer (NVIDIA `diar_streaming_sortformer_4spk`,
-//! GGUF via transcribe-cpp) runs alongside the meeting's ASR stream, fed the
-//! same audio. It emits speaker turns — who spoke when, up to 4 speakers,
-//! numbered by arrival order — which are aligned with the ASR segments by
-//! time. It produces no text and never restarts mid-meeting, so speaker
-//! identities stay stable across the ASR stream's pause resets.
+//! A Sortformer diarizer (NVIDIA `diar_streaming_sortformer_4spk`, GGUF via
+//! transcribe-cpp) runs alongside the meeting's ASR, fed the same audio. It
+//! emits speaker turns — who spoke when, up to 4 speakers, numbered by
+//! arrival order — which are aligned with the ASR segments by time. It
+//! produces no text.
 
 use anyhow::Result;
 use futures_util::StreamExt;
@@ -14,8 +13,7 @@ use serde::Serialize;
 use std::path::PathBuf;
 use tauri::{AppHandle, Emitter};
 use transcribe_cpp::{
-    Model, ModelOptions, RunExtension, RunOptions, Session, SortformerStreamOptions,
-    SpeakerSegment, StreamOptions,
+    Model, ModelOptions, RunExtension, RunOptions, Session, SortformerStreamOptions, SpeakerSegment,
 };
 
 pub const DIARIZER_FILENAME: &str = "diar_streaming_sortformer_4spk-v2.1-Q8_0.gguf";
@@ -29,8 +27,7 @@ pub fn diarizer_model_path(app: &AppHandle) -> Result<PathBuf> {
 }
 
 /// Load the diarizer into its own session (CPU/GPU per library default).
-/// The caller owns the session; streams are begun with [`diarizer_options`].
-pub fn load_diarizer_session(app: &AppHandle) -> Option<Session> {
+fn load_diarizer_session(app: &AppHandle) -> Option<Session> {
     let path = diarizer_model_path(app).ok()?;
     if !path.exists() {
         return None;
@@ -54,15 +51,133 @@ pub fn load_diarizer_session(app: &AppHandle) -> Option<Session> {
     }
 }
 
-/// Run + stream options for a diarizer stream.
-pub fn diarizer_options() -> (RunOptions, StreamOptions) {
-    let run = RunOptions {
+fn diarizer_run_options() -> RunOptions {
+    RunOptions {
         family: Some(RunExtension::Sortformer(SortformerStreamOptions {
             preset: None,
         })),
         ..Default::default()
-    };
-    (run, StreamOptions::default())
+    }
+}
+
+enum DiarCmd {
+    Feed(Vec<f32>),
+    /// Re-run soon if enough new audio arrived (sent at ASR pause resets).
+    RunNow,
+    /// Run one last time over everything and reply with the result.
+    Final(std::sync::mpsc::Sender<Vec<SpeakerSegment>>),
+}
+
+/// A meeting-long diarization worker. Sortformer has no incremental stream
+/// API in this engine version ("stream begin: not implemented"), so the
+/// worker keeps the full meeting audio and re-runs the model over all of it
+/// on an adaptive cadence — every run re-derives arrival-order speaker ids
+/// from scratch over the same growing prefix, which keeps them stable.
+/// Attribution readers take the latest finished result.
+pub struct Diarizer {
+    tx: std::sync::mpsc::Sender<DiarCmd>,
+    segments: std::sync::Arc<std::sync::Mutex<Vec<SpeakerSegment>>>,
+}
+
+impl Diarizer {
+    /// Load the model and spawn the worker; `None` when the model is not on
+    /// disk or fails to load.
+    pub fn start(app: &AppHandle) -> Option<Diarizer> {
+        let mut session = load_diarizer_session(app)?;
+        let (tx, rx) = std::sync::mpsc::channel::<DiarCmd>();
+        let segments = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
+        let shared = std::sync::Arc::clone(&segments);
+        std::thread::spawn(move || {
+            let opts = diarizer_run_options();
+            let mut audio: Vec<f32> = Vec::new();
+            let mut last_run_len: usize = 0;
+            let run = |audio: &Vec<f32>, last_run_len: &mut usize, session: &mut Session| {
+                if audio.is_empty() {
+                    return;
+                }
+                let started = std::time::Instant::now();
+                match session.run(audio, &opts) {
+                    Ok(transcript) => {
+                        info!(
+                            "Diarizer run: {:.0}s audio, {} speaker segments, took {:?}",
+                            audio.len() as f32 / 16_000.0,
+                            transcript.speaker_segments.len(),
+                            started.elapsed()
+                        );
+                        *shared.lock().unwrap() = transcript.speaker_segments;
+                    }
+                    Err(e) => warn!("Diarizer run failed: {e}"),
+                }
+                *last_run_len = audio.len();
+            };
+            loop {
+                match rx.recv_timeout(std::time::Duration::from_secs(5)) {
+                    Ok(DiarCmd::Feed(pcm)) => audio.extend_from_slice(&pcm),
+                    Ok(DiarCmd::RunNow) => {
+                        // Worth a fresh pass when ≥5s (and ≥5% of the total —
+                        // full-audio reruns get expensive on long meetings)
+                        // arrived since the last one.
+                        let new = audio.len() - last_run_len;
+                        if new >= 5 * 16_000 && new * 20 >= audio.len() {
+                            run(&audio, &mut last_run_len, &mut session);
+                        }
+                    }
+                    Ok(DiarCmd::Final(reply)) => {
+                        // Take any feeds still queued behind us, then run over
+                        // everything for the definitive attribution.
+                        while let Ok(cmd) = rx.try_recv() {
+                            if let DiarCmd::Feed(pcm) = cmd {
+                                audio.extend_from_slice(&pcm);
+                            }
+                        }
+                        run(&audio, &mut last_run_len, &mut session);
+                        let _ = reply.send(shared.lock().unwrap().clone());
+                        break;
+                    }
+                    Err(std::sync::mpsc::RecvTimeoutError::Timeout) => {
+                        // Idle cadence: refresh when ≥15s and ≥10% new audio.
+                        let new = audio.len() - last_run_len;
+                        if new >= 15 * 16_000 && new * 10 >= audio.len() {
+                            run(&audio, &mut last_run_len, &mut session);
+                        }
+                    }
+                    Err(std::sync::mpsc::RecvTimeoutError::Disconnected) => break,
+                }
+            }
+        });
+        Some(Diarizer { tx, segments })
+    }
+
+    pub fn feed(&self, pcm: &[f32]) {
+        let _ = self.tx.send(DiarCmd::Feed(pcm.to_vec()));
+    }
+
+    /// Latest finished speaker segments (may lag the newest audio).
+    pub fn segments(&self) -> Vec<SpeakerSegment> {
+        self.segments.lock().unwrap().clone()
+    }
+
+    /// Nudge the worker to refresh soon (called at ASR pause resets).
+    pub fn request_run(&self) {
+        let _ = self.tx.send(DiarCmd::RunNow);
+    }
+
+    /// Final full-audio pass; falls back to the latest finished result when
+    /// it does not complete within `timeout` (the stream finalize handshake
+    /// has its own 30s budget upstream).
+    pub fn finalize_wait(&self, timeout: std::time::Duration) -> Vec<SpeakerSegment> {
+        let (reply_tx, reply_rx) = std::sync::mpsc::channel();
+        if self.tx.send(DiarCmd::Final(reply_tx)).is_err() {
+            return self.segments();
+        }
+        match reply_rx.recv_timeout(timeout) {
+            Ok(segments) => segments,
+            Err(_) => {
+                warn!("Diarizer final pass didn't finish in {timeout:?}; using latest result");
+                self.segments()
+            }
+        }
+    }
 }
 
 /// The speaker who talked most during `[t0_ms, t1_ms]`, or `None` when the
