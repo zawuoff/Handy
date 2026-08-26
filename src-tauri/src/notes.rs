@@ -127,11 +127,21 @@ async fn generate_and_store(app: &AppHandle, entry_id: i64) -> Result<(), String
         // Same reasoning opt-out as transcript post-processing: notes don't
         // benefit enough to justify seconds of extra latency on local models.
         let disable_reasoning = matches!(provider.id.as_str(), "custom" | "openrouter");
+        // The user's own jottings from the live meeting view are the anchor:
+        // whatever they flagged as important must shape the notes.
+        let user_content = match hm.get_entry_live_notes(entry_id).ok().flatten() {
+            Some(live) => format!(
+                "Notes the user personally took during this meeting — treat them as the \
+                 most important signals and build the notes around them:\n{live}\n\n\
+                 Transcript:\n{transcript}"
+            ),
+            None => transcript,
+        };
         crate::llm_client::send_chat_completion_with_schema(
             &provider,
             api_key,
             &model,
-            transcript,
+            user_content,
             Some(prompt),
             None,
             disable_reasoning,

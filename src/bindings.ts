@@ -921,6 +921,17 @@ async toggleMeetingCaptions() : Promise<Result<null, string>> {
     else return { status: "error", error: e  as any };
 }
 },
+/**
+ * Store the notes the user is typing in the live meeting view.
+ */
+async setLiveMeetingNotes(text: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("set_live_meeting_notes", { text }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async getTodos() : Promise<Result<Todo[], string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("get_todos") };

@@ -842,7 +842,11 @@ impl ShortcutAction for TranscribeAction {
                                     // Chinese variant conversion), not the raw ASR
                                     // output that dictation archives alongside its
                                     // pasted result.
-                                    hm.save_meeting_entry(file_name, processed.final_text.clone())
+                                    hm.save_meeting_entry(
+                                        file_name,
+                                        processed.final_text.clone(),
+                                        crate::meeting::take_pending_live_notes(),
+                                    )
                                 } else {
                                     hm.save_entry(
                                         file_name,
@@ -952,7 +956,11 @@ impl ShortcutAction for TranscribeAction {
                             // Save entry with empty text so user can retry
                             if wav_saved {
                                 let save_result = if is_meeting {
-                                    hm.save_meeting_entry(file_name, String::new())
+                                    hm.save_meeting_entry(
+                                        file_name,
+                                        String::new(),
+                                        crate::meeting::take_pending_live_notes(),
+                                    )
                                 } else {
                                     hm.save_entry(
                                         file_name,

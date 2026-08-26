@@ -745,7 +745,14 @@
     "failedToast": "לא ניתן היה לכתוב את ההערות. בדקו את הספק בהגדרות העיבוד.",
     "transcriptChip": "תמליל",
     "onThisDevice": "במכשיר הזה",
-    "docPlaceholder": "כתבו כל דבר…"
+    "docPlaceholder": "כתבו כל דבר…",
+    "saved": "נשמר",
+    "toolbarBold": "מודגש",
+    "toolbarItalic": "נטוי",
+    "toolbarStrike": "קו חוצה",
+    "toolbarHeading": "כותרת",
+    "toolbarBullets": "רשימת תבליטים",
+    "toolbarNumbered": "רשימה ממוספרת"
   },
   "shell": {
     "appName": "Noted",
@@ -773,7 +780,10 @@
     "liveTranscript": "תמליל חי",
     "listening": "מאזין…",
     "noStreamingModel": "מקליט. טקסט חי דורש מודל סטרימינג — התמליל יהיה מוכן בעצירה.",
-    "privacy": "תומלל במכשיר זה. שום דבר לא עוזב את המחשב שלך."
+    "privacy": "תומלל במכשיר זה. שום דבר לא עוזב את המחשב שלך.",
+    "notesTitle": "הערות הפגישה",
+    "notesHint": "רשמו כל דבר — ההערות שלכם משתפרות עם התמלול בסיום הפגישה.",
+    "notesPlaceholder": "הקלידו הערה…"
   },
   "todos": {
     "title": "משימות",

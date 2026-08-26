@@ -745,7 +745,14 @@
     "failedToast": "Không thể viết ghi chú. Kiểm tra nhà cung cấp trong cài đặt hậu xử lý.",
     "transcriptChip": "Bản chép lời",
     "onThisDevice": "Trên thiết bị này",
-    "docPlaceholder": "Viết bất cứ điều gì…"
+    "docPlaceholder": "Viết bất cứ điều gì…",
+    "saved": "Đã lưu",
+    "toolbarBold": "Đậm",
+    "toolbarItalic": "Nghiêng",
+    "toolbarStrike": "Gạch ngang",
+    "toolbarHeading": "Tiêu đề",
+    "toolbarBullets": "Danh sách gạch đầu dòng",
+    "toolbarNumbered": "Danh sách đánh số"
   },
   "shell": {
     "appName": "Noted",
@@ -773,7 +780,10 @@
     "liveTranscript": "Bản chép lời trực tiếp",
     "listening": "Đang nghe…",
     "noStreamingModel": "Đang ghi âm. Văn bản trực tiếp cần mô hình streaming — bản chép lời sẽ sẵn sàng khi bạn dừng.",
-    "privacy": "Được chép lời trên thiết bị này. Không gì rời khỏi máy tính của bạn."
+    "privacy": "Được chép lời trên thiết bị này. Không gì rời khỏi máy tính của bạn.",
+    "notesTitle": "Ghi chú cuộc họp",
+    "notesHint": "Ghi bất cứ điều gì — ghi chú của bạn sẽ được hoàn thiện cùng bản ghi khi cuộc họp kết thúc.",
+    "notesPlaceholder": "Nhập ghi chú…"
   },
   "todos": {
     "title": "Việc cần làm",

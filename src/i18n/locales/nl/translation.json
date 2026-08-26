@@ -745,7 +745,14 @@
     "failedToast": "Kon geen notities schrijven. Controleer je provider in de nabewerkingsinstellingen.",
     "transcriptChip": "Transcript",
     "onThisDevice": "Op dit apparaat",
-    "docPlaceholder": "Schrijf wat je wilt…"
+    "docPlaceholder": "Schrijf wat je wilt…",
+    "saved": "Opgeslagen",
+    "toolbarBold": "Vet",
+    "toolbarItalic": "Cursief",
+    "toolbarStrike": "Doorgestreept",
+    "toolbarHeading": "Kop",
+    "toolbarBullets": "Opsommingslijst",
+    "toolbarNumbered": "Genummerde lijst"
   },
   "shell": {
     "appName": "Noted",
@@ -773,7 +780,10 @@
     "liveTranscript": "Live transcript",
     "listening": "Luistert…",
     "noStreamingModel": "Opname loopt. Live tekst vereist een streamingmodel — het transcript is klaar wanneer je stopt.",
-    "privacy": "Getranscribeerd op dit apparaat. Niets verlaat je computer."
+    "privacy": "Getranscribeerd op dit apparaat. Niets verlaat je computer.",
+    "notesTitle": "Vergadernotities",
+    "notesHint": "Noteer wat je wilt — je notities worden na de vergadering verrijkt met het transcript.",
+    "notesPlaceholder": "Typ een notitie…"
   },
   "todos": {
     "title": "Taken",

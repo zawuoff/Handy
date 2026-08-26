@@ -88,6 +88,13 @@ fn current_meeting_text() -> Result<String, String> {
 ",
         iso_date(started)
     );
+    if let Some(notes) = snap.get("notes").and_then(|v| v.as_str()) {
+        if !notes.trim().is_empty() {
+            out.push_str("\nNotes the user has taken so far:\n");
+            out.push_str(notes.trim());
+            out.push('\n');
+        }
+    }
     if transcript.is_empty() {
         if streaming {
             out.push_str(

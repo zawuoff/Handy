@@ -16,8 +16,6 @@ import {
   Trash2,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { toast } from "sonner";
 import {
   commands,
@@ -26,6 +24,7 @@ import {
   type HistoryUpdatePayload,
 } from "@/bindings";
 import { useOsType } from "@/hooks/useOsType";
+import { RichNoteEditor } from "@/components/shell/RichNoteEditor";
 import { formatDateTime } from "@/utils/dateFormat";
 import { AudioPlayer, AudioPlayerGroup } from "../../ui/AudioPlayer";
 import { Button } from "../../ui/Button";
@@ -98,8 +97,7 @@ const NoteDetail: React.FC<{
   const osType = useOsType();
   const [title, setTitle] = useState(entry.title);
   const [showTranscript, setShowTranscript] = useState(false);
-  const [editing, setEditing] = useState(false);
-  const docRef = useRef<HTMLTextAreaElement>(null);
+  const [saved, setSaved] = useState(false);
 
   // The note body is one editable document, Notion-style. Until the user
   // touches it, it mirrors the entry (their saved text, falling back to the
@@ -118,19 +116,14 @@ const NoteDetail: React.FC<{
       const result = await commands.setHistoryEntryUserNotes(entry.id, draft);
       if (result.status !== "ok") {
         console.error("Failed to save note:", result.error);
+        return;
       }
+      // A quiet, evident autosave: flash "Saved" in the chip row.
+      setSaved(true);
+      setTimeout(() => setSaved(false), 1600);
     }, 800);
     return () => clearTimeout(timer);
   }, [draft, entry.id]);
-
-  // Grow the document with its content instead of scrolling inside itself.
-  useEffect(() => {
-    const el = docRef.current;
-    if (!el) return;
-    el.style.height = "auto";
-    el.style.height = `${el.scrollHeight}px`;
-    if (editing) el.focus();
-  }, [doc, editing]);
 
   const saveTitle = async () => {
     const next = title.trim();
@@ -253,30 +246,25 @@ const NoteDetail: React.FC<{
           />
         )}
         <Chip icon={<HardDrive size={12} />} label={t("notes.onThisDevice")} />
+        <span
+          className={`inline-flex items-center gap-1 text-[11.5px] text-faint transition-opacity duration-300 ${
+            saved ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          <Check size={11} />
+          {t("notes.saved")}
+        </span>
       </div>
 
-      {editing || !doc.trim() ? (
-        <textarea
-          ref={docRef}
-          className="w-full ms-9 max-w-[68ch] bg-transparent resize-none outline-none border-none text-[15px] leading-7 text-text placeholder:text-faint placeholder:italic min-h-72 overflow-hidden"
-          value={doc}
+      <div className="ms-9 max-w-[68ch]">
+        <RichNoteEditor
+          content={doc}
+          onChangeMarkdown={(markdown) => setDraft(markdown)}
           placeholder={
             generating ? t("notes.writing") : t("notes.docPlaceholder")
           }
-          onChange={(e) => setDraft(e.target.value)}
-          onFocus={() => setEditing(true)}
-          onBlur={() => setEditing(false)}
-          spellCheck={false}
         />
-      ) : (
-        <div
-          className="note-md ms-9 max-w-[68ch] cursor-text min-h-72"
-          title={t("notes.docPlaceholder")}
-          onClick={() => setEditing(true)}
-        >
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{doc}</ReactMarkdown>
-        </div>
-      )}
+      </div>
 
       {showTranscript && (
         <div className="ms-9 rounded-xl border border-border bg-card p-4 flex flex-col gap-3">

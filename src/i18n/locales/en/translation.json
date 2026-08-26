@@ -745,7 +745,14 @@
     "failedToast": "Couldn't write meeting notes. Check your provider in Post Process settings.",
     "transcriptChip": "Transcript",
     "onThisDevice": "On this device",
-    "docPlaceholder": "Write anything…"
+    "docPlaceholder": "Write anything…",
+    "saved": "Saved",
+    "toolbarBold": "Bold",
+    "toolbarItalic": "Italic",
+    "toolbarStrike": "Strikethrough",
+    "toolbarHeading": "Heading",
+    "toolbarBullets": "Bullet list",
+    "toolbarNumbered": "Numbered list"
   },
   "shell": {
     "appName": "Noted",
@@ -773,7 +780,10 @@
     "liveTranscript": "Live transcript",
     "listening": "Listening…",
     "noStreamingModel": "Recording. Live text needs a streaming model — the transcript will be ready when you stop.",
-    "privacy": "Transcribed on this device. Nothing leaves your computer."
+    "privacy": "Transcribed on this device. Nothing leaves your computer.",
+    "notesTitle": "Meeting notes",
+    "notesHint": "Jot anything — your notes get enhanced with the transcript when the meeting ends.",
+    "notesPlaceholder": "Type a note…"
   },
   "todos": {
     "title": "Todos",

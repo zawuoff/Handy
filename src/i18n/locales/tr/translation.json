@@ -745,7 +745,14 @@
     "failedToast": "Notlar yazılamadı. Post-process ayarlarındaki sağlayıcınızı kontrol edin.",
     "transcriptChip": "Transkript",
     "onThisDevice": "Bu cihazda",
-    "docPlaceholder": "Herhangi bir şey yazın…"
+    "docPlaceholder": "Herhangi bir şey yazın…",
+    "saved": "Kaydedildi",
+    "toolbarBold": "Kalın",
+    "toolbarItalic": "İtalik",
+    "toolbarStrike": "Üstü çizili",
+    "toolbarHeading": "Başlık",
+    "toolbarBullets": "Madde işaretli liste",
+    "toolbarNumbered": "Numaralı liste"
   },
   "shell": {
     "appName": "Noted",
@@ -773,7 +780,10 @@
     "liveTranscript": "Canlı transkript",
     "listening": "Dinleniyor…",
     "noStreamingModel": "Kayıt sürüyor. Canlı metin bir akış modeli gerektirir — transkript durdurduğunuzda hazır olur.",
-    "privacy": "Bu cihazda yazıya döküldü. Hiçbir şey bilgisayarınızdan çıkmaz."
+    "privacy": "Bu cihazda yazıya döküldü. Hiçbir şey bilgisayarınızdan çıkmaz.",
+    "notesTitle": "Toplantı notları",
+    "notesHint": "Aklınıza geleni yazın — toplantı bitince notlarınız transkriptle zenginleştirilir.",
+    "notesPlaceholder": "Bir not yazın…"
   },
   "todos": {
     "title": "Yapılacaklar",

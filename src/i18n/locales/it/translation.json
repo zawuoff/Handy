@@ -745,7 +745,14 @@
     "failedToast": "Impossibile scrivere le note. Controlla il provider nelle impostazioni di post-elaborazione.",
     "transcriptChip": "Trascrizione",
     "onThisDevice": "Su questo dispositivo",
-    "docPlaceholder": "Scrivi qualsiasi cosa…"
+    "docPlaceholder": "Scrivi qualsiasi cosa…",
+    "saved": "Salvato",
+    "toolbarBold": "Grassetto",
+    "toolbarItalic": "Corsivo",
+    "toolbarStrike": "Barrato",
+    "toolbarHeading": "Titolo",
+    "toolbarBullets": "Elenco puntato",
+    "toolbarNumbered": "Elenco numerato"
   },
   "shell": {
     "appName": "Noted",
@@ -773,7 +780,10 @@
     "liveTranscript": "Trascrizione dal vivo",
     "listening": "In ascolto…",
     "noStreamingModel": "Registrazione in corso. Il testo dal vivo richiede un modello streaming — la trascrizione sarà pronta allo stop.",
-    "privacy": "Trascritto su questo dispositivo. Nulla lascia il tuo computer."
+    "privacy": "Trascritto su questo dispositivo. Nulla lascia il tuo computer.",
+    "notesTitle": "Note della riunione",
+    "notesHint": "Annota qualsiasi cosa: le tue note vengono arricchite con la trascrizione al termine della riunione.",
+    "notesPlaceholder": "Scrivi una nota…"
   },
   "todos": {
     "title": "Attività",

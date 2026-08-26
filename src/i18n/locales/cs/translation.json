@@ -745,7 +745,14 @@
     "failedToast": "Poznámky se nepodařilo napsat. Zkontrolujte poskytovatele v nastavení post-processingu.",
     "transcriptChip": "Přepis",
     "onThisDevice": "Na tomto zařízení",
-    "docPlaceholder": "Pište cokoli…"
+    "docPlaceholder": "Pište cokoli…",
+    "saved": "Uloženo",
+    "toolbarBold": "Tučné",
+    "toolbarItalic": "Kurzíva",
+    "toolbarStrike": "Přeškrtnuté",
+    "toolbarHeading": "Nadpis",
+    "toolbarBullets": "Odrážkový seznam",
+    "toolbarNumbered": "Číslovaný seznam"
   },
   "shell": {
     "appName": "Noted",
@@ -773,7 +780,10 @@
     "liveTranscript": "Živý přepis",
     "listening": "Poslouchám…",
     "noStreamingModel": "Nahrává se. Živý text vyžaduje streamovací model — přepis bude hotov po zastavení.",
-    "privacy": "Přepsáno na tomto zařízení. Nic neopouští váš počítač."
+    "privacy": "Přepsáno na tomto zařízení. Nic neopouští váš počítač.",
+    "notesTitle": "Poznámky ze schůzky",
+    "notesHint": "Zapisujte cokoli — po skončení schůzky se vaše poznámky vylepší pomocí přepisu.",
+    "notesPlaceholder": "Napište poznámku…"
   },
   "todos": {
     "title": "Úkoly",

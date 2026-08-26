@@ -745,7 +745,14 @@
     "failedToast": "無法撰寫會議筆記。請在後處理設定中檢查你的供應商。",
     "transcriptChip": "轉錄文字",
     "onThisDevice": "儲存在本裝置",
-    "docPlaceholder": "寫點什麼…"
+    "docPlaceholder": "寫點什麼…",
+    "saved": "已儲存",
+    "toolbarBold": "粗體",
+    "toolbarItalic": "斜體",
+    "toolbarStrike": "刪除線",
+    "toolbarHeading": "標題",
+    "toolbarBullets": "項目符號清單",
+    "toolbarNumbered": "編號清單"
   },
   "shell": {
     "appName": "Noted",
@@ -773,7 +780,10 @@
     "liveTranscript": "即時轉錄",
     "listening": "正在聆聽…",
     "noStreamingModel": "錄音中。即時文字需要串流模型——停止後轉錄即完成。",
-    "privacy": "在本裝置上轉錄。任何內容都不會離開您的電腦。"
+    "privacy": "在本裝置上轉錄。任何內容都不會離開您的電腦。",
+    "notesTitle": "會議筆記",
+    "notesHint": "隨手記下任何內容——會議結束後，你的筆記會結合逐字稿加以完善。",
+    "notesPlaceholder": "輸入筆記…"
   },
   "todos": {
     "title": "待辦",

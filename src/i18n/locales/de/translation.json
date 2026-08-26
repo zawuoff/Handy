@@ -745,7 +745,14 @@
     "failedToast": "Notizen konnten nicht geschrieben werden. Prüfe deinen Anbieter in den Nachbearbeitungs-Einstellungen.",
     "transcriptChip": "Transkript",
     "onThisDevice": "Auf diesem Gerät",
-    "docPlaceholder": "Schreib irgendetwas…"
+    "docPlaceholder": "Schreib irgendetwas…",
+    "saved": "Gespeichert",
+    "toolbarBold": "Fett",
+    "toolbarItalic": "Kursiv",
+    "toolbarStrike": "Durchgestrichen",
+    "toolbarHeading": "Überschrift",
+    "toolbarBullets": "Aufzählung",
+    "toolbarNumbered": "Nummerierte Liste"
   },
   "shell": {
     "appName": "Noted",
@@ -773,7 +780,10 @@
     "liveTranscript": "Live-Transkript",
     "listening": "Höre zu…",
     "noStreamingModel": "Aufnahme läuft. Live-Text braucht ein Streaming-Modell — das Transkript ist nach dem Stopp fertig.",
-    "privacy": "Auf diesem Gerät transkribiert. Nichts verlässt deinen Computer."
+    "privacy": "Auf diesem Gerät transkribiert. Nichts verlässt deinen Computer.",
+    "notesTitle": "Meeting-Notizen",
+    "notesHint": "Notieren Sie alles — Ihre Notizen werden nach dem Meeting mit dem Transkript verfeinert.",
+    "notesPlaceholder": "Notiz eingeben…"
   },
   "todos": {
     "title": "Aufgaben",

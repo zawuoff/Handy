@@ -745,7 +745,14 @@
     "failedToast": "Kunde inte skriva anteckningarna. Kontrollera din leverantör i efterbehandlingsinställningarna.",
     "transcriptChip": "Transkript",
     "onThisDevice": "På den här enheten",
-    "docPlaceholder": "Skriv vad som helst…"
+    "docPlaceholder": "Skriv vad som helst…",
+    "saved": "Sparat",
+    "toolbarBold": "Fet",
+    "toolbarItalic": "Kursiv",
+    "toolbarStrike": "Genomstruken",
+    "toolbarHeading": "Rubrik",
+    "toolbarBullets": "Punktlista",
+    "toolbarNumbered": "Numrerad lista"
   },
   "shell": {
     "appName": "Noted",
@@ -773,7 +780,10 @@
     "liveTranscript": "Livetranskript",
     "listening": "Lyssnar…",
     "noStreamingModel": "Spelar in. Livetext kräver en streamingmodell — transkriptet är klart när du stoppar.",
-    "privacy": "Transkriberat på den här enheten. Inget lämnar din dator."
+    "privacy": "Transkriberat på den här enheten. Inget lämnar din dator.",
+    "notesTitle": "Mötesanteckningar",
+    "notesHint": "Anteckna vad som helst — dina anteckningar förbättras med transkriptionen när mötet är slut.",
+    "notesPlaceholder": "Skriv en anteckning…"
   },
   "todos": {
     "title": "Uppgifter",

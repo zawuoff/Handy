@@ -745,7 +745,14 @@
     "failedToast": "Kunne ikke skrive mødenoter. Tjek din udbyder i efterbehandlingsindstillingerne.",
     "transcriptChip": "Udskrift",
     "onThisDevice": "På denne enhed",
-    "docPlaceholder": "Skriv hvad som helst…"
+    "docPlaceholder": "Skriv hvad som helst…",
+    "saved": "Gemt",
+    "toolbarBold": "Fed",
+    "toolbarItalic": "Kursiv",
+    "toolbarStrike": "Gennemstreget",
+    "toolbarHeading": "Overskrift",
+    "toolbarBullets": "Punktliste",
+    "toolbarNumbered": "Nummereret liste"
   },
   "shell": {
     "appName": "Noted",
@@ -773,7 +780,10 @@
     "liveTranscript": "Live-transskription",
     "listening": "Lytter…",
     "noStreamingModel": "Optager. Live-tekst kræver en streamingmodel — udskriften er klar, når du stopper.",
-    "privacy": "Transskriberet på denne enhed. Intet forlader din computer."
+    "privacy": "Transskriberet på denne enhed. Intet forlader din computer.",
+    "notesTitle": "Mødenoter",
+    "notesHint": "Notér hvad som helst — dine noter forbedres med transskriptionen, når mødet slutter.",
+    "notesPlaceholder": "Skriv en note…"
   },
   "todos": {
     "title": "Opgaver",

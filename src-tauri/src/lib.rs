@@ -779,6 +779,7 @@ pub fn run(cli_args: CliArgs) {
             meeting::get_meeting_state,
             meeting::toggle_meeting_session,
             meeting::toggle_meeting_captions,
+            meeting::set_live_meeting_notes,
             commands::history::toggle_history_entry_saved,
             commands::history::get_audio_file_path,
             commands::history::delete_history_entry,

@@ -745,7 +745,14 @@
     "failedToast": "Impossible de rédiger les notes. Vérifiez votre fournisseur dans les réglages de post-traitement.",
     "transcriptChip": "Transcription",
     "onThisDevice": "Sur cet appareil",
-    "docPlaceholder": "Écrivez ce que vous voulez…"
+    "docPlaceholder": "Écrivez ce que vous voulez…",
+    "saved": "Enregistré",
+    "toolbarBold": "Gras",
+    "toolbarItalic": "Italique",
+    "toolbarStrike": "Barré",
+    "toolbarHeading": "Titre",
+    "toolbarBullets": "Liste à puces",
+    "toolbarNumbered": "Liste numérotée"
   },
   "shell": {
     "appName": "Noted",
@@ -773,7 +780,10 @@
     "liveTranscript": "Transcription en direct",
     "listening": "Écoute…",
     "noStreamingModel": "Enregistrement en cours. Le texte en direct nécessite un modèle streaming — la transcription sera prête à l'arrêt.",
-    "privacy": "Transcrit sur cet appareil. Rien ne quitte votre ordinateur."
+    "privacy": "Transcrit sur cet appareil. Rien ne quitte votre ordinateur.",
+    "notesTitle": "Notes de réunion",
+    "notesHint": "Notez ce que vous voulez — vos notes sont enrichies avec la transcription à la fin de la réunion.",
+    "notesPlaceholder": "Saisissez une note…"
   },
   "todos": {
     "title": "Tâches",

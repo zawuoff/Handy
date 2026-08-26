@@ -745,7 +745,14 @@
     "failedToast": "ノートを作成できませんでした。ポストプロセス設定でプロバイダーを確認してください。",
     "transcriptChip": "文字起こし",
     "onThisDevice": "この端末に保存",
-    "docPlaceholder": "何でも書いてください…"
+    "docPlaceholder": "何でも書いてください…",
+    "saved": "保存済み",
+    "toolbarBold": "太字",
+    "toolbarItalic": "斜体",
+    "toolbarStrike": "取り消し線",
+    "toolbarHeading": "見出し",
+    "toolbarBullets": "箇条書き",
+    "toolbarNumbered": "番号付きリスト"
   },
   "shell": {
     "appName": "Noted",
@@ -773,7 +780,10 @@
     "liveTranscript": "ライブ文字起こし",
     "listening": "聞き取り中…",
     "noStreamingModel": "録音中。ライブ表示にはストリーミングモデルが必要です。停止すると文字起こしが完成します。",
-    "privacy": "この端末で文字起こし。何も外部に送信されません。"
+    "privacy": "この端末で文字起こし。何も外部に送信されません。",
+    "notesTitle": "会議メモ",
+    "notesHint": "自由にメモしてください。会議終了後、メモは文字起こしをもとに仕上げられます。",
+    "notesPlaceholder": "メモを入力…"
   },
   "todos": {
     "title": "タスク",

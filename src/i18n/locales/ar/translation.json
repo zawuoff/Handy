@@ -745,7 +745,14 @@
     "failedToast": "تعذّرت كتابة ملاحظات الاجتماع. تحقق من المزوّد في إعدادات المعالجة اللاحقة.",
     "transcriptChip": "النص",
     "onThisDevice": "على هذا الجهاز",
-    "docPlaceholder": "اكتب أي شيء…"
+    "docPlaceholder": "اكتب أي شيء…",
+    "saved": "تم الحفظ",
+    "toolbarBold": "غامق",
+    "toolbarItalic": "مائل",
+    "toolbarStrike": "يتوسطه خط",
+    "toolbarHeading": "عنوان",
+    "toolbarBullets": "قائمة نقطية",
+    "toolbarNumbered": "قائمة مرقمة"
   },
   "shell": {
     "appName": "Noted",
@@ -773,7 +780,10 @@
     "liveTranscript": "النص المباشر",
     "listening": "جارٍ الاستماع…",
     "noStreamingModel": "جارٍ التسجيل. النص المباشر يتطلب نموذج بث — سيكون النص جاهزًا عند التوقف.",
-    "privacy": "تم النسخ على هذا الجهاز. لا شيء يغادر حاسوبك."
+    "privacy": "تم النسخ على هذا الجهاز. لا شيء يغادر حاسوبك.",
+    "notesTitle": "ملاحظات الاجتماع",
+    "notesHint": "دوّن أي شيء — تُحسَّن ملاحظاتك مع النص المكتوب عند انتهاء الاجتماع.",
+    "notesPlaceholder": "اكتب ملاحظة…"
   },
   "todos": {
     "title": "المهام",

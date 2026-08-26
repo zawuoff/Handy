@@ -60,6 +60,9 @@ static MIGRATIONS: &[M] = &[
             provider_id TEXT
         );",
     ),
+    // Notes the user jotted live during the meeting; kept verbatim as an
+    // anchor for note generation. Internal (not on HistoryEntry).
+    M::up("ALTER TABLE transcription_history ADD COLUMN live_notes TEXT;"),
 ];
 
 /// Where a history entry came from. Stored as TEXT so future sources
@@ -309,12 +312,14 @@ impl HistoryManager {
 
     /// Save a meeting-session entry. Marked `saved` from the start so retention
     /// cleanup never deletes a long recording to make room for quick dictations.
+    /// `live_notes` are the user's own jottings from the live meeting view.
     pub fn save_meeting_entry(
         &self,
         file_name: String,
         transcription_text: String,
+        live_notes: Option<String>,
     ) -> Result<HistoryEntry> {
-        self.save_entry_with_source(
+        let entry = self.save_entry_with_source(
             file_name,
             transcription_text,
             false,
@@ -322,7 +327,26 @@ impl HistoryManager {
             None,
             SOURCE_MEETING,
             true,
-        )
+        )?;
+        if let Some(notes) = live_notes.filter(|notes| !notes.trim().is_empty()) {
+            let conn = self.get_connection()?;
+            conn.execute(
+                "UPDATE transcription_history SET live_notes = ?1 WHERE id = ?2",
+                params![notes, entry.id],
+            )?;
+        }
+        Ok(entry)
+    }
+
+    /// The user's live-meeting jottings for an entry, if any.
+    pub fn get_entry_live_notes(&self, id: i64) -> Result<Option<String>> {
+        let conn = self.get_connection()?;
+        let notes: Option<String> = conn.query_row(
+            "SELECT live_notes FROM transcription_history WHERE id = ?1",
+            params![id],
+            |row| row.get(0),
+        )?;
+        Ok(notes.filter(|value| !value.trim().is_empty()))
     }
 
     #[allow(clippy::too_many_arguments)]

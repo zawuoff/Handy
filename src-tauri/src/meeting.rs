@@ -31,6 +31,19 @@ struct ActiveMeeting {
     tentative: String,
     captions_visible: bool,
     copied_flash_until: Option<Instant>,
+    /// Notes the user types in the live meeting view.
+    live_notes: String,
+}
+
+/// Live notes of the most recently ended session, held briefly between
+/// `end_session` (recording stopped) and the async save pipeline that
+/// persists the meeting entry.
+static PENDING_LIVE_NOTES: once_cell::sync::Lazy<Mutex<Option<String>>> =
+    once_cell::sync::Lazy::new(|| Mutex::new(None));
+
+/// Take the jottings of the just-ended meeting (once).
+pub fn take_pending_live_notes() -> Option<String> {
+    PENDING_LIVE_NOTES.lock().unwrap().take()
 }
 
 /// Everything the tray needs to render the live meeting readout.
@@ -71,18 +84,27 @@ impl MeetingSession {
             tentative: String::new(),
             captions_visible,
             copied_flash_until: None,
+            live_notes: String::new(),
         });
         generation
     }
 
-    /// Ends the session. Returns whether the captions overlay was visible,
+    /// Replace the user's live jottings (typed in the meeting view).
+    pub fn set_live_notes(&self, text: &str) {
+        if let Some(active) = self.inner.lock().unwrap().as_mut() {
+            active.live_notes.clear();
+            active.live_notes.push_str(text);
+        }
+    }
+
+    /// Ends the session. Returns (captions visible, live notes),
     /// or `None` if no session was active.
-    fn take_end(&self) -> Option<bool> {
+    fn take_end(&self) -> Option<(bool, String)> {
         self.inner
             .lock()
             .unwrap()
             .take()
-            .map(|active| active.captions_visible)
+            .map(|active| (active.captions_visible, active.live_notes))
     }
 
     pub fn is_active(&self) -> bool {
@@ -259,8 +281,13 @@ pub fn end_session(app: &AppHandle) {
     let Some(session) = app.try_state::<MeetingSession>() else {
         return;
     };
-    if let Some(captions_were_visible) = session.take_end() {
+    if let Some((captions_were_visible, live_notes)) = session.take_end() {
         debug!("Meeting session ended (captions visible: {captions_were_visible})");
+        *PENDING_LIVE_NOTES.lock().unwrap() = if live_notes.trim().is_empty() {
+            None
+        } else {
+            Some(live_notes)
+        };
         if captions_were_visible {
             restore_overlay_enabled_cache(app);
         }
@@ -309,6 +336,7 @@ fn persist_live_snapshot(app: &AppHandle) {
             "started_unix": now - active.started_at.elapsed().as_secs() as i64,
             "updated_unix": now,
             "transcript": transcript,
+            "notes": active.live_notes,
         })
     };
     // Write-then-rename so a reader never sees a half-written file.
@@ -363,6 +391,16 @@ pub fn get_meeting_state(app: AppHandle) -> Result<MeetingState, String> {
 #[specta::specta]
 pub fn toggle_meeting_session(app: AppHandle) -> Result<(), String> {
     crate::signal_handle::send_transcription_input(&app, "meeting", "UI");
+    Ok(())
+}
+
+/// Store the notes the user is typing in the live meeting view.
+#[tauri::command]
+#[specta::specta]
+pub fn set_live_meeting_notes(app: AppHandle, text: String) -> Result<(), String> {
+    if let Some(session) = app.try_state::<MeetingSession>() {
+        session.set_live_notes(&text);
+    }
     Ok(())
 }
 
@@ -472,7 +510,10 @@ mod tests {
         assert!(readout.title_tail.is_some());
         assert!(readout.lines.is_some());
 
-        assert_eq!(session.take_end(), Some(false));
+        assert_eq!(
+            session.take_end().map(|(captions, _)| captions),
+            Some(false)
+        );
         assert!(session.readout().is_none());
     }
 }

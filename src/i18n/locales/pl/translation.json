@@ -745,7 +745,14 @@
     "failedToast": "Nie udało się napisać notatek. Sprawdź dostawcę w ustawieniach post-processingu.",
     "transcriptChip": "Transkrypcja",
     "onThisDevice": "Na tym urządzeniu",
-    "docPlaceholder": "Napisz cokolwiek…"
+    "docPlaceholder": "Napisz cokolwiek…",
+    "saved": "Zapisano",
+    "toolbarBold": "Pogrubienie",
+    "toolbarItalic": "Kursywa",
+    "toolbarStrike": "Przekreślenie",
+    "toolbarHeading": "Nagłówek",
+    "toolbarBullets": "Lista punktowana",
+    "toolbarNumbered": "Lista numerowana"
   },
   "shell": {
     "appName": "Noted",
@@ -773,7 +780,10 @@
     "liveTranscript": "Transkrypcja na żywo",
     "listening": "Słucham…",
     "noStreamingModel": "Nagrywanie. Tekst na żywo wymaga modelu strumieniowego — transkrypcja będzie gotowa po zatrzymaniu.",
-    "privacy": "Transkrybowano na tym urządzeniu. Nic nie opuszcza twojego komputera."
+    "privacy": "Transkrybowano na tym urządzeniu. Nic nie opuszcza twojego komputera.",
+    "notesTitle": "Notatki ze spotkania",
+    "notesHint": "Notuj cokolwiek — po zakończeniu spotkania Twoje notatki zostaną wzbogacone o transkrypcję.",
+    "notesPlaceholder": "Wpisz notatkę…"
   },
   "todos": {
     "title": "Zadania",

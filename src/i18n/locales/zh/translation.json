@@ -745,7 +745,14 @@
     "failedToast": "无法撰写会议笔记。请在后处理设置中检查你的提供商。",
     "transcriptChip": "转录文本",
     "onThisDevice": "保存在本设备",
-    "docPlaceholder": "写点什么…"
+    "docPlaceholder": "写点什么…",
+    "saved": "已保存",
+    "toolbarBold": "加粗",
+    "toolbarItalic": "斜体",
+    "toolbarStrike": "删除线",
+    "toolbarHeading": "标题",
+    "toolbarBullets": "项目符号列表",
+    "toolbarNumbered": "编号列表"
   },
   "shell": {
     "appName": "Noted",
@@ -773,7 +780,10 @@
     "liveTranscript": "实时转录",
     "listening": "正在聆听…",
     "noStreamingModel": "录音中。实时文字需要流式模型——停止后转录即完成。",
-    "privacy": "在本设备上转录。任何内容都不会离开您的电脑。"
+    "privacy": "在本设备上转录。任何内容都不会离开您的电脑。",
+    "notesTitle": "会议笔记",
+    "notesHint": "随手记下任何内容——会议结束后，你的笔记会结合转写内容进行完善。",
+    "notesPlaceholder": "输入笔记…"
   },
   "todos": {
     "title": "待办",
