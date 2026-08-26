@@ -239,6 +239,7 @@ pub fn begin_session(app: &AppHandle, streaming: bool) {
     std::thread::spawn(move || {
         loop {
             crate::tray::update_meeting_readout(&app);
+            persist_live_snapshot(&app);
             std::thread::sleep(Duration::from_secs(1));
             let Some(session) = app.try_state::<MeetingSession>() else {
                 return;
@@ -264,7 +265,64 @@ pub fn end_session(app: &AppHandle) {
             restore_overlay_enabled_cache(app);
         }
         let _ = app.emit("meeting-ended", ());
+        clear_live_snapshot(app);
         crate::tray::update_meeting_readout(app);
+    }
+}
+
+/// File the in-flight meeting is mirrored into for out-of-process readers
+/// (the `--mcp-serve` server): written by the readout ticker about once a
+/// second while a session runs, removed when it ends, and any stale leftover
+/// from a crash is removed at startup (see `clear_live_snapshot`).
+const LIVE_SNAPSHOT_FILE: &str = "live_meeting.json";
+
+fn live_snapshot_path(app: &AppHandle) -> Option<std::path::PathBuf> {
+    crate::portable::app_data_dir(app)
+        .ok()
+        .map(|dir| dir.join(LIVE_SNAPSHOT_FILE))
+}
+
+fn persist_live_snapshot(app: &AppHandle) {
+    let Some(path) = live_snapshot_path(app) else {
+        return;
+    };
+    let Some(session) = app.try_state::<MeetingSession>() else {
+        return;
+    };
+    let snapshot = {
+        let guard = session.inner.lock().unwrap();
+        let Some(active) = guard.as_ref() else {
+            return;
+        };
+        let mut transcript = active.committed.trim_end().to_string();
+        let tentative = active.tentative.trim();
+        if !tentative.is_empty() {
+            if !transcript.is_empty() {
+                transcript.push(' ');
+            }
+            transcript.push_str(tentative);
+        }
+        let now = chrono::Utc::now().timestamp();
+        serde_json::json!({
+            "active": true,
+            "streaming": active.streaming,
+            "started_unix": now - active.started_at.elapsed().as_secs() as i64,
+            "updated_unix": now,
+            "transcript": transcript,
+        })
+    };
+    // Write-then-rename so a reader never sees a half-written file.
+    let tmp = path.with_extension("json.tmp");
+    if std::fs::write(&tmp, snapshot.to_string()).is_ok() {
+        let _ = std::fs::rename(&tmp, &path);
+    }
+}
+
+/// Remove the live snapshot. Called when a session ends and once at startup,
+/// so a crash mid-meeting can't leave a phantom "meeting in progress" behind.
+pub fn clear_live_snapshot(app: &AppHandle) {
+    if let Some(path) = live_snapshot_path(app) {
+        let _ = std::fs::remove_file(path);
     }
 }
 

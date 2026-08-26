@@ -41,6 +41,77 @@ fn open_db() -> Result<Connection, String> {
     .map_err(|e| format!("cannot open notes database at {}: {e}", db_path.display()))
 }
 
+/// Reads the live snapshot the app's meeting ticker writes once a second
+/// while a session is recording (`meeting::persist_live_snapshot`). The file
+/// is removed when the session ends and cleaned up at app startup, so its
+/// presence — with a fresh timestamp — means a meeting is happening now.
+fn current_meeting_text() -> Result<String, String> {
+    let path = resolve_app_data_dir().join("live_meeting.json");
+    let raw =
+        match std::fs::read_to_string(&path) {
+            Ok(raw) => raw,
+            Err(_) => return Ok(
+                "No meeting is being recorded right now. Use list_meetings for finished meetings."
+                    .to_string(),
+            ),
+        };
+    let snap: Value = serde_json::from_str(&raw).map_err(|e| e.to_string())?;
+    let now = chrono::Utc::now().timestamp();
+    let updated = snap
+        .get("updated_unix")
+        .and_then(|v| v.as_i64())
+        .unwrap_or(0);
+    if now - updated > 30 {
+        return Ok(
+            "No meeting is live: a leftover snapshot was found but it is stale (the recording app              likely stopped unexpectedly). Use list_meetings for finished meetings."
+                .to_string(),
+        );
+    }
+    let started = snap
+        .get("started_unix")
+        .and_then(|v| v.as_i64())
+        .unwrap_or(now);
+    let mins = ((now - started).max(0)) / 60;
+    let secs = ((now - started).max(0)) % 60;
+    let streaming = snap
+        .get("streaming")
+        .and_then(|v| v.as_bool())
+        .unwrap_or(false);
+    let transcript = snap
+        .get("transcript")
+        .and_then(|v| v.as_str())
+        .unwrap_or("")
+        .trim();
+
+    let mut out = format!(
+        "A meeting is being recorded RIGHT NOW (started {} — running for {mins}m {secs}s).
+",
+        iso_date(started)
+    );
+    if transcript.is_empty() {
+        if streaming {
+            out.push_str(
+                "
+Nothing has been said yet (or the meeting just started).",
+            );
+        } else {
+            out.push_str(
+                "
+The active transcription model does not stream live text, so the transcript                  will only be available once the meeting is stopped.",
+            );
+        }
+    } else {
+        out.push_str(
+            "
+Live transcript so far (newest words last, still growing):
+
+",
+        );
+        out.push_str(transcript);
+    }
+    Ok(out)
+}
+
 /// The note body as the user sees it: their edited text, falling back to the
 /// generated notes.
 fn note_body(user_notes: Option<&str>, ai_notes: Option<&str>) -> String {
@@ -127,8 +198,13 @@ fn full_note_text(row: &NoteRow) -> String {
 fn tool_definitions() -> Value {
     json!([
         {
+            "name": "get_current_meeting",
+            "description": "Check whether a meeting is being recorded RIGHT NOW and read its live transcript so far. Always use this first when the user asks about the current or ongoing meeting; list_meetings only shows finished meetings.",
+            "inputSchema": { "type": "object", "properties": {} }
+        },
+        {
             "name": "list_meetings",
-            "description": "List the user's recent meeting notes (newest first): id, date, title, whether notes exist, and a short preview. Use get_meeting with an id for the full content.",
+            "description": "List the user's FINISHED meetings (newest first): id, date, title, whether notes exist, and a short preview. Use get_meeting with an id for the full content, and get_current_meeting for a meeting happening right now.",
             "inputSchema": {
                 "type": "object",
                 "properties": {
@@ -170,6 +246,9 @@ fn clamp_limit(args: &Value) -> i64 {
 }
 
 fn run_tool(name: &str, args: &Value) -> Result<String, String> {
+    if name == "get_current_meeting" {
+        return current_meeting_text();
+    }
     let conn = open_db()?;
     match name {
         "list_meetings" => {
@@ -341,7 +420,7 @@ mod tests {
         let list = json!({ "jsonrpc": "2.0", "id": 2, "method": "tools/list" });
         let response = handle_request(&list).expect("tools/list gets a response");
         let tools = response["result"]["tools"].as_array().unwrap();
-        assert_eq!(tools.len(), 3);
+        assert_eq!(tools.len(), 4);
     }
 
     #[test]

@@ -185,6 +185,9 @@ fn initialize_core_logic(app_handle: &AppHandle) {
     app_handle.manage(history_manager.clone());
     app_handle.manage(tray::TrayState::new());
     app_handle.manage(meeting::MeetingSession::new());
+    // A crash mid-meeting must not leave a phantom live-meeting snapshot for
+    // the MCP server to report.
+    meeting::clear_live_snapshot(app_handle);
 
     // Note: Shortcuts are NOT initialized here.
     // The frontend is responsible for calling the `initialize_shortcuts` command
