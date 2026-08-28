@@ -207,22 +207,26 @@ pub fn latest_speaker(segments: &[SpeakerSegment], now_ms: i64) -> Option<i32> {
         .map(|seg| seg.speaker_id)
 }
 
-/// Rewrite "Speaker N:" labels in a stored transcript with the names the
-/// user assigned during the meeting. Names typed mid-meeting apply to the
-/// whole transcript, including turns recorded before they were entered.
+/// Rewrite "Speaker N" labels with the names the user assigned — both the
+/// transcript's "Speaker 2:" turn labels and prose mentions in generated
+/// notes ("as Speaker 2 said", "**Speaker 2**"). The trailing `\b` keeps
+/// "Speaker 1" from matching inside "Speaker 12"; unnamed speakers keep
+/// their label.
 pub fn apply_speaker_names(
     transcript: &str,
     names: &std::collections::HashMap<i32, String>,
 ) -> String {
-    let mut out = transcript.to_string();
-    for (speaker, name) in names {
-        let name = name.trim();
-        if name.is_empty() {
-            continue;
-        }
-        out = out.replace(&format!("Speaker {speaker}:"), &format!("{name}:"));
-    }
-    out
+    static SPEAKER_LABEL: once_cell::sync::Lazy<regex::Regex> =
+        once_cell::sync::Lazy::new(|| regex::Regex::new(r"\bSpeaker (\d+)\b").unwrap());
+    SPEAKER_LABEL
+        .replace_all(transcript, |caps: &regex::Captures| {
+            let id: i32 = caps[1].parse().unwrap_or(-1);
+            match names.get(&id).map(|n| n.trim()).filter(|n| !n.is_empty()) {
+                Some(name) => name.to_string(),
+                None => caps[0].to_string(),
+            }
+        })
+        .into_owned()
 }
 
 #[derive(Clone, Serialize)]
@@ -335,6 +339,26 @@ mod tests {
         assert_eq!(
             apply_speaker_names(transcript, &names),
             "Nikki: hello\n\nSam: hi\n\nNikki: bye\n\nSpeaker 3: hm"
+        );
+    }
+
+    #[test]
+    fn apply_speaker_names_handles_notes_prose() {
+        let names =
+            std::collections::HashMap::from([(1, "Nikki".to_string()), (2, " ".to_string())]);
+        // Colon-less prose, bold labels, digit boundary, empty-name skip.
+        assert_eq!(
+            apply_speaker_names("as Speaker 1 said, **Speaker 1** agreed", &names),
+            "as Nikki said, **Nikki** agreed"
+        );
+        assert_eq!(
+            apply_speaker_names("Speaker 12: hi\n\nSpeaker 1: yo", &names),
+            "Speaker 12: hi\n\nNikki: yo"
+        );
+        // Speaker 2's name is blank after trim — label kept.
+        assert_eq!(
+            apply_speaker_names("Speaker 2: hm", &names),
+            "Speaker 2: hm"
         );
     }
 

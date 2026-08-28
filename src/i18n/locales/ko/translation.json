@@ -17,7 +17,9 @@
     "meetingDiscard": "녹음 취소",
     "meetingListening": "듣는 중…",
     "radarPrompt": "통화가 진행 중인 것 같습니다. 회의로 녹음할까요?",
-    "radarRecord": "녹음"
+    "radarRecord": "녹음",
+    "tasksDone": "Tasks done",
+    "tasksFailed": "Task failed"
   },
   "sidebar": {
     "general": "일반",
@@ -27,7 +29,8 @@
     "history": "히스토리",
     "debug": "디버그",
     "about": "정보",
-    "notes": "노트"
+    "notes": "노트",
+    "integrations": "Integrations"
   },
   "onboarding": {
     "subtitle": "시작하려면 음성 인식 모델을 선택하세요",
@@ -194,6 +197,10 @@
           "meeting": {
             "name": "회의 모드 단축키",
             "description": "회의 세션을 시작하고 중지합니다. 전사본은 붙여넣기 대신 기록에 저장되며 직접 삭제할 때까지 유지됩니다."
+          },
+          "execute_task": {
+            "name": "Task key",
+            "description": "Speak a task — add todos, calendar events, draft or send emails — and it happens in the background."
           }
         },
         "errors": {
@@ -639,6 +646,40 @@
       "description": "회의 전사에서 화자를 구분합니다(화자 1, 화자 2, …). 처음 켤 때 작은 로컬 모델(~140MB)을 다운로드합니다.",
       "downloading": "화자 모델 다운로드 중… {{percent}}%",
       "downloadFailed": "화자 모델 다운로드 실패 — 연결을 확인하고 다시 켜 주세요."
+    },
+    "integrations": {
+      "composio": {
+        "title": "Composio"
+      },
+      "apiKey": {
+        "title": "API key",
+        "description": "Your Composio API key, used to connect apps like Google Docs. Get one at composio.dev.",
+        "placeholder": "Paste your Composio API key"
+      },
+      "gdocs": {
+        "title": "Google Docs",
+        "description": "Connect your Google account so your meeting notes can be saved to Google Docs."
+      },
+      "connect": "Connect",
+      "statusNotConnected": "Not connected",
+      "statusPending": "Waiting for approval in your browser…",
+      "statusConnected": "Connected",
+      "gmail": {
+        "title": "Gmail",
+        "description": "Connect Gmail so Noted can create email drafts for you — nothing is ever sent without you."
+      },
+      "contacts": {
+        "title": "Email contacts",
+        "description": "Names you can speak with the task key — \"send an email to John…\" uses these addresses.",
+        "namePlaceholder": "Name (e.g. John)",
+        "emailPlaceholder": "email@example.com",
+        "add": "Add"
+      },
+      "signature": {
+        "title": "Email sign-off name",
+        "description": "Used to sign emails written for you (e.g. \"Kind regards, <your name>\").",
+        "placeholder": "Your name"
+      }
     }
   },
   "footer": {
@@ -758,7 +799,16 @@
     "toolbarStrike": "취소선",
     "toolbarHeading": "제목",
     "toolbarBullets": "글머리 기호 목록",
-    "toolbarNumbered": "번호 매기기 목록"
+    "toolbarNumbered": "번호 매기기 목록",
+    "syncAll": "Sync to Google Docs",
+    "syncToGdocs": "Sync to Google Docs",
+    "resyncToGdocs": "Re-sync to Google Docs",
+    "syncDoneToast": "Saved to Google Docs",
+    "syncAllToast": "Google Docs sync: {{synced}} saved, {{failed}} failed",
+    "renameFailedToast": "Couldn't rename the speakers",
+    "draftEmail": "Draft email",
+    "draftEmailDoneToast": "Draft created in Gmail",
+    "emailDraftsToast": "Drafted {{count}} promised email(s) in Gmail"
   },
   "shell": {
     "appName": "Noted",

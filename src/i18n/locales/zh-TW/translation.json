@@ -17,7 +17,9 @@
     "meetingDiscard": "放棄錄音",
     "meetingListening": "正在聆聽…",
     "radarPrompt": "似乎正在通話——要錄製為會議嗎?",
-    "radarRecord": "錄製"
+    "radarRecord": "錄製",
+    "tasksDone": "Tasks done",
+    "tasksFailed": "Task failed"
   },
   "sidebar": {
     "general": "一般",
@@ -27,7 +29,8 @@
     "history": "歷史紀錄",
     "debug": "偵錯",
     "about": "關於",
-    "notes": "筆記"
+    "notes": "筆記",
+    "integrations": "Integrations"
   },
   "onboarding": {
     "subtitle": "首先，請選擇一種模型",
@@ -194,6 +197,10 @@
           "meeting": {
             "name": "會議模式快捷鍵",
             "description": "開始與停止會議錄製。轉錄文字會儲存到歷史記錄而不是貼上，並會一直保留，直到您刪除為止。"
+          },
+          "execute_task": {
+            "name": "Task key",
+            "description": "Speak a task — add todos, calendar events, draft or send emails — and it happens in the background."
           }
         },
         "errors": {
@@ -639,6 +646,40 @@
       "description": "在會議逐字稿中區分說話者（說話者1、說話者2……）。首次開啟會下載一個小型本機模型（約140MB）。",
       "downloading": "正在下載說話者模型… {{percent}}%",
       "downloadFailed": "說話者模型下載失敗——請檢查網路後重新開啟。"
+    },
+    "integrations": {
+      "composio": {
+        "title": "Composio"
+      },
+      "apiKey": {
+        "title": "API key",
+        "description": "Your Composio API key, used to connect apps like Google Docs. Get one at composio.dev.",
+        "placeholder": "Paste your Composio API key"
+      },
+      "gdocs": {
+        "title": "Google Docs",
+        "description": "Connect your Google account so your meeting notes can be saved to Google Docs."
+      },
+      "connect": "Connect",
+      "statusNotConnected": "Not connected",
+      "statusPending": "Waiting for approval in your browser…",
+      "statusConnected": "Connected",
+      "gmail": {
+        "title": "Gmail",
+        "description": "Connect Gmail so Noted can create email drafts for you — nothing is ever sent without you."
+      },
+      "contacts": {
+        "title": "Email contacts",
+        "description": "Names you can speak with the task key — \"send an email to John…\" uses these addresses.",
+        "namePlaceholder": "Name (e.g. John)",
+        "emailPlaceholder": "email@example.com",
+        "add": "Add"
+      },
+      "signature": {
+        "title": "Email sign-off name",
+        "description": "Used to sign emails written for you (e.g. \"Kind regards, <your name>\").",
+        "placeholder": "Your name"
+      }
     }
   },
   "footer": {
@@ -758,7 +799,16 @@
     "toolbarStrike": "刪除線",
     "toolbarHeading": "標題",
     "toolbarBullets": "項目符號清單",
-    "toolbarNumbered": "編號清單"
+    "toolbarNumbered": "編號清單",
+    "syncAll": "Sync to Google Docs",
+    "syncToGdocs": "Sync to Google Docs",
+    "resyncToGdocs": "Re-sync to Google Docs",
+    "syncDoneToast": "Saved to Google Docs",
+    "syncAllToast": "Google Docs sync: {{synced}} saved, {{failed}} failed",
+    "renameFailedToast": "Couldn't rename the speakers",
+    "draftEmail": "Draft email",
+    "draftEmailDoneToast": "Draft created in Gmail",
+    "emailDraftsToast": "Drafted {{count}} promised email(s) in Gmail"
   },
   "shell": {
     "appName": "Noted",

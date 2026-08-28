@@ -25,6 +25,7 @@ export const GeneralSettings: React.FC = () => {
       <SettingsGroup title={t("settings.general.title")}>
         <ShortcutInput shortcutId="transcribe" grouped={true} />
         <ShortcutInput shortcutId="meeting" grouped={true} />
+        <ShortcutInput shortcutId="execute_task" grouped={true} />
         <PushToTalk descriptionMode="tooltip" grouped={true} />
         <MeetingRadar descriptionMode="tooltip" grouped={true} />
         <SpeakerSeparation descriptionMode="tooltip" grouped={true} />

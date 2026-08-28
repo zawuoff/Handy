@@ -892,6 +892,7 @@ mod tests {
             source: crate::managers::history::SOURCE_DICTATION.to_string(),
             ai_notes: None,
             user_notes: None,
+            gdoc_id: None,
         }
     }
 

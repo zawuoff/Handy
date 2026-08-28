@@ -10,6 +10,7 @@ mod catalog;
 pub mod cli;
 mod clipboard;
 mod commands;
+mod composio;
 mod diarization;
 mod helpers;
 mod input;
@@ -28,6 +29,7 @@ mod secure_input;
 mod settings;
 mod shortcut;
 mod signal_handle;
+mod tasks;
 mod transcription_coordinator;
 mod tray;
 mod tray_i18n;
@@ -763,6 +765,7 @@ pub fn run(cli_args: CliArgs) {
             commands::history::set_history_entry_title,
             commands::history::set_history_entry_user_notes,
             commands::history::generate_meeting_notes,
+            commands::history::rename_note_speakers,
             notes::get_generating_note_ids,
             shortcut::change_meeting_notes_prompt_setting,
             shortcut::change_meeting_radar_enabled_setting,
@@ -791,6 +794,14 @@ pub fn run(cli_args: CliArgs) {
             commands::history::retry_history_entry_transcription,
             commands::history::update_history_limit,
             commands::history::update_recording_retention_period,
+            composio::change_composio_api_key_setting,
+            composio::connect_composio_toolkit,
+            composio::get_composio_connection_status,
+            composio::sync_note_to_gdocs,
+            composio::sync_all_notes_to_gdocs,
+            composio::draft_note_email,
+            composio::change_gmail_contacts_setting,
+            composio::change_gmail_signature_name_setting,
             helpers::clamshell::is_laptop,
         ])
         .events(collect_events![

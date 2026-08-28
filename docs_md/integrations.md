@@ -1,5 +1,75 @@
 # Integrations
 
+## Composio → Google Docs (`composio.rs`)
+
+Settings → Integrations holds a Composio API key (`SecretString` in
+settings — never log it) plus a Connect button for Google Docs. Connect
+lazily creates a Composio auth config (`use_composio_managed_auth`,
+toolkit `googledocs`) and a connected account, opens the returned OAuth URL
+in the browser, and the UI polls `get_gdocs_connection_status` until
+`ACTIVE`. Ids persist in settings (`composio_gdocs_auth_config_id` /
+`composio_gdocs_account_id`).
+
+Sync (per-note chip in `NoteDetail`, "Sync all" button on the notes
+library) sends the note body the user sees — `user_notes` if edited, else
+`ai_notes` — via `POST /tools/execute/GOOGLEDOCS_CREATE_DOCUMENT_MARKDOWN`
+(first time; the doc id is stored in the `gdoc_id` column) or
+`…UPDATE_DOCUMENT_MARKDOWN` (re-sync updates the same doc — no duplicates).
+Guards: per-entry `SYNC_IN_FLIGHT` set + a `SYNC_ALL_RUNNING` flag. Tool
+slugs/argument names live as constants at the top of `composio.rs`; if
+Composio renames a response field, `find_string` (a tolerant key probe)
+is the place to look.
+
+Post-hoc speaker rename lives next door: a saved note whose transcript
+still has `Speaker N:` labels shows a "Name speakers" chip; saving calls
+`rename_note_speakers`, which regex-replaces `\bSpeaker (\d+)\b` (prose and
+bold mentions included) across `transcription_text`, `ai_notes` **and**
+`user_notes` via `diarization::apply_speaker_names`.
+
+## Composio → Gmail (`composio.rs`, `notes.rs`)
+
+Same connect machinery, generalized: `connect_composio_toolkit(toolkit)` /
+`get_composio_connection_status(toolkit)` handle both `googledocs` and
+`gmail` (per-toolkit id fields in settings; `get_toolkit_ids` /
+`store_toolkit_ids` map slugs to fields — a new toolkit is one more match
+arm plus a `ConnectRow` in `IntegrationsSettings.tsx`).
+
+Two features, both draft-only — **Gmail drafts are never sent by the app**:
+
+- **"Draft email" chip** on a note (`draft_note_email`): a Gmail draft with
+  the note body (+ the Google Doc link when synced), addressed to the user
+  themself as a placeholder (`GMAIL_GET_PROFILE` supplies the address).
+- **Email-commitment pass** (`notes.rs::draft_email_commitments`): a third
+  LLM pass after notes + action items — finds promises to email someone
+  ("sure, I'll email you the quotation") in the transcript and creates one
+  Gmail draft each (≤5). Guarded exactly like action items: an appended
+  `email_drafts_organized` column with backfill-to-1 for pre-existing
+  meetings, claimed atomically via `try_claim_email_drafts` — the
+  connected-check runs BEFORE the claim so meetings recorded before Gmail
+  was connected can still draft on a later regenerate. UI toast via the
+  `email-drafts` event (listener in `App.tsx`).
+
+## The task key (`tasks.rs`)
+
+A fourth transcribe binding, `execute_task` (default `ctrl+alt+space`;
+`option+ctrl+space` on macOS). It records like dictation but the transcript
+is routed to `tasks::spawn_execute` instead of being pasted
+(`TranscriptionOutput::ExecuteTask` in `actions.rs`; the id is listed in
+`is_transcribe_binding` — forgetting that for future bindings bypasses the
+coordinator, see the trap note in the shortcut code). One LLM call maps the
+speech to JSON actions: todo (`hm.add_todo`), calendar event
+(`notes::create_calendar_event`), or email via Composio Gmail — **draft by
+default; actually sends only when the user clearly said "send" AND the
+recipient resolved**. Recipients resolve: spoken address > saved contact
+(`settings.gmail_contacts`, name→email, managed under Settings →
+Integrations → Gmail) > the user's own address; an unresolved name
+downgrades a send to a draft. `settings.gmail_signature_name` feeds the
+sign-off. Outcome (per-action ✓/✗ lines, or the whole-run error) is always
+surfaced as a `notify-send` desktop notification, titled via the
+build-generated tray strings `tasks_done`/`tasks_failed` (`tray.tasksDone` /
+`tray.tasksFailed` in the locale files). The raw command transcript is
+archived to history like a dictation.
+
 ## MCP server (`mcp.rs`) — Claude / Codex read the notes
 
 The app binary doubles as a stdio MCP server: `handy --mcp-serve` speaks

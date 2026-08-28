@@ -17,7 +17,9 @@
     "meetingDiscard": "放弃录音",
     "meetingListening": "正在聆听…",
     "radarPrompt": "似乎正在通话——要录制为会议吗？",
-    "radarRecord": "录制"
+    "radarRecord": "录制",
+    "tasksDone": "Tasks done",
+    "tasksFailed": "Task failed"
   },
   "sidebar": {
     "general": "通用",
@@ -27,7 +29,8 @@
     "history": "历史记录",
     "debug": "调试",
     "about": "关于",
-    "notes": "笔记"
+    "notes": "笔记",
+    "integrations": "Integrations"
   },
   "onboarding": {
     "subtitle": "请选择一个转录模型以开始使用",
@@ -214,6 +217,10 @@
           "meeting": {
             "name": "会议模式快捷键",
             "description": "开始和停止会议录制。转录文本会保存到历史记录而不是粘贴，并会一直保留，直到您删除为止。"
+          },
+          "execute_task": {
+            "name": "Task key",
+            "description": "Speak a task — add todos, calendar events, draft or send emails — and it happens in the background."
           }
         },
         "errors": {
@@ -639,6 +646,40 @@
       "description": "在会议转写中区分说话人（说话人1、说话人2……）。首次开启会下载一个小型本地模型（约140MB）。",
       "downloading": "正在下载说话人模型… {{percent}}%",
       "downloadFailed": "说话人模型下载失败——请检查网络后重新开启。"
+    },
+    "integrations": {
+      "composio": {
+        "title": "Composio"
+      },
+      "apiKey": {
+        "title": "API key",
+        "description": "Your Composio API key, used to connect apps like Google Docs. Get one at composio.dev.",
+        "placeholder": "Paste your Composio API key"
+      },
+      "gdocs": {
+        "title": "Google Docs",
+        "description": "Connect your Google account so your meeting notes can be saved to Google Docs."
+      },
+      "connect": "Connect",
+      "statusNotConnected": "Not connected",
+      "statusPending": "Waiting for approval in your browser…",
+      "statusConnected": "Connected",
+      "gmail": {
+        "title": "Gmail",
+        "description": "Connect Gmail so Noted can create email drafts for you — nothing is ever sent without you."
+      },
+      "contacts": {
+        "title": "Email contacts",
+        "description": "Names you can speak with the task key — \"send an email to John…\" uses these addresses.",
+        "namePlaceholder": "Name (e.g. John)",
+        "emailPlaceholder": "email@example.com",
+        "add": "Add"
+      },
+      "signature": {
+        "title": "Email sign-off name",
+        "description": "Used to sign emails written for you (e.g. \"Kind regards, <your name>\").",
+        "placeholder": "Your name"
+      }
     }
   },
   "footer": {
@@ -758,7 +799,16 @@
     "toolbarStrike": "删除线",
     "toolbarHeading": "标题",
     "toolbarBullets": "项目符号列表",
-    "toolbarNumbered": "编号列表"
+    "toolbarNumbered": "编号列表",
+    "syncAll": "Sync to Google Docs",
+    "syncToGdocs": "Sync to Google Docs",
+    "resyncToGdocs": "Re-sync to Google Docs",
+    "syncDoneToast": "Saved to Google Docs",
+    "syncAllToast": "Google Docs sync: {{synced}} saved, {{failed}} failed",
+    "renameFailedToast": "Couldn't rename the speakers",
+    "draftEmail": "Draft email",
+    "draftEmailDoneToast": "Draft created in Gmail",
+    "emailDraftsToast": "Drafted {{count}} promised email(s) in Gmail"
   },
   "shell": {
     "appName": "Noted",

@@ -17,7 +17,9 @@
     "meetingDiscard": "Scarta registrazione",
     "meetingListening": "In ascolto…",
     "radarPrompt": "Sembra in corso una chiamata: registrarla come riunione?",
-    "radarRecord": "Registra"
+    "radarRecord": "Registra",
+    "tasksDone": "Tasks done",
+    "tasksFailed": "Task failed"
   },
   "sidebar": {
     "general": "Generale",
@@ -27,7 +29,8 @@
     "history": "Cronologia",
     "debug": "Debug",
     "about": "Informazioni",
-    "notes": "Note"
+    "notes": "Note",
+    "integrations": "Integrations"
   },
   "onboarding": {
     "subtitle": "Per cominciare, scegli un modello di riconoscimento vocale",
@@ -214,6 +217,10 @@
           "meeting": {
             "name": "Scorciatoia modalità riunione",
             "description": "Avvia e interrompe una sessione di riunione. La trascrizione viene salvata nella cronologia invece di essere incollata e resta finché non la elimini."
+          },
+          "execute_task": {
+            "name": "Task key",
+            "description": "Speak a task — add todos, calendar events, draft or send emails — and it happens in the background."
           }
         },
         "errors": {
@@ -639,6 +646,40 @@
       "description": "Distingue gli interlocutori nelle trascrizioni delle riunioni (Interlocutore 1, 2, …). Scarica un piccolo modello locale (~140 MB) la prima volta.",
       "downloading": "Download del modello… {{percent}}%",
       "downloadFailed": "Download del modello non riuscito — controlla la connessione e riattiva."
+    },
+    "integrations": {
+      "composio": {
+        "title": "Composio"
+      },
+      "apiKey": {
+        "title": "API key",
+        "description": "Your Composio API key, used to connect apps like Google Docs. Get one at composio.dev.",
+        "placeholder": "Paste your Composio API key"
+      },
+      "gdocs": {
+        "title": "Google Docs",
+        "description": "Connect your Google account so your meeting notes can be saved to Google Docs."
+      },
+      "connect": "Connect",
+      "statusNotConnected": "Not connected",
+      "statusPending": "Waiting for approval in your browser…",
+      "statusConnected": "Connected",
+      "gmail": {
+        "title": "Gmail",
+        "description": "Connect Gmail so Noted can create email drafts for you — nothing is ever sent without you."
+      },
+      "contacts": {
+        "title": "Email contacts",
+        "description": "Names you can speak with the task key — \"send an email to John…\" uses these addresses.",
+        "namePlaceholder": "Name (e.g. John)",
+        "emailPlaceholder": "email@example.com",
+        "add": "Add"
+      },
+      "signature": {
+        "title": "Email sign-off name",
+        "description": "Used to sign emails written for you (e.g. \"Kind regards, <your name>\").",
+        "placeholder": "Your name"
+      }
     }
   },
   "footer": {
@@ -758,7 +799,16 @@
     "toolbarStrike": "Barrato",
     "toolbarHeading": "Titolo",
     "toolbarBullets": "Elenco puntato",
-    "toolbarNumbered": "Elenco numerato"
+    "toolbarNumbered": "Elenco numerato",
+    "syncAll": "Sync to Google Docs",
+    "syncToGdocs": "Sync to Google Docs",
+    "resyncToGdocs": "Re-sync to Google Docs",
+    "syncDoneToast": "Saved to Google Docs",
+    "syncAllToast": "Google Docs sync: {{synced}} saved, {{failed}} failed",
+    "renameFailedToast": "Couldn't rename the speakers",
+    "draftEmail": "Draft email",
+    "draftEmailDoneToast": "Draft created in Gmail",
+    "emailDraftsToast": "Drafted {{count}} promised email(s) in Gmail"
   },
   "shell": {
     "appName": "Noted",

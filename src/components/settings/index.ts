@@ -6,6 +6,7 @@ export { HistorySettings } from "./history/HistorySettings";
 export { NotesSettings } from "./notes/NotesSettings";
 export { NotesStyleSettings } from "./notes/NotesStyleSettings";
 export { AboutSettings } from "./about/AboutSettings";
+export { IntegrationsSettings } from "./integrations/IntegrationsSettings";
 export { PostProcessingSettings } from "./post-processing/PostProcessingSettings";
 export { ModelsSettings } from "./models/ModelsSettings";
 

@@ -337,6 +337,35 @@ impl std::ops::DerefMut for SecretMap {
     }
 }
 
+/// A single secret value; like `SecretMap`, exists only so `Debug` on
+/// `AppSettings` never prints the key into a log line.
+#[derive(Clone, Default, Serialize, Deserialize, Type)]
+#[serde(transparent)]
+pub(crate) struct SecretString(String);
+
+impl fmt::Debug for SecretString {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(if self.0.is_empty() {
+            "\"\""
+        } else {
+            "[REDACTED]"
+        })
+    }
+}
+
+impl From<String> for SecretString {
+    fn from(value: String) -> Self {
+        Self(value)
+    }
+}
+
+impl std::ops::Deref for SecretString {
+    type Target = String;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
 /* still handy for composing the initial JSON in the store ------------- */
 /// The container-level `serde(default)` (backed by the `Default` impl below)
 /// guarantees every field — including ones added in the future — falls back to
@@ -449,6 +478,28 @@ pub struct AppSettings {
     /// Offer to record when another app is using the mic during playback.
     #[serde(default)]
     pub meeting_radar_enabled: bool,
+    /// Composio API key for third-party integrations (Google Docs sync).
+    #[serde(default)]
+    pub composio_api_key: SecretString,
+    /// Composio auth config id for the googledocs toolkit (created lazily).
+    #[serde(default)]
+    pub composio_gdocs_auth_config_id: String,
+    /// Composio connected account id for Google Docs (set after Connect).
+    #[serde(default)]
+    pub composio_gdocs_account_id: String,
+    /// Composio auth config id for the gmail toolkit (created lazily).
+    #[serde(default)]
+    pub composio_gmail_auth_config_id: String,
+    /// Composio connected account id for Gmail (set after Connect).
+    #[serde(default)]
+    pub composio_gmail_account_id: String,
+    /// Spoken-name → email address map for voice-commanded emails
+    /// ("send an email to John…").
+    #[serde(default)]
+    pub gmail_contacts: HashMap<String, String>,
+    /// Name used to sign off emails written by the task key.
+    #[serde(default)]
+    pub gmail_signature_name: String,
     #[serde(default = "default_app_language")]
     pub app_language: String,
     #[serde(default = "default_theme")]
@@ -662,6 +713,14 @@ fn default_post_process_providers() -> Vec<PostProcessProvider> {
             supports_structured_output: true,
         },
         PostProcessProvider {
+            id: "opencode_go".to_string(),
+            label: "OpenCode Go".to_string(),
+            base_url: "https://opencode.ai/zen/go/v1".to_string(),
+            allow_base_url_edit: false,
+            models_endpoint: Some("/models".to_string()),
+            supports_structured_output: false,
+        },
+        PostProcessProvider {
             id: "anthropic".to_string(),
             label: "Anthropic".to_string(),
             base_url: "https://api.anthropic.com/v1".to_string(),
@@ -737,6 +796,9 @@ fn default_post_process_api_keys() -> SecretMap {
 fn default_model_for_provider(provider_id: &str) -> String {
     if provider_id == APPLE_INTELLIGENCE_PROVIDER_ID {
         return APPLE_INTELLIGENCE_DEFAULT_MODEL_ID.to_string();
+    }
+    if provider_id == "opencode_go" {
+        return "kimi-k3".to_string();
     }
     String::new()
 }
@@ -842,19 +904,23 @@ fn ensure_post_process_defaults(settings: &mut AppSettings) -> bool {
 }
 
 pub fn default_meeting_notes_prompt() -> String {
-    "You are a meeting note-taker. You will receive the raw transcript of a meeting or recording. Turn it into clear, useful notes.\n\n\
+    "You are an expert meeting analyst creating an exhaustive, reliable record from a raw transcript. Detail is more important than brevity. A reader who missed the meeting should understand the arguments, examples, evidence, decisions and next steps without opening the transcript.\n\n\
 Structure:\n\
-- Start with a short summary (2-4 sentences) of what this was about and what happened, under a '## Summary' heading.\n\
-- Then a '## Key points' section: short bullet points with the important topics, facts and numbers that came up.\n\
-- If any decisions were made, add a '## Decisions' section listing each one.\n\
-- If there are tasks, commitments or follow-ups, add a '## Action items' section listing each as '- **who**: what (deadline, if mentioned)'. Leave this section out if there are none.\n\n\
+- Start with '## Summary': one overview paragraph followed by 3-8 bold topic subheadings, each with a compact paragraph explaining the outcome and significance.\n\
+- Add '## Decisions': list every explicit decision, agreement, policy, boundary or resolved trade-off. For each, state what was decided and why. Leave this section out only when there truly were no decisions.\n\
+- Add '## Next steps': list every task, commitment, promised document, follow-up and unresolved question as '- [ ] **Owner**: action — deadline or timing'. Use **Unassigned** when the owner was not stated; never guess an owner.\n\
+- Add '## Detailed discussion': create one chronological bullet for every substantive topic or topic change. Start each bullet with a specific bold title, then explain who raised it, the context, arguments, examples, objections, figures and resulting conclusion. Preserve nuance and disagreement.\n\n\
 Rules:\n\
 - Write the notes strictly in English, no matter what language or mix of languages the transcript is in (Hindi, Urdu, Arabic or anything else) — translate everything into natural English.\n\
 - The transcript may contain English words written in another script (for example English spelled in Devanagari letters). Read those as English and normalize them.\n\
 - Focus on the work. Keep everything genuinely work-related, including long discussions, debates and reasoning — those matter. Leave out personal chatter, jokes and off-topic tangents entirely.\n\
-- Be concise and factual. Never invent anything that is not in the transcript.\n\
+- Be comprehensive and factual. Do not collapse distinct examples, customer stories, proposals or objections into a generic summary. Preserve all concrete names, roles, products, prices, percentages, dates, quantities and comparisons.\n\
+- Attribute important claims, proposals, objections and commitments to the named speaker when the transcript identifies them. If it only says Speaker 1/2/3, use that label; never infer a person's identity.\n\
+- Include timestamps only when they are present in the supplied transcript. Never estimate or fabricate timestamps.\n\
+- Never invent facts, agreement, owners, deadlines, motives or conclusions. Mark ambiguous wording as unclear rather than silently resolving it.\n\
 - Ignore small talk, filler words and obvious transcription errors.\n\
-- Format in Markdown: '## ' for section headings, '-' for bullets, and **bold** for names, dates and amounts.\n\
+- Scale the output to the meeting: long meetings should produce long notes. Aim to cover every meaningful 3-5 minute segment or topic shift, without repeating the same fact.\n\
+- Format in Markdown: '## ' for section headings, '-' for bullets, '- [ ]' for next steps, and **bold** for topic labels, names, dates and amounts.\n\
 - Output only the notes — no preamble, no closing remarks."
         .to_string()
 }
@@ -919,6 +985,22 @@ pub fn get_default_settings() -> AppSettings {
             current_binding: default_meeting_shortcut.to_string(),
         },
     );
+    #[cfg(target_os = "macos")]
+    let default_execute_task_shortcut = "option+ctrl+space";
+    #[cfg(not(target_os = "macos"))]
+    let default_execute_task_shortcut = "ctrl+alt+space";
+
+    bindings.insert(
+        "execute_task".to_string(),
+        ShortcutBinding {
+            id: "execute_task".to_string(),
+            name: "Execute Task".to_string(),
+            description: "Speak a task — add todos, calendar events, draft or send emails — and it happens in the background."
+                .to_string(),
+            default_binding: default_execute_task_shortcut.to_string(),
+            current_binding: default_execute_task_shortcut.to_string(),
+        },
+    );
     bindings.insert(
         "cancel".to_string(),
         ShortcutBinding {
@@ -975,6 +1057,13 @@ pub fn get_default_settings() -> AppSettings {
         meeting_notes_prompt: default_meeting_notes_prompt(),
         diarization_enabled: false,
         meeting_radar_enabled: false,
+        composio_api_key: SecretString::default(),
+        composio_gdocs_auth_config_id: String::new(),
+        composio_gdocs_account_id: String::new(),
+        composio_gmail_auth_config_id: String::new(),
+        composio_gmail_account_id: String::new(),
+        gmail_contacts: HashMap::new(),
+        gmail_signature_name: String::new(),
         app_language: default_app_language(),
         theme: default_theme(),
         experimental_enabled: false,
@@ -1164,6 +1253,16 @@ fn apply_settings_migrations(
     if settings
         .meeting_notes_prompt
         .contains("Write in the same language as the transcript.")
+    {
+        settings.meeting_notes_prompt = default_meeting_notes_prompt();
+        updated = true;
+    }
+
+    // Third prompt upgrade: replace the shipped concise default with the
+    // exhaustive Gemini-style record. User-edited prompts remain untouched.
+    if settings
+        .meeting_notes_prompt
+        .contains("Be concise and factual. Never invent anything")
     {
         settings.meeting_notes_prompt = default_meeting_notes_prompt();
         updated = true;
@@ -1660,6 +1759,28 @@ mod tests {
         assert!(!debug_output.contains("sk-proj-secret-key-12345"));
         assert!(!debug_output.contains("sk-ant-secret-key-67890"));
         assert!(debug_output.contains("[REDACTED]"));
+    }
+
+    #[test]
+    fn concise_default_meeting_prompt_migrates_to_detailed_notes() {
+        let mut settings = get_default_settings();
+        settings.meeting_notes_prompt =
+            "Be concise and factual. Never invent anything that is not in the transcript."
+                .to_string();
+        let raw = serde_json::json!({
+            "settings_schema_version": CURRENT_SETTINGS_SCHEMA_VERSION,
+            "onboarding_completed": true,
+            "whats_new_last_seen_version": default_whats_new_last_seen_version(),
+            "meeting_notes_prompt": settings.meeting_notes_prompt,
+        });
+
+        assert!(apply_settings_migrations(&mut settings, &raw));
+        assert!(settings
+            .meeting_notes_prompt
+            .contains("## Detailed discussion"));
+        assert!(settings
+            .meeting_notes_prompt
+            .contains("Detail is more important than brevity"));
     }
 
     #[test]

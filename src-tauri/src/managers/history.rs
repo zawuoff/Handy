@@ -63,6 +63,15 @@ static MIGRATIONS: &[M] = &[
     // Notes the user jotted live during the meeting; kept verbatim as an
     // anchor for note generation. Internal (not on HistoryEntry).
     M::up("ALTER TABLE transcription_history ADD COLUMN live_notes TEXT;"),
+    // Google Doc id this entry was synced to via Composio (None = never synced).
+    M::up("ALTER TABLE transcription_history ADD COLUMN gdoc_id TEXT;"),
+    // One-time flag for the "I'll email you that" Gmail-draft pass. Backfill
+    // mirrors the action-items migration: meetings that predate the feature
+    // must never suddenly draft emails on a regenerate.
+    M::up(
+        "ALTER TABLE transcription_history ADD COLUMN email_drafts_organized BOOLEAN NOT NULL DEFAULT 0;
+         UPDATE transcription_history SET email_drafts_organized = 1 WHERE source = 'meeting';",
+    ),
 ];
 
 /// Where a history entry came from. Stored as TEXT so future sources
@@ -105,6 +114,8 @@ pub struct HistoryEntry {
     pub ai_notes: Option<String>,
     /// The user's own notes for this entry.
     pub user_notes: Option<String>,
+    /// Google Doc this entry was synced to (None = never synced).
+    pub gdoc_id: Option<String>,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Type)]
@@ -282,6 +293,7 @@ impl HistoryManager {
             source: row.get("source")?,
             ai_notes: row.get("ai_notes")?,
             user_notes: row.get("user_notes")?,
+            gdoc_id: row.get("gdoc_id")?,
         })
     }
 
@@ -402,6 +414,7 @@ impl HistoryManager {
             source: source.to_string(),
             ai_notes: None,
             user_notes: None,
+            gdoc_id: None,
         };
 
         debug!("Saved history entry with id {}", entry.id);
@@ -449,7 +462,7 @@ impl HistoryManager {
 
         let entry = conn
             .query_row(
-                "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested, source, ai_notes, user_notes
+                "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested, source, ai_notes, user_notes, gdoc_id
                  FROM transcription_history WHERE id = ?1",
                 params![id],
                 Self::map_history_entry,
@@ -507,6 +520,49 @@ impl HistoryManager {
         if updated == 0 {
             return Err(anyhow!("History entry {} not found", id));
         }
+        drop(conn);
+        self.fetch_and_emit_updated(id)
+    }
+
+    /// Remember which Google Doc an entry was synced to and notify the UI.
+    pub fn set_gdoc_id(&self, id: i64, gdoc_id: String) -> Result<HistoryEntry> {
+        let conn = self.get_connection()?;
+        let updated = conn.execute(
+            "UPDATE transcription_history SET gdoc_id = ?1 WHERE id = ?2",
+            params![gdoc_id, id],
+        )?;
+        if updated == 0 {
+            return Err(anyhow!("History entry {} not found", id));
+        }
+        drop(conn);
+        self.fetch_and_emit_updated(id)
+    }
+
+    /// Replace "Speaker N" labels with user-assigned names across the
+    /// transcript, the generated notes, and the user's edited note body
+    /// (the note view shows user_notes when present, so it must be
+    /// rewritten too). One UPDATE, one Updated event.
+    pub fn rename_speakers(
+        &self,
+        id: i64,
+        names: &std::collections::HashMap<i32, String>,
+    ) -> Result<HistoryEntry> {
+        let entry = self
+            .get_entry_by_id_sync(id)?
+            .ok_or_else(|| anyhow!("History entry {} not found", id))?;
+        let rename = |text: &str| crate::diarization::apply_speaker_names(text, names);
+        let conn = self.get_connection()?;
+        conn.execute(
+            "UPDATE transcription_history
+             SET transcription_text = ?1, ai_notes = ?2, user_notes = ?3
+             WHERE id = ?4",
+            params![
+                rename(&entry.transcription_text),
+                entry.ai_notes.as_deref().map(rename),
+                entry.user_notes.as_deref().map(rename),
+                id
+            ],
+        )?;
         drop(conn);
         self.fetch_and_emit_updated(id)
     }
@@ -618,6 +674,18 @@ impl HistoryManager {
         Ok(updated == 1)
     }
 
+    /// Same one-shot claim as action items, for the Gmail-draft pass:
+    /// commitments spotted in a meeting must draft each email exactly once.
+    pub fn try_claim_email_drafts(&self, id: i64) -> Result<bool> {
+        let conn = self.get_connection()?;
+        let updated = conn.execute(
+            "UPDATE transcription_history SET email_drafts_organized = 1
+             WHERE id = ?1 AND email_drafts_organized = 0",
+            params![id],
+        )?;
+        Ok(updated == 1)
+    }
+
     fn map_ask_session(row: &rusqlite::Row<'_>) -> rusqlite::Result<AskSession> {
         Ok(AskSession {
             id: row.get("id")?,
@@ -665,6 +733,43 @@ impl HistoryManager {
             .query_map([limit.min(100) as i64], Self::map_ask_session)?
             .collect::<std::result::Result<Vec<_>, _>>()?;
         Ok(sessions)
+    }
+
+    /// The newest meetings that have notes (user-edited preferred, else AI),
+    /// for the task key's meeting-notes context: (title, local datetime, body).
+    pub fn recent_meeting_notes(&self, limit: usize) -> Result<Vec<(String, String, String)>> {
+        let conn = self.get_connection()?;
+        let mut stmt = conn.prepare(
+            "SELECT title, timestamp, ai_notes, user_notes FROM transcription_history
+             WHERE source = 'meeting' ORDER BY id DESC LIMIT ?1",
+        )?;
+        let rows = stmt.query_map([limit.min(10) as i64], |row| {
+            let title: String = row.get(0)?;
+            let timestamp: i64 = row.get(1)?;
+            let ai_notes: Option<String> = row.get(2)?;
+            let user_notes: Option<String> = row.get(3)?;
+            Ok((title, timestamp, ai_notes, user_notes))
+        })?;
+        let mut out = Vec::new();
+        for row in rows {
+            let (title, timestamp, ai_notes, user_notes) = row?;
+            let body = match user_notes {
+                Some(text) if !text.trim().is_empty() => text,
+                _ => ai_notes.unwrap_or_default(),
+            };
+            if body.trim().is_empty() {
+                continue;
+            }
+            let date = chrono::DateTime::from_timestamp(timestamp, 0)
+                .map(|utc| {
+                    utc.with_timezone(&chrono::Local)
+                        .format("%Y-%m-%d %H:%M")
+                        .to_string()
+                })
+                .unwrap_or_else(|| timestamp.to_string());
+            out.push((title, date, body));
+        }
+        Ok(out)
     }
 
     pub fn get_ask_session(&self, id: i64) -> Result<Option<AskSession>> {
@@ -940,7 +1045,7 @@ impl HistoryManager {
             (Some(cursor_id), Some(lim)) => {
                 let fetch_count = (lim + 1) as i64;
                 let mut stmt = conn.prepare(
-                    "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested, source, ai_notes, user_notes
+                    "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested, source, ai_notes, user_notes, gdoc_id
                      FROM transcription_history
                      WHERE id < ?1
                      ORDER BY id DESC
@@ -954,7 +1059,7 @@ impl HistoryManager {
             (None, Some(lim)) => {
                 let fetch_count = (lim + 1) as i64;
                 let mut stmt = conn.prepare(
-                    "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested, source, ai_notes, user_notes
+                    "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested, source, ai_notes, user_notes, gdoc_id
                      FROM transcription_history
                      ORDER BY id DESC
                      LIMIT ?1",
@@ -966,7 +1071,7 @@ impl HistoryManager {
             }
             (_, None) => {
                 let mut stmt = conn.prepare(
-                    "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested, source, ai_notes, user_notes
+                    "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested, source, ai_notes, user_notes, gdoc_id
                      FROM transcription_history
                      ORDER BY id DESC",
                 )?;
@@ -999,7 +1104,7 @@ impl HistoryManager {
             (Some(cursor_id), Some(lim)) => {
                 let fetch_count = (lim + 1) as i64;
                 let mut stmt = conn.prepare(
-                    "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested, source, ai_notes, user_notes
+                    "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested, source, ai_notes, user_notes, gdoc_id
                      FROM transcription_history
                      WHERE source = 'meeting' AND id < ?1
                      ORDER BY id DESC
@@ -1013,7 +1118,7 @@ impl HistoryManager {
             (None, Some(lim)) => {
                 let fetch_count = (lim + 1) as i64;
                 let mut stmt = conn.prepare(
-                    "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested, source, ai_notes, user_notes
+                    "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested, source, ai_notes, user_notes, gdoc_id
                      FROM transcription_history
                      WHERE source = 'meeting'
                      ORDER BY id DESC
@@ -1026,7 +1131,7 @@ impl HistoryManager {
             }
             (_, None) => {
                 let mut stmt = conn.prepare(
-                    "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested, source, ai_notes, user_notes
+                    "SELECT id, file_name, timestamp, saved, title, transcription_text, post_processed_text, post_process_prompt, post_process_requested, source, ai_notes, user_notes, gdoc_id
                      FROM transcription_history
                      WHERE source = 'meeting'
                      ORDER BY id DESC",
@@ -1061,7 +1166,8 @@ impl HistoryManager {
                 post_process_requested,
                 source,
                 ai_notes,
-                user_notes
+                user_notes,
+                gdoc_id
              FROM transcription_history
              ORDER BY timestamp DESC
              LIMIT 1",
@@ -1091,7 +1197,8 @@ impl HistoryManager {
                 post_process_requested,
                 source,
                 ai_notes,
-                user_notes
+                user_notes,
+                gdoc_id
              FROM transcription_history
              WHERE transcription_text != ''
              ORDER BY timestamp DESC
@@ -1152,7 +1259,8 @@ impl HistoryManager {
                 post_process_requested,
                 source,
                 ai_notes,
-                user_notes
+                user_notes,
+                gdoc_id
              FROM transcription_history
              WHERE id = ?1",
         )?;
@@ -1352,7 +1460,8 @@ mod tests {
                 post_process_requested BOOLEAN NOT NULL DEFAULT 0,
                 source TEXT NOT NULL DEFAULT 'dictation',
                 ai_notes TEXT,
-                user_notes TEXT
+                user_notes TEXT,
+                gdoc_id TEXT
             );",
         )
         .expect("create transcription_history table");

@@ -135,6 +135,59 @@ struct ChatMessageResponse {
     content: Option<String>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ApiProtocol {
+    ChatCompletions,
+    Responses,
+    AnthropicMessages,
+}
+
+fn api_protocol(provider: &PostProcessProvider, model: &str) -> ApiProtocol {
+    if !provider.base_url.contains("opencode.ai/zen/go/v1") {
+        return ApiProtocol::ChatCompletions;
+    }
+
+    match model {
+        "grok-4.6" | "gpt-5.6-luna" | "muse-spark-1.2-contributor" => ApiProtocol::Responses,
+        "minimax-m3" | "minimax-m2.7" | "minimax-m2.5" | "qwen3.8-max" | "qwen3.7-max"
+        | "qwen3.7-plus" | "qwen3.6-plus" => ApiProtocol::AnthropicMessages,
+        _ => ApiProtocol::ChatCompletions,
+    }
+}
+
+fn response_text(value: &Value) -> Option<String> {
+    if let Some(text) = value.get("output_text").and_then(Value::as_str) {
+        return Some(text.to_string());
+    }
+
+    let text = value
+        .get("output")?
+        .as_array()?
+        .iter()
+        .flat_map(|item| {
+            item.get("content")
+                .and_then(Value::as_array)
+                .into_iter()
+                .flatten()
+        })
+        .filter_map(|part| part.get("text").and_then(Value::as_str))
+        .collect::<Vec<_>>()
+        .join("");
+    (!text.is_empty()).then_some(text)
+}
+
+fn anthropic_text(value: &Value) -> Option<String> {
+    let text = value
+        .get("content")?
+        .as_array()?
+        .iter()
+        .filter(|part| part.get("type").and_then(Value::as_str) == Some("text"))
+        .filter_map(|part| part.get("text").and_then(Value::as_str))
+        .collect::<Vec<_>>()
+        .join("");
+    (!text.is_empty()).then_some(text)
+}
+
 /// Build headers for API requests based on provider type
 fn build_headers(provider: &PostProcessProvider, api_key: &str) -> Result<HeaderMap, String> {
     let mut headers = HeaderMap::new();
@@ -241,7 +294,7 @@ fn reqwest_error_kinds(error: &reqwest::Error) -> String {
     }
 }
 
-fn sanitized_url(url: &reqwest::Url) -> String {
+pub(crate) fn sanitized_url(url: &reqwest::Url) -> String {
     let mut url = url.clone();
 
     // Custom endpoints should not contain credentials or query-string tokens,
@@ -262,7 +315,7 @@ fn sanitized_url_for_log(url: &str) -> String {
         .unwrap_or_else(|_| "<invalid URL>".to_string())
 }
 
-fn report_reqwest_error(context: &str, error: &reqwest::Error) -> String {
+pub(crate) fn report_reqwest_error(context: &str, error: &reqwest::Error) -> String {
     let kinds = reqwest_error_kinds(error);
     let url = error
         .url()
@@ -335,6 +388,32 @@ pub async fn send_chat_completion_with_schema(
     json_schema: Option<Value>,
     disable_reasoning: bool,
 ) -> Result<Option<String>, String> {
+    match api_protocol(provider, model) {
+        ApiProtocol::Responses => {
+            return send_responses_completion(
+                provider,
+                api_key,
+                model,
+                user_content,
+                system_prompt,
+                json_schema,
+            )
+            .await;
+        }
+        ApiProtocol::AnthropicMessages => {
+            return send_anthropic_completion(
+                provider,
+                api_key,
+                model,
+                user_content,
+                system_prompt,
+                json_schema,
+            )
+            .await;
+        }
+        ApiProtocol::ChatCompletions => {}
+    }
+
     let base_url = provider.base_url.trim_end_matches('/');
     let url = format!("{}/chat/completions", base_url);
 
@@ -461,6 +540,98 @@ pub async fn send_chat_completion_with_schema(
         .and_then(|choice| choice.message.content.clone()))
 }
 
+async fn send_responses_completion(
+    provider: &PostProcessProvider,
+    api_key: String,
+    model: &str,
+    user_content: String,
+    system_prompt: Option<String>,
+    json_schema: Option<Value>,
+) -> Result<Option<String>, String> {
+    let url = format!("{}/responses", provider.base_url.trim_end_matches('/'));
+    let client = create_client(provider, &api_key)?;
+    let mut body = serde_json::json!({
+        "model": model,
+        "input": user_content,
+        "store": false
+    });
+    if let Some(system) = system_prompt {
+        body["instructions"] = Value::String(system);
+    }
+    if let Some(schema) = json_schema {
+        body["text"] = serde_json::json!({
+            "format": {
+                "type": "json_schema",
+                "name": "transcription_output",
+                "strict": true,
+                "schema": schema
+            }
+        });
+    }
+
+    let response = client
+        .post(&url)
+        .json(&body)
+        .send()
+        .await
+        .map_err(|e| report_reqwest_error("Responses API request failed", &e))?;
+    let status = response.status();
+    if !status.is_success() {
+        let error_text = response.text().await.unwrap_or_default();
+        return Err(format!(
+            "Responses API request failed with status {status}: {error_text}"
+        ));
+    }
+    let value: Value = response
+        .json()
+        .await
+        .map_err(|e| report_reqwest_error("Failed to parse Responses API response", &e))?;
+    Ok(response_text(&value))
+}
+
+async fn send_anthropic_completion(
+    provider: &PostProcessProvider,
+    api_key: String,
+    model: &str,
+    user_content: String,
+    system_prompt: Option<String>,
+    json_schema: Option<Value>,
+) -> Result<Option<String>, String> {
+    let url = format!("{}/messages", provider.base_url.trim_end_matches('/'));
+    let client = create_client(provider, &api_key)?;
+    let mut system = system_prompt.unwrap_or_default();
+    if let Some(schema) = json_schema {
+        system.push_str("\n\nReturn only JSON matching this schema exactly:\n");
+        system.push_str(&schema.to_string());
+    }
+    let body = serde_json::json!({
+        "model": model,
+        "max_tokens": 16384,
+        "system": system,
+        "messages": [{"role": "user", "content": user_content}],
+        "stream": false
+    });
+
+    let response = client
+        .post(&url)
+        .json(&body)
+        .send()
+        .await
+        .map_err(|e| report_reqwest_error("Messages API request failed", &e))?;
+    let status = response.status();
+    if !status.is_success() {
+        let error_text = response.text().await.unwrap_or_default();
+        return Err(format!(
+            "Messages API request failed with status {status}: {error_text}"
+        ));
+    }
+    let value: Value = response
+        .json()
+        .await
+        .map_err(|e| report_reqwest_error("Failed to parse Messages API response", &e))?;
+    Ok(anthropic_text(&value))
+}
+
 /// Fetch available models from an OpenAI-compatible API
 /// Returns a list of model IDs
 pub async fn fetch_models(
@@ -562,6 +733,35 @@ mod tests {
             models_endpoint: None,
             supports_structured_output: false,
         }
+    }
+
+    #[test]
+    fn opencode_go_routes_models_to_their_documented_protocols() {
+        let provider = provider("custom", "https://opencode.ai/zen/go/v1");
+        assert_eq!(
+            api_protocol(&provider, "gpt-5.6-luna"),
+            ApiProtocol::Responses
+        );
+        assert_eq!(
+            api_protocol(&provider, "qwen3.8-max"),
+            ApiProtocol::AnthropicMessages
+        );
+        assert_eq!(
+            api_protocol(&provider, "kimi-k3"),
+            ApiProtocol::ChatCompletions
+        );
+    }
+
+    #[test]
+    fn extracts_text_from_responses_and_messages_payloads() {
+        let responses = serde_json::json!({
+            "output": [{"content": [{"type": "output_text", "text": "Detailed notes"}]}]
+        });
+        let messages = serde_json::json!({
+            "content": [{"type": "text", "text": "Detailed notes"}]
+        });
+        assert_eq!(response_text(&responses).as_deref(), Some("Detailed notes"));
+        assert_eq!(anthropic_text(&messages).as_deref(), Some("Detailed notes"));
     }
 
     fn request_json(reasoning: ReasoningParams) -> Value {

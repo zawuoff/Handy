@@ -17,7 +17,9 @@
     "meetingDiscard": "録音を破棄",
     "meetingListening": "聞き取り中…",
     "radarPrompt": "通話中のようです。ミーティングとして録音しますか？",
-    "radarRecord": "録音"
+    "radarRecord": "録音",
+    "tasksDone": "Tasks done",
+    "tasksFailed": "Task failed"
   },
   "sidebar": {
     "general": "一般",
@@ -27,7 +29,8 @@
     "history": "履歴",
     "debug": "デバッグ",
     "about": "概要",
-    "notes": "ノート"
+    "notes": "ノート",
+    "integrations": "Integrations"
   },
   "onboarding": {
     "subtitle": "開始するには、文字起こしのモデルを選択してください",
@@ -214,6 +217,10 @@
           "meeting": {
             "name": "ミーティングモードのショートカット",
             "description": "ミーティングセッションを開始・停止します。文字起こしは貼り付けられず履歴に保存され、削除するまで残ります。"
+          },
+          "execute_task": {
+            "name": "Task key",
+            "description": "Speak a task — add todos, calendar events, draft or send emails — and it happens in the background."
           }
         },
         "errors": {
@@ -639,6 +646,40 @@
       "description": "会議の文字起こしで話者を区別します（話者1、話者2、…）。初回に小さなローカルモデル（約140MB）をダウンロードします。",
       "downloading": "話者モデルをダウンロード中… {{percent}}%",
       "downloadFailed": "話者モデルのダウンロードに失敗しました。接続を確認して再度オンにしてください。"
+    },
+    "integrations": {
+      "composio": {
+        "title": "Composio"
+      },
+      "apiKey": {
+        "title": "API key",
+        "description": "Your Composio API key, used to connect apps like Google Docs. Get one at composio.dev.",
+        "placeholder": "Paste your Composio API key"
+      },
+      "gdocs": {
+        "title": "Google Docs",
+        "description": "Connect your Google account so your meeting notes can be saved to Google Docs."
+      },
+      "connect": "Connect",
+      "statusNotConnected": "Not connected",
+      "statusPending": "Waiting for approval in your browser…",
+      "statusConnected": "Connected",
+      "gmail": {
+        "title": "Gmail",
+        "description": "Connect Gmail so Noted can create email drafts for you — nothing is ever sent without you."
+      },
+      "contacts": {
+        "title": "Email contacts",
+        "description": "Names you can speak with the task key — \"send an email to John…\" uses these addresses.",
+        "namePlaceholder": "Name (e.g. John)",
+        "emailPlaceholder": "email@example.com",
+        "add": "Add"
+      },
+      "signature": {
+        "title": "Email sign-off name",
+        "description": "Used to sign emails written for you (e.g. \"Kind regards, <your name>\").",
+        "placeholder": "Your name"
+      }
     }
   },
   "footer": {
@@ -758,7 +799,16 @@
     "toolbarStrike": "取り消し線",
     "toolbarHeading": "見出し",
     "toolbarBullets": "箇条書き",
-    "toolbarNumbered": "番号付きリスト"
+    "toolbarNumbered": "番号付きリスト",
+    "syncAll": "Sync to Google Docs",
+    "syncToGdocs": "Sync to Google Docs",
+    "resyncToGdocs": "Re-sync to Google Docs",
+    "syncDoneToast": "Saved to Google Docs",
+    "syncAllToast": "Google Docs sync: {{synced}} saved, {{failed}} failed",
+    "renameFailedToast": "Couldn't rename the speakers",
+    "draftEmail": "Draft email",
+    "draftEmailDoneToast": "Draft created in Gmail",
+    "emailDraftsToast": "Drafted {{count}} promised email(s) in Gmail"
   },
   "shell": {
     "appName": "Noted",

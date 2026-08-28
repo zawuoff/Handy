@@ -60,6 +60,9 @@ enum TranscriptionOutput {
     Paste { post_process: bool },
     /// Meeting mode: save the transcript to history only.
     SaveToHistory,
+    /// Task key: hand the transcript to the AI task executor (todos,
+    /// calendar events, emails) instead of pasting anything.
+    ExecuteTask,
 }
 
 struct TranscribeAction {
@@ -76,6 +79,10 @@ impl TranscribeAction {
 
     fn is_meeting(&self) -> bool {
         matches!(self.output, TranscriptionOutput::SaveToHistory)
+    }
+
+    fn is_execute_task(&self) -> bool {
+        matches!(self.output, TranscriptionOutput::ExecuteTask)
     }
 }
 
@@ -716,6 +723,7 @@ impl ShortcutAction for TranscribeAction {
         let binding_id = binding_id.to_string(); // Clone binding_id for the async task
         let post_process = self.post_process();
         let is_meeting = self.is_meeting();
+        let is_execute_task = self.is_execute_task();
         let cancel_generation = rm.cancel_generation();
 
         tauri::async_runtime::spawn(async move {
@@ -913,6 +921,13 @@ impl ShortcutAction for TranscribeAction {
                             } else if processed.final_text.is_empty() {
                                 utils::hide_recording_overlay(&ah);
                                 set_tray_state(&ah, TrayIconState::Idle);
+                            } else if is_execute_task {
+                                // Task key: the AI interprets the request and
+                                // acts (todos, events, emails) in the
+                                // background; nothing is pasted.
+                                crate::tasks::spawn_execute(&ah, processed.final_text.clone());
+                                utils::hide_recording_overlay(&ah);
+                                set_tray_state(&ah, TrayIconState::Idle);
                             } else if let Some(command) =
                                 crate::voice_commands::parse(&processed.final_text)
                             {
@@ -1061,6 +1076,12 @@ pub static ACTION_MAP: Lazy<HashMap<String, Arc<dyn ShortcutAction>>> = Lazy::ne
         "transcribe_with_post_process".to_string(),
         Arc::new(TranscribeAction {
             output: TranscriptionOutput::Paste { post_process: true },
+        }) as Arc<dyn ShortcutAction>,
+    );
+    map.insert(
+        "execute_task".to_string(),
+        Arc::new(TranscribeAction {
+            output: TranscriptionOutput::ExecuteTask,
         }) as Arc<dyn ShortcutAction>,
     );
     map.insert(

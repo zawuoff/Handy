@@ -251,6 +251,19 @@ function App() {
     };
   }, [t]);
 
+  // Promises to email someone, spotted in the meeting, become Gmail drafts
+  // — announce how many are waiting for review.
+  useEffect(() => {
+    const unlisten = listen<{ count: number }>("email-drafts", (event) => {
+      toast.success(
+        t("notes.emailDraftsToast", { count: event.payload.count }),
+      );
+    });
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, [t]);
+
   // A meeting that could not be saved has no paste fallback; the backend
   // rescues the transcript to the clipboard (payload: whether that worked).
   useEffect(() => {

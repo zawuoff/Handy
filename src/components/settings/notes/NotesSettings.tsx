@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { ask } from "@tauri-apps/plugin-dialog";
@@ -7,13 +13,16 @@ import {
   ArrowLeft,
   Calendar,
   Check,
+  CloudUpload,
   Copy,
   HardDrive,
   Loader2,
+  Mail,
   Mic,
   RotateCcw,
   Sparkles,
   Trash2,
+  Users,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -24,6 +33,7 @@ import {
   type HistoryUpdatePayload,
 } from "@/bindings";
 import { useOsType } from "@/hooks/useOsType";
+import { useSettings } from "@/hooks/useSettings";
 import { RichNoteEditor } from "@/components/shell/RichNoteEditor";
 import { formatDateTime } from "@/utils/dateFormat";
 import { AudioPlayer, AudioPlayerGroup } from "../../ui/AudioPlayer";
@@ -95,9 +105,32 @@ const NoteDetail: React.FC<{
 }> = ({ entry, generating, onBack }) => {
   const { t, i18n } = useTranslation();
   const osType = useOsType();
+  const { getSetting } = useSettings();
   const [title, setTitle] = useState(entry.title);
   const [showTranscript, setShowTranscript] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [drafting, setDrafting] = useState(false);
+  const [showSpeakers, setShowSpeakers] = useState(false);
+  const [speakerDrafts, setSpeakerDrafts] = useState<Record<number, string>>(
+    {},
+  );
+
+  const gdocsConnected =
+    ((getSetting("composio_gdocs_account_id") as string) ?? "") !== "";
+  const gmailConnected =
+    ((getSetting("composio_gmail_account_id") as string) ?? "") !== "";
+
+  // Unnamed speakers left over from the meeting ("Speaker 2: …" paragraphs).
+  // Renaming removes the labels, so this empties — and the card hides —
+  // right after a successful save.
+  const speakerIds = useMemo(() => {
+    const ids = new Set<number>();
+    for (const match of entry.transcription_text.matchAll(/Speaker (\d+):/g)) {
+      ids.add(Number(match[1]));
+    }
+    return [...ids].sort((a, b) => a - b);
+  }, [entry.transcription_text]);
 
   // The note body is one editable document, Notion-style. Until the user
   // touches it, it mirrors the entry (their saved text, falling back to the
@@ -143,6 +176,48 @@ const NoteDetail: React.FC<{
     if (result.status !== "ok") {
       toast.error(t("notes.failedToast"));
     }
+  };
+
+  const syncNote = async () => {
+    setSyncing(true);
+    const result = await commands.syncNoteToGdocs(entry.id);
+    setSyncing(false);
+    if (result.status === "ok") {
+      toast.success(t("notes.syncDoneToast"));
+    } else {
+      toast.error(result.error);
+    }
+  };
+
+  const draftEmail = async () => {
+    setDrafting(true);
+    const result = await commands.draftNoteEmail(entry.id);
+    setDrafting(false);
+    if (result.status === "ok") {
+      toast.success(t("notes.draftEmailDoneToast"));
+    } else {
+      toast.error(result.error);
+    }
+  };
+
+  const saveSpeakerNames = async () => {
+    const names = speakerIds
+      .map((speaker) => ({
+        speaker,
+        name: (speakerDrafts[speaker] ?? "").trim(),
+      }))
+      .filter((n) => n.name);
+    if (names.length === 0) return;
+    // Drop any local draft first so a pending autosave can't write the old
+    // labels back over the rename; the Updated event brings the new body.
+    savedDoc.current = null;
+    setDraft(null);
+    const result = await commands.renameNoteSpeakers(entry.id, names);
+    if (result.status !== "ok") {
+      toast.error(t("notes.renameFailedToast"));
+      return;
+    }
+    setShowSpeakers(false);
   };
 
   const handleDelete = async () => {
@@ -246,6 +321,42 @@ const NoteDetail: React.FC<{
           />
         )}
         <Chip icon={<HardDrive size={12} />} label={t("notes.onThisDevice")} />
+        {gdocsConnected && (entry.ai_notes || entry.user_notes?.trim()) && (
+          <Chip
+            icon={
+              syncing ? (
+                <Loader2 size={12} className="animate-spin" />
+              ) : (
+                <CloudUpload size={12} />
+              )
+            }
+            label={
+              entry.gdoc_id ? t("notes.resyncToGdocs") : t("notes.syncToGdocs")
+            }
+            onClick={syncing ? undefined : syncNote}
+          />
+        )}
+        {gmailConnected && (entry.ai_notes || entry.user_notes?.trim()) && (
+          <Chip
+            icon={
+              drafting ? (
+                <Loader2 size={12} className="animate-spin" />
+              ) : (
+                <Mail size={12} />
+              )
+            }
+            label={t("notes.draftEmail")}
+            onClick={drafting ? undefined : draftEmail}
+          />
+        )}
+        {speakerIds.length > 0 && (
+          <Chip
+            icon={<Users size={12} />}
+            label={t("live.speakersButton", { count: speakerIds.length })}
+            active={showSpeakers}
+            onClick={() => setShowSpeakers((prev) => !prev)}
+          />
+        )}
         <span
           className={`inline-flex items-center gap-1 text-[11.5px] text-faint transition-opacity duration-300 ${
             saved ? "opacity-100" : "opacity-0"
@@ -265,6 +376,41 @@ const NoteDetail: React.FC<{
           }
         />
       </div>
+
+      {showSpeakers && speakerIds.length > 0 && (
+        <div className="ms-9 rounded-xl border border-border bg-card p-4 flex flex-col gap-2">
+          <span className="text-[11px] text-faint">
+            {t("live.speakersHint")}
+          </span>
+          {speakerIds.map((id) => (
+            <div key={id} className="flex items-center gap-2">
+              <span className="text-[11.5px] text-muted w-20 shrink-0">
+                {t("live.speakerN", { n: id })}
+              </span>
+              <input
+                className="flex-1 min-w-0 bg-card2 border border-border rounded-md px-2 py-1 text-[12.5px] outline-none focus:border-border-strong"
+                value={speakerDrafts[id] ?? ""}
+                onChange={(e) =>
+                  setSpeakerDrafts((prev) => ({
+                    ...prev,
+                    [id]: e.target.value,
+                  }))
+                }
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") saveSpeakerNames();
+                }}
+              />
+            </div>
+          ))}
+          <button
+            className="self-end flex items-center gap-1.5 text-[12px] font-medium text-accent hover:opacity-80 cursor-pointer"
+            onClick={saveSpeakerNames}
+          >
+            <Check size={13} />
+            {t("live.saveNames")}
+          </button>
+        </div>
+      )}
 
       {showTranscript && (
         <div className="ms-9 rounded-xl border border-border bg-card p-4 flex flex-col gap-3">
@@ -293,11 +439,32 @@ export const NotesSettings: React.FC<{
   openNote?: { id: number } | null;
 }> = ({ openNote }) => {
   const { t, i18n } = useTranslation();
+  const { getSetting } = useSettings();
   const [entries, setEntries] = useState<HistoryEntry[]>([]);
   const [hasMore, setHasMore] = useState(false);
   const [loading, setLoading] = useState(true);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [statusById, setStatusById] = useState<Record<number, NotesStatus>>({});
+  const [syncingAll, setSyncingAll] = useState(false);
+
+  const gdocsConnected =
+    ((getSetting("composio_gdocs_account_id") as string) ?? "") !== "";
+
+  const syncAll = async () => {
+    setSyncingAll(true);
+    const result = await commands.syncAllNotesToGdocs();
+    setSyncingAll(false);
+    if (result.status === "ok") {
+      toast.success(
+        t("notes.syncAllToast", {
+          synced: result.data.synced,
+          failed: result.data.failed,
+        }),
+      );
+    } else {
+      toast.error(result.error);
+    }
+  };
 
   // Follow deep links from the Home view (a fresh object per request, so
   // opening the same note twice still re-selects it).
@@ -394,7 +561,25 @@ export const NotesSettings: React.FC<{
 
   return (
     <div className="max-w-3xl w-full mx-auto flex flex-col gap-4">
-      <h2 className="font-serif text-2xl font-medium">{t("notes.title")}</h2>
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="font-serif text-2xl font-medium">{t("notes.title")}</h2>
+        {gdocsConnected && entries.length > 0 && (
+          <Button
+            variant="secondary"
+            size="sm"
+            className="flex items-center gap-1.5"
+            disabled={syncingAll}
+            onClick={syncAll}
+          >
+            {syncingAll ? (
+              <Loader2 size={13} className="animate-spin" />
+            ) : (
+              <CloudUpload size={13} />
+            )}
+            {t("notes.syncAll")}
+          </Button>
+        )}
+      </div>
       {loading ? (
         <p className="text-sm text-muted">{t("notes.loading")}</p>
       ) : entries.length === 0 ? (

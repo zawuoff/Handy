@@ -61,6 +61,31 @@ pub async fn set_history_entry_user_notes(
         .map_err(|e| e.to_string())
 }
 
+/// One speaker id → name assignment for a post-hoc rename.
+#[derive(serde::Deserialize, specta::Type)]
+pub struct SpeakerName {
+    pub speaker: i32,
+    pub name: String,
+}
+
+/// Replace "Speaker N" labels with real names across an entry's transcript,
+/// generated notes and edited note body. Blank names are skipped.
+#[tauri::command]
+#[specta::specta]
+pub async fn rename_note_speakers(
+    _app: AppHandle,
+    history_manager: State<'_, Arc<HistoryManager>>,
+    id: i64,
+    names: Vec<SpeakerName>,
+) -> Result<(), String> {
+    let names: std::collections::HashMap<i32, String> =
+        names.into_iter().map(|n| (n.speaker, n.name)).collect();
+    history_manager
+        .rename_speakers(id, &names)
+        .map(|_| ())
+        .map_err(|e| e.to_string())
+}
+
 /// (Re)generate AI notes for an entry in the background. Returns immediately;
 /// progress arrives via the `notes-status` event and the history `Updated`
 /// event once the notes are stored.

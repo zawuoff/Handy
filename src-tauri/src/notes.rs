@@ -170,6 +170,13 @@ async fn generate_and_store(app: &AppHandle, entry_id: i64) -> Result<(), String
     if let Err(err) = organize_action_items(app, entry_id, notes).await {
         debug!("Action-item extraction skipped for entry {entry_id}: {err}");
     }
+
+    // Third pass: promises to email someone something ("sure, I'll email you
+    // the quotation") become Gmail drafts, ready to review and send.
+    // Best-effort, same as action items.
+    if let Err(err) = draft_email_commitments(app, entry_id).await {
+        debug!("Email-draft pass skipped for entry {entry_id}: {err}");
+    }
     Ok(())
 }
 
@@ -233,6 +240,135 @@ fn normalized_title(title: &str) -> String {
         .split_whitespace()
         .collect::<Vec<_>>()
         .join(" ")
+}
+
+#[derive(serde::Deserialize)]
+struct EmailCommitment {
+    subject: String,
+    body: String,
+    #[serde(default)]
+    recipient_hint: Option<String>,
+}
+
+#[derive(Clone, serde::Serialize)]
+struct EmailDraftsEvent {
+    count: u32,
+}
+
+/// Scan the transcript for promises to email someone something and create a
+/// Gmail draft for each. Drafts never send themselves, so this is safe to
+/// run unattended; the user reviews them in Gmail.
+async fn draft_email_commitments(app: &AppHandle, entry_id: i64) -> Result<(), String> {
+    // Connection check BEFORE the claim: a meeting recorded before Gmail was
+    // connected keeps its claim, so a later regenerate can still draft.
+    let (composio_key, gmail_account) =
+        crate::composio::toolkit_credentials(app, crate::composio::TOOLKIT_GMAIL)?;
+
+    let hm = Arc::clone(&app.state::<Arc<HistoryManager>>());
+    // Atomic one-time claim (same pattern as action items): regenerations
+    // must never re-draft the same emails.
+    if !hm
+        .try_claim_email_drafts(entry_id)
+        .map_err(|e| e.to_string())?
+    {
+        return Err("email drafts already created".to_string());
+    }
+    let transcript = hm
+        .get_entry_by_id(entry_id)
+        .await
+        .map_err(|e| e.to_string())?
+        .ok_or("entry not found")?
+        .transcription_text;
+    if transcript.trim().is_empty() {
+        return Err("transcript is empty".to_string());
+    }
+
+    let settings = get_settings(app);
+    let provider = settings
+        .active_post_process_provider()
+        .cloned()
+        .ok_or("no provider configured")?;
+    let model = settings
+        .post_process_models
+        .get(&provider.id)
+        .cloned()
+        .unwrap_or_default();
+    if model.trim().is_empty() {
+        return Err("no model configured".to_string());
+    }
+    if provider.id == APPLE_INTELLIGENCE_PROVIDER_ID {
+        return Err("email drafting is not wired to Apple Intelligence".to_string());
+    }
+    let api_key = settings
+        .post_process_api_keys
+        .get(&provider.id)
+        .cloned()
+        .unwrap_or_default();
+    let disable_reasoning = matches!(provider.id.as_str(), "custom" | "openrouter");
+
+    let shape = r#"[{"subject": "short email subject", "body": "the drafted email text", "recipient_hint": "email address if one was said aloud, else null"}]"#;
+    let prompt = format!(
+        "You are reviewing a meeting transcript. Find every commitment a participant made \
+         to EMAIL or SEND something to someone after the meeting — for example one person \
+         asks \"can you email me the quotation details\" and another replies \"sure, I'll \
+         email it\".\n\
+         Respond with ONLY a JSON array, no prose and no markdown fence, shaped exactly like:\n\
+         {shape}\n\
+         Rules: write each body in English as a short, polite, ready-to-send email in first \
+         person; include the specific details promised where the transcript contains them, \
+         and a bracketed placeholder like [attach quotation] where something must be attached \
+         or filled in; never invent facts; one entry per distinct promised email — merge \
+         duplicates; return [] if nobody promised to email anything."
+    );
+
+    let raw = crate::llm_client::send_chat_completion_with_schema(
+        &provider,
+        api_key,
+        &model,
+        transcript,
+        Some(prompt),
+        None,
+        disable_reasoning,
+    )
+    .await?
+    .ok_or("empty extraction response")?;
+
+    // Tolerant parse, same as action items: outermost JSON array only.
+    let raw = strip_think_block(&raw);
+    let start = raw.find('[').ok_or("no JSON array in response")?;
+    let end = raw.rfind(']').ok_or("no JSON array in response")?;
+    let commitments: Vec<EmailCommitment> =
+        serde_json::from_str(&raw[start..=end]).map_err(|e| format!("bad JSON: {e}"))?;
+
+    let mut count = 0u32;
+    for commitment in commitments.into_iter().take(5) {
+        let subject = commitment.subject.trim();
+        let body = commitment.body.trim();
+        if subject.is_empty() || body.is_empty() {
+            continue;
+        }
+        let recipient = crate::composio::resolve_draft_recipient(
+            &composio_key,
+            &gmail_account,
+            commitment.recipient_hint.as_deref(),
+        )
+        .await?;
+        crate::composio::create_gmail_draft(
+            &composio_key,
+            &gmail_account,
+            &recipient,
+            subject,
+            body,
+        )
+        .await?;
+        count += 1;
+    }
+
+    if count > 0 {
+        let _ = app.emit("email-drafts", EmailDraftsEvent { count });
+        info!("Meeting {entry_id}: drafted {count} promised email(s) in Gmail");
+    }
+    Ok(())
 }
 
 async fn organize_action_items(app: &AppHandle, entry_id: i64, notes: &str) -> Result<(), String> {

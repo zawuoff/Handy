@@ -361,7 +361,10 @@ pub struct TranscriptionCoordinator {
 }
 
 pub fn is_transcribe_binding(id: &str) -> bool {
-    id == "transcribe" || id == "transcribe_with_post_process" || id == "meeting"
+    id == "transcribe"
+        || id == "transcribe_with_post_process"
+        || id == "meeting"
+        || id == "execute_task"
 }
 
 /// Bindings that always toggle regardless of the push-to-talk setting —

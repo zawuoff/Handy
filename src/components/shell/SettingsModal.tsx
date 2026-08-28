@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  Cable,
   Cog,
   FlaskConical,
   Info,
@@ -16,6 +17,7 @@ import {
   AdvancedSettings,
   DebugSettings,
   AboutSettings,
+  IntegrationsSettings,
   PostProcessingSettings,
   ModelsSettings,
   NotesStyleSettings,
@@ -28,6 +30,7 @@ type SettingsTab =
   | "models"
   | "advanced"
   | "postprocessing"
+  | "integrations"
   | "debug"
   | "about";
 
@@ -72,6 +75,13 @@ const TABS: {
     icon: Sparkles,
     component: PostProcessingSettings,
     enabled: (settings) => settings?.post_process_enabled ?? false,
+  },
+  {
+    id: "integrations",
+    labelKey: "sidebar.integrations",
+    icon: Cable,
+    component: IntegrationsSettings,
+    enabled: () => true,
   },
   {
     id: "debug",

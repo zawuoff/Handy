@@ -893,6 +893,99 @@ async changeMeetingNotesPromptSetting(prompt: string) : Promise<Result<null, str
     else return { status: "error", error: e  as any };
 }
 },
+/**
+ * Replace "Speaker N" labels with real names across an entry's transcript,
+ * generated notes and edited note body. Blank names are skipped.
+ */
+async renameNoteSpeakers(id: number, names: SpeakerName[]) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("rename_note_speakers", { id, names }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async changeComposioApiKeySetting(apiKey: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_composio_api_key_setting", { apiKey }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Start a toolkit's OAuth flow: create the auth config on first use, create
+ * a connected account, and return the URL the user must open in a browser
+ * to approve access. The frontend polls the status afterwards.
+ */
+async connectComposioToolkit(toolkit: string) : Promise<Result<string, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("connect_composio_toolkit", { toolkit }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Returns `not_connected` when no key/account is stored, otherwise the
+ * account's status string from Composio (`ACTIVE` once OAuth completes).
+ */
+async getComposioConnectionStatus(toolkit: string) : Promise<Result<string, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("get_composio_connection_status", { toolkit }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * "Draft email" button on a note: a Gmail draft with the note body (and the
+ * Google Doc link when one exists), addressed to the user to fill in.
+ */
+async draftNoteEmail(id: number) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("draft_note_email", { id }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async changeGmailContactsSetting(contacts: Partial<{ [key in string]: string }>) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_gmail_contacts_setting", { contacts }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async changeGmailSignatureNameSetting(name: string) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("change_gmail_signature_name_setting", { name }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+async syncNoteToGdocs(id: number) : Promise<Result<null, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("sync_note_to_gdocs", { id }) };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
+/**
+ * Sync every meeting note that has content, sequentially. Entries without
+ * a body yet (no notes generated) are skipped and not counted as failures.
+ */
+async syncAllNotesToGdocs() : Promise<Result<GdocsSyncSummary, string>> {
+    try {
+    return { status: "ok", data: await TAURI_INVOKE("sync_all_notes_to_gdocs") };
+} catch (e) {
+    if(e instanceof Error) throw e;
+    else return { status: "error", error: e  as any };
+}
+},
 async getMeetingState() : Promise<Result<MeetingState, string>> {
     try {
     return { status: "ok", data: await TAURI_INVOKE("get_meeting_state") };
@@ -1193,7 +1286,36 @@ selected_channel?: number | null; clamshell_microphone?: string | null; selected
 /**
  * System prompt used to turn a meeting transcript into notes.
  */
-meeting_notes_prompt?: string; meeting_radar_enabled?: boolean; diarization_enabled?: boolean; app_language?: string; theme?: Theme; experimental_enabled?: boolean; lazy_stream_close?: boolean; keyboard_implementation?: KeyboardImplementation; show_tray_icon?: boolean; paste_delay_ms?: number; paste_delay_after_ms?: number; 
+meeting_notes_prompt?: string; meeting_radar_enabled?: boolean;
+/**
+ * Composio API key for third-party integrations (Google Docs sync).
+ */
+composio_api_key?: string;
+/**
+ * Composio auth config id for the googledocs toolkit (created lazily).
+ */
+composio_gdocs_auth_config_id?: string;
+/**
+ * Composio connected account id for Google Docs (set after Connect).
+ */
+composio_gdocs_account_id?: string;
+/**
+ * Composio auth config id for the gmail toolkit (created lazily).
+ */
+composio_gmail_auth_config_id?: string;
+/**
+ * Composio connected account id for Gmail (set after Connect).
+ */
+composio_gmail_account_id?: string;
+/**
+ * Spoken-name → email address map for voice-commanded emails
+ * ("send an email to John…").
+ */
+gmail_contacts?: Partial<{ [key in string]: string }>;
+/**
+ * Name used to sign off emails written by the task key.
+ */
+gmail_signature_name?: string; diarization_enabled?: boolean; app_language?: string; theme?: Theme; experimental_enabled?: boolean; lazy_stream_close?: boolean; keyboard_implementation?: KeyboardImplementation; show_tray_icon?: boolean; paste_delay_ms?: number; paste_delay_after_ms?: number; 
 /**
  * Debug-gated ("beta") receipt-sequenced paste: restore the clipboard only
  * after the target app actually reads the transcript, instead of after a
@@ -1237,6 +1359,7 @@ source_entry_id: number | null }
 export type CalendarEvent = { summary: string; start_unix: number; end_unix: number; all_day: boolean }
 export type AskSession = { id: number; query: string; answer: string | null; created_at: number; provider_id: string | null }
 export type SearchHit = { entry_id: number; title: string; timestamp: number; snippet: string }
+export type GdocsSyncSummary = { synced: number; failed: number }
 export type GpuDeviceOption = { id: string; name: string; total_vram_mb: number }
 export type HistoryEntry = { id: number; file_name: string; timestamp: number; saved: boolean; title: string; transcription_text: string; post_processed_text: string | null; post_process_prompt: string | null; post_process_requested: boolean; source: string; 
 /**
@@ -1246,7 +1369,11 @@ ai_notes: string | null;
 /**
  * The user's own notes for this entry.
  */
-user_notes: string | null }
+user_notes: string | null;
+/**
+ * Google Doc this entry was synced to (None = never synced).
+ */
+gdoc_id: string | null }
 export type HistoryUpdatePayload = { action: "added"; entry: HistoryEntry } | { action: "updated"; entry: HistoryEntry } | { action: "deleted"; id: number } | { action: "toggled"; id: number }
 /**
  * Result of changing keyboard implementation
@@ -1377,6 +1504,10 @@ export type StreamTextEvent = { committed: string; tentative: string;
  * The last turn is the in-progress one and may still change speaker.
  */
 turns: SpeakerTurn[] }
+/**
+ * One speaker id → name assignment for a post-hoc rename.
+ */
+export type SpeakerName = { speaker: number; name: string }
 export type SpeakerTurn = { speaker: number; text: string; t_ms: number }
 /**
  * Semantic kind of "working" phase, used to localize the spinner label.

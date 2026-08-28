@@ -17,7 +17,9 @@
     "meetingDiscard": "Kaydı sil",
     "meetingListening": "Dinleniyor…",
     "radarPrompt": "Bir görüşme sürüyor gibi görünüyor — toplantı olarak kaydedilsin mi?",
-    "radarRecord": "Kaydet"
+    "radarRecord": "Kaydet",
+    "tasksDone": "Tasks done",
+    "tasksFailed": "Task failed"
   },
   "sidebar": {
     "general": "Genel",
@@ -27,7 +29,8 @@
     "history": "Geçmiş",
     "debug": "Hata Ayıklama",
     "about": "Hakkında",
-    "notes": "Notlar"
+    "notes": "Notlar",
+    "integrations": "Integrations"
   },
   "onboarding": {
     "subtitle": "Başlamak için bir transkripsiyon modeli seçin",
@@ -214,6 +217,10 @@
           "meeting": {
             "name": "Toplantı modu kısayolu",
             "description": "Bir toplantı oturumunu başlatır ve durdurur. Transkript yapıştırılmak yerine geçmişe kaydedilir ve siz silene kadar saklanır."
+          },
+          "execute_task": {
+            "name": "Task key",
+            "description": "Speak a task — add todos, calendar events, draft or send emails — and it happens in the background."
           }
         },
         "errors": {
@@ -639,6 +646,40 @@
       "description": "Toplantı transkriptlerinde konuşmacıları ayırt eder (Konuşmacı 1, Konuşmacı 2, …). İlk açılışta küçük bir yerel model (~140 MB) indirir.",
       "downloading": "Konuşmacı modeli indiriliyor… {{percent}}%",
       "downloadFailed": "Model indirilemedi — bağlantınızı kontrol edip yeniden açın."
+    },
+    "integrations": {
+      "composio": {
+        "title": "Composio"
+      },
+      "apiKey": {
+        "title": "API key",
+        "description": "Your Composio API key, used to connect apps like Google Docs. Get one at composio.dev.",
+        "placeholder": "Paste your Composio API key"
+      },
+      "gdocs": {
+        "title": "Google Docs",
+        "description": "Connect your Google account so your meeting notes can be saved to Google Docs."
+      },
+      "connect": "Connect",
+      "statusNotConnected": "Not connected",
+      "statusPending": "Waiting for approval in your browser…",
+      "statusConnected": "Connected",
+      "gmail": {
+        "title": "Gmail",
+        "description": "Connect Gmail so Noted can create email drafts for you — nothing is ever sent without you."
+      },
+      "contacts": {
+        "title": "Email contacts",
+        "description": "Names you can speak with the task key — \"send an email to John…\" uses these addresses.",
+        "namePlaceholder": "Name (e.g. John)",
+        "emailPlaceholder": "email@example.com",
+        "add": "Add"
+      },
+      "signature": {
+        "title": "Email sign-off name",
+        "description": "Used to sign emails written for you (e.g. \"Kind regards, <your name>\").",
+        "placeholder": "Your name"
+      }
     }
   },
   "footer": {
@@ -758,7 +799,16 @@
     "toolbarStrike": "Üstü çizili",
     "toolbarHeading": "Başlık",
     "toolbarBullets": "Madde işaretli liste",
-    "toolbarNumbered": "Numaralı liste"
+    "toolbarNumbered": "Numaralı liste",
+    "syncAll": "Sync to Google Docs",
+    "syncToGdocs": "Sync to Google Docs",
+    "resyncToGdocs": "Re-sync to Google Docs",
+    "syncDoneToast": "Saved to Google Docs",
+    "syncAllToast": "Google Docs sync: {{synced}} saved, {{failed}} failed",
+    "renameFailedToast": "Couldn't rename the speakers",
+    "draftEmail": "Draft email",
+    "draftEmailDoneToast": "Draft created in Gmail",
+    "emailDraftsToast": "Drafted {{count}} promised email(s) in Gmail"
   },
   "shell": {
     "appName": "Noted",
