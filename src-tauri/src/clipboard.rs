@@ -158,6 +158,47 @@ fn try_send_key_combo_linux(paste_method: &PasteMethod) -> Result<bool, String> 
     Ok(false)
 }
 
+/// Attempts to send the auto-submit key (Enter / Ctrl+Enter / Cmd+Enter) using
+/// Linux-native tools, mirroring `try_send_key_combo_linux`.
+///
+/// Auto-submit is part of the same dictation flow as the paste itself, so it must
+/// avoid the enigo virtual-keyboard path on Wayland for the same reasons the paste
+/// does (see `try_send_key_combo_linux`). Returns `Ok(true)` if a native tool
+/// handled it, `Ok(false)` to fall back to enigo.
+#[cfg(target_os = "linux")]
+fn try_send_submit_key_linux(key: AutoSubmitKey) -> Result<bool, String> {
+    if is_wayland() {
+        if !is_kde_wayland() && !is_gnome_wayland() && is_wtype_available() {
+            info!("Using wtype for auto-submit key");
+            send_submit_key_via_wtype(key)?;
+            return Ok(true);
+        }
+        if is_dotool_available() {
+            info!("Using dotool for auto-submit key");
+            send_submit_key_via_dotool(key)?;
+            return Ok(true);
+        }
+        if is_ydotool_available() {
+            info!("Using ydotool for auto-submit key");
+            send_submit_key_via_ydotool(key)?;
+            return Ok(true);
+        }
+    } else {
+        if is_xdotool_available() {
+            info!("Using xdotool for auto-submit key");
+            send_submit_key_via_xdotool(key)?;
+            return Ok(true);
+        }
+        if is_ydotool_available() {
+            info!("Using ydotool for auto-submit key");
+            send_submit_key_via_ydotool(key)?;
+            return Ok(true);
+        }
+    }
+
+    Ok(false)
+}
+
 /// Attempts to type text directly using Linux-native tools.
 /// Returns `Ok(true)` if a native tool handled it, `Ok(false)` to fall back to enigo.
 #[cfg(target_os = "linux")]
@@ -677,6 +718,115 @@ fn send_key_combo_via_xdotool(paste_method: &PasteMethod) -> Result<(), String> 
     Ok(())
 }
 
+/// Send the auto-submit key via wtype on Wayland.
+#[cfg(target_os = "linux")]
+fn send_submit_key_via_wtype(key: AutoSubmitKey) -> Result<(), String> {
+    let args: Vec<&str> = match key {
+        AutoSubmitKey::Enter => vec!["-k", "Return"],
+        AutoSubmitKey::CtrlEnter => vec!["-M", "ctrl", "-k", "Return", "-m", "ctrl"],
+        // wtype names the Super/Meta modifier "logo".
+        AutoSubmitKey::CmdEnter => vec!["-M", "logo", "-k", "Return", "-m", "logo"],
+    };
+
+    let output = Command::new("wtype")
+        .args(&args)
+        .output()
+        .map_err(|e| format!("Failed to execute wtype: {}", e))?;
+
+    if !output.status.success() {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        return Err(format!("wtype failed: {}", stderr));
+    }
+
+    Ok(())
+}
+
+/// Send the auto-submit key via dotool.
+#[cfg(target_os = "linux")]
+fn send_submit_key_via_dotool(key: AutoSubmitKey) -> Result<(), String> {
+    let command = match key {
+        AutoSubmitKey::Enter => "echo key enter | dotool",
+        AutoSubmitKey::CtrlEnter => "echo key ctrl+enter | dotool",
+        AutoSubmitKey::CmdEnter => "echo key super+enter | dotool",
+    };
+    use std::process::Stdio;
+    let status = Command::new("sh")
+        .arg("-c")
+        .arg(command)
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .status()
+        .map_err(|e| format!("Failed to execute dotool: {}", e))?;
+    if !status.success() {
+        return Err("dotool failed".into());
+    }
+
+    Ok(())
+}
+
+#[cfg(target_os = "linux")]
+fn ydotool_submit_key_args(
+    key: AutoSubmitKey,
+    syntax: YdotoolKeySyntax,
+) -> &'static [&'static str] {
+    // Raw evdev keycodes: KEY_ENTER=28, KEY_LEFTCTRL=29, KEY_LEFTMETA=125.
+    match (key, syntax) {
+        (AutoSubmitKey::Enter, YdotoolKeySyntax::Symbolic) => &["key", "enter"][..],
+        (AutoSubmitKey::CtrlEnter, YdotoolKeySyntax::Symbolic) => &["key", "ctrl+enter"][..],
+        (AutoSubmitKey::CmdEnter, YdotoolKeySyntax::Symbolic) => &["key", "super+enter"][..],
+        (AutoSubmitKey::Enter, YdotoolKeySyntax::RawKeycodes) => &["key", "28:1", "28:0"][..],
+        (AutoSubmitKey::CtrlEnter, YdotoolKeySyntax::RawKeycodes) => {
+            &["key", "29:1", "28:1", "28:0", "29:0"][..]
+        }
+        (AutoSubmitKey::CmdEnter, YdotoolKeySyntax::RawKeycodes) => {
+            &["key", "125:1", "28:1", "28:0", "125:0"][..]
+        }
+    }
+}
+
+/// Send the auto-submit key via ydotool (requires ydotoold daemon).
+#[cfg(target_os = "linux")]
+fn send_submit_key_via_ydotool(key: AutoSubmitKey) -> Result<(), String> {
+    let syntax = detect_ydotool_key_syntax();
+    let args = ydotool_submit_key_args(key, syntax);
+
+    let output = Command::new("ydotool")
+        .args(args)
+        .output()
+        .map_err(|e| format!("Failed to execute ydotool: {}", e))?;
+
+    if !output.status.success() {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        return Err(format!("ydotool failed: {}", stderr));
+    }
+
+    Ok(())
+}
+
+/// Send the auto-submit key via xdotool on X11.
+#[cfg(target_os = "linux")]
+fn send_submit_key_via_xdotool(key: AutoSubmitKey) -> Result<(), String> {
+    let key_combo = match key {
+        AutoSubmitKey::Enter => "Return",
+        AutoSubmitKey::CtrlEnter => "ctrl+Return",
+        AutoSubmitKey::CmdEnter => "super+Return",
+    };
+
+    let output = Command::new("xdotool")
+        .arg("key")
+        .arg("--clearmodifiers")
+        .arg(key_combo)
+        .output()
+        .map_err(|e| format!("Failed to execute xdotool: {}", e))?;
+
+    if !output.status.success() {
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        return Err(format!("xdotool failed: {}", stderr));
+    }
+
+    Ok(())
+}
+
 /// Pastes text by invoking an external script.
 /// The script receives the text to paste as a single argument.
 fn paste_via_external_script(text: &str, script_path: &str) -> Result<(), String> {
@@ -848,10 +998,26 @@ pub fn paste(text: String, app_handle: AppHandle) -> Result<(), String> {
 
     if should_send_auto_submit(settings.auto_submit, paste_method) {
         std::thread::sleep(Duration::from_millis(50));
-        if let Err(error) = with_enigo(&app_handle, |enigo| {
-            send_return_key(enigo, settings.auto_submit_key)
-        }) {
-            log::warn!("Paste succeeded, but auto-submit failed: {error}");
+
+        // Prefer the same native-tool chain the paste used, so the Enter press is
+        // as reliable as the paste on Wayland; fall back to enigo otherwise.
+        #[cfg(target_os = "linux")]
+        let native_submit_sent = match try_send_submit_key_linux(settings.auto_submit_key) {
+            Ok(sent) => sent,
+            Err(error) => {
+                log::warn!("Native auto-submit failed ({error}); falling back to enigo");
+                false
+            }
+        };
+        #[cfg(not(target_os = "linux"))]
+        let native_submit_sent = false;
+
+        if !native_submit_sent {
+            if let Err(error) = with_enigo(&app_handle, |enigo| {
+                send_return_key(enigo, settings.auto_submit_key)
+            }) {
+                log::warn!("Paste succeeded, but auto-submit failed: {error}");
+            }
         }
     }
 
@@ -942,6 +1108,40 @@ e.g. 28:1 28:0 means pressing on the Enter button on a standard US keyboard.
         assert_eq!(
             ydotool_key_args(&PasteMethod::ShiftInsert, YdotoolKeySyntax::RawKeycodes).unwrap(),
             ["key", "42:1", "110:1", "110:0", "42:0"]
+        );
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn generates_symbolic_ydotool_submit_key_arguments() {
+        assert_eq!(
+            ydotool_submit_key_args(AutoSubmitKey::Enter, YdotoolKeySyntax::Symbolic),
+            ["key", "enter"]
+        );
+        assert_eq!(
+            ydotool_submit_key_args(AutoSubmitKey::CtrlEnter, YdotoolKeySyntax::Symbolic),
+            ["key", "ctrl+enter"]
+        );
+        assert_eq!(
+            ydotool_submit_key_args(AutoSubmitKey::CmdEnter, YdotoolKeySyntax::Symbolic),
+            ["key", "super+enter"]
+        );
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn generates_raw_ydotool_submit_key_arguments() {
+        assert_eq!(
+            ydotool_submit_key_args(AutoSubmitKey::Enter, YdotoolKeySyntax::RawKeycodes),
+            ["key", "28:1", "28:0"]
+        );
+        assert_eq!(
+            ydotool_submit_key_args(AutoSubmitKey::CtrlEnter, YdotoolKeySyntax::RawKeycodes),
+            ["key", "29:1", "28:1", "28:0", "29:0"]
+        );
+        assert_eq!(
+            ydotool_submit_key_args(AutoSubmitKey::CmdEnter, YdotoolKeySyntax::RawKeycodes),
+            ["key", "125:1", "28:1", "28:0", "125:0"]
         );
     }
 
